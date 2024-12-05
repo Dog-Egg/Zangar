@@ -1,0 +1,13 @@
+[project]
+name = "Zangar"
+dynamic = ["version"]
+dependencies = ["python-dateutil"]
+authors = [{ name = "Lee", email = "294622946@qq.com" }]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/Dog-Egg/Zangar"
+Issues = "https://github.com/Dog-Egg/Zangar/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "zangar.__version__" }
