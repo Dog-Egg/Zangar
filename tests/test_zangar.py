@@ -1,4 +1,3 @@
-import datetime
 from types import SimpleNamespace
 
 import pytest
@@ -6,13 +5,12 @@ import pytest
 import zangar as z
 
 
-def test_relationship_to_refinements():
+def test_schema():
     name_to_greeting = (
-        z.String()
-        .transform(lambda s: s.title())
-        .refine(lambda s: len(s) > 3, message="Name must be at least 4 characters long")
+        z.transform(lambda s: s.title())
+        .ensure(lambda s: len(s) > 3, message="Name must be at least 4 characters long")
         .transform(lambda s: f"Hello {s}")
-        .refine(lambda s: "!" not in s, message="Name must not contain !")
+        .ensure(lambda s: "!" not in s, message="Name must not contain !")
     )
 
     with pytest.raises(z.ValidationError) as e:
@@ -30,9 +28,9 @@ def test_relationship_to_refinements():
 
 def test_multiple_error_messages():
     password = (
-        z.String()
-        .refine(lambda s: len(s) >= 8, message="密码至少需要8位")
-        .refine(lambda s: "!" not in s, message="密码不能包含感叹号")
+        z.str()
+        .ensure(lambda s: len(s) >= 8, message="密码至少需要8位")
+        .ensure(lambda s: "!" not in s, message="密码不能包含感叹号")
     )
 
     with pytest.raises(z.ValidationError) as e:
@@ -47,32 +45,21 @@ def test_multiple_error_messages():
     ]
 
 
-class TestSchema:
-    def test_nullable_and_nonnullable(self):
-        with pytest.raises(z.ValidationError) as e:
-            z.String().parse(None)
-        assert e.value.format_errors() == [{"msgs": ["This value is not nullable"]}]
-
-        with pytest.raises(z.ValidationError) as e:
-            z.String().nonnullable(message="不可为空").parse(None)
-        assert e.value.format_errors() == [{"msgs": ["不可为空"]}]
-
-
 class TestObject:
     def test_field_default(self):
-        obj = z.Object(
+        obj = z.object(
             {
-                "a": z.Field(z.String()).optional(default="Tom"),
-                "b": z.Field(z.String()).optional(default=lambda: "Tom"),
-                "c": z.Field(z.String()).optional(),
+                "a": z.field(z.str()).optional(default="Tom"),
+                "b": z.field(z.str()).optional(default=lambda: "Tom"),
+                "c": z.field(z.str()).optional(),
             }
         )
         assert obj.parse({}) == {"a": "Tom", "b": "Tom"}
 
     def test_field_required(self):
-        obj = z.Object(
+        obj = z.object(
             {
-                "a": z.Field(z.String()).required(message="a is required"),
+                "a": z.field(z.str()).required(message="a is required"),
             }
         )
         with pytest.raises(z.ValidationError) as e:
@@ -80,11 +67,26 @@ class TestObject:
         assert e.value.format_errors() == [{"msgs": ["a is required"]}]
 
     def test_parse_object(self):
-        assert z.Object({"a": z.Field(z.String())}).parse(SimpleNamespace(a="Tom")) == {
+        assert z.object({"a": z.field(z.str())}).parse(SimpleNamespace(a="Tom")) == {
             "a": "Tom"
         }
 
 
-def test_Integer():
-    with pytest.raises(z.ValidationError):
-        z.Integer().parse("1.1")
+class TestList:
+    def test_parse_wrong_type(self):
+        with pytest.raises(z.ValidationError) as e:
+            z.list(z.int()).parse(1)  # type: ignore
+        assert e.value.format_errors() == [{"msgs": ["Expected list, received int"]}]
+
+    def test_inner_parsing(self):
+        """List 需要先对内部数据进行解析"""
+        assert (
+            z.list(z.transform(int))
+            .ensure(lambda x: all(i > 0 for i in x))
+            .parse(["1", "2"])
+        )
+
+
+class TestUnion:
+    def test_order(self):
+        assert repr(z.str() | z.int() | z.bool()) == "String | Integer | Boolean"
