@@ -35,16 +35,9 @@ list = z.List
 T = t.TypeVar("T")
 
 
-def ensure(
-    func: Callable[[T], builtins.bool],
-    /,
-    *,
-    message: t.Any | Callable[[T], t.Any] = None,
-):
-    return z.Schema().ensure(func, message=message)
+def ensure(func: Callable[[T], builtins.bool], /, **kwargs):
+    return z.Schema().ensure(func, **kwargs)
 
 
-def transform(
-    func: Callable[[t.Any], T], /, *, message: t.Any | Callable[[t.Any], t.Any] = None
-):
-    return z.Schema().transform(func, message=message)
+def transform(func: Callable[[t.Any], T], /, **kwargs):
+    return z.Schema().transform(func, **kwargs)

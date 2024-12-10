@@ -83,7 +83,7 @@ class Field(t.Generic[T]):
 class Schema(t.Generic[T], SchemaBase[T]):
     def __init__(self, prev: SchemaBase | None = None):
         self.__prev = prev
-        self.__validators: list[Callable[[t.Any], None]] = []
+        self.__validators: list[tuple[Callable[[t.Any], None], bool]] = []
         self.__transform: Callable[[T], t.Any] = lambda x: x
 
     def ensure(
@@ -92,6 +92,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
         /,
         *,
         message: t.Any | Callable[[T], t.Any] = None,
+        break_on_failure: bool = False,
     ):
 
         def validate(value):
@@ -102,7 +103,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        self.__validators.append(validate)
+        self.__validators.append((validate, break_on_failure))
         return self
 
     def transform(
@@ -131,11 +132,13 @@ class Schema(t.Generic[T], SchemaBase[T]):
         if self.__prev:
             value = self.__prev.parse(value)
         error = ValidationError(empty)
-        for validate in self.__validators:
+        for validate, break_on_failure in self.__validators:
             try:
                 validate(value)
             except ValidationError as e:
                 error._concat(e)
+                if break_on_failure:
+                    break
         if not error._empty():
             raise error
         return self.__transform(value)
@@ -171,14 +174,42 @@ class TypeSchema(Schema[T]):
 
 
 class String(TypeSchema[str], type=str):
+    def min(self, value: int, /, **kwargs):
+        kwargs.setdefault("message", f"The minimum length of the string is {value}")
+        return self.ensure(lambda x: len(x) >= value, **kwargs)
+
+    def max(self, value: int, /, **kwargs):
+        kwargs.setdefault("message", f"The maximum length of the string is {value}")
+        return self.ensure(lambda x: len(x) <= value, **kwargs)
+
+
+class NumberMixin(Schema):
+    def gte(self, value: int | float, /, **kwargs):
+        kwargs.setdefault(
+            "message", f"The value should be greater than or equal to {value}"
+        )
+        return self.ensure(lambda x: x >= value, **kwargs)
+
+    def gt(self, value: int | float, /, **kwargs):
+        kwargs.setdefault("message", f"The value should be greater than {value}")
+        return self.ensure(lambda x: x > value, **kwargs)
+
+    def lte(self, value: int | float, /, **kwargs):
+        kwargs.setdefault(
+            "message", f"The value should be less than or equal to {value}"
+        )
+        return self.ensure(lambda x: x <= value, **kwargs)
+
+    def lt(self, value: int | float, /, **kwargs):
+        kwargs.setdefault("message", f"The value should be less than {value}")
+        return self.ensure(lambda x: x < value, **kwargs)
+
+
+class Integer(TypeSchema[int], NumberMixin, type=int):
     pass
 
 
-class Integer(TypeSchema[int], type=int):
-    pass
-
-
-class Float(TypeSchema[float], type=float):
+class Float(TypeSchema[float], NumberMixin, type=float):
     pass
 
 
