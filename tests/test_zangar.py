@@ -90,3 +90,22 @@ class TestList:
 class TestUnion:
     def test_order(self):
         assert repr(z.str() | z.int() | z.bool()) == "String | Integer | Boolean"
+
+
+class TestNumber:
+    def test_methods(self):
+        my_int = z.int().gt(0).lte(100)
+
+        with pytest.raises(z.ValidationError) as e:
+            my_int.parse(-1)
+        assert e.value.format_errors() == [
+            {"msgs": ["The value should be greater than 0"]}
+        ]
+
+        with pytest.raises(z.ValidationError) as e:
+            my_int.parse(101)
+        assert e.value.format_errors() == [
+            {"msgs": ["The value should be less than or equal to 100"]}
+        ]
+
+        assert my_int.parse(50) == 50

@@ -7,25 +7,23 @@ from operator import getitem
 from ._common import Empty, empty
 from .exceptions import ValidationError
 
-I = t.TypeVar("I")
-O = t.TypeVar("O")
 T = t.TypeVar("T")
 P = t.TypeVar("P")
 
 
-class SchemaBase(t.Generic[I, O]):
-    def parse(self, value: I, /) -> O:
+class SchemaBase(t.Generic[T]):
+    def parse(self, value, /) -> T:
         raise NotImplementedError
 
-    def __or__(self, other: SchemaBase[T, P]):
+    def __or__(self, other: SchemaBase[P]):
         return Union(self, other)
 
 
-class Union(t.Generic[I, O, T, P], SchemaBase[t.Union[I, O], t.Union[T, P]]):
-    def __init__(self, a: SchemaBase[I, T], b: SchemaBase[O, P], /):
+class Union(t.Generic[T, P], SchemaBase[t.Union[T, P]]):
+    def __init__(self, a: SchemaBase[T], b: SchemaBase[P], /):
         self.__unions = (a, b)
 
-    def parse(self, value: I | O, /) -> T | P:
+    def parse(self, value, /) -> T | P:
         error = ValidationError(empty)
         for item in self.__unions:
             try:
@@ -44,10 +42,10 @@ class Union(t.Generic[I, O, T, P], SchemaBase[t.Union[I, O], t.Union[T, P]]):
         return " | ".join(items)
 
 
-class Field(t.Generic[I]):
+class Field(t.Generic[T]):
     def __init__(
         self,
-        schema: SchemaBase[I, O],
+        schema: SchemaBase[T],
         /,
         *,
         alias: str | None = None,
@@ -56,7 +54,7 @@ class Field(t.Generic[I]):
         self.__alias = alias
         self._required = True
         self._required_message: str = "This field is required"
-        self.__default: Callable[[], I] | I | Empty = empty
+        self.__default: Callable[[], T] | T | Empty = empty
 
     def _get_default(self):
         if callable(self.__default):
@@ -70,7 +68,7 @@ class Field(t.Generic[I]):
     def parse(self, value, /):
         return self.__schema.parse(value)
 
-    def optional(self, *, default: I | Callable[[], I] | Empty = empty):
+    def optional(self, *, default: T | Callable[[], T] | Empty = empty):
         self._required = False
         self.__default = default
         return self
@@ -82,18 +80,19 @@ class Field(t.Generic[I]):
         return self
 
 
-class Schema(t.Generic[P, I, O], SchemaBase[P, O]):
+class Schema(t.Generic[T], SchemaBase[T]):
     def __init__(self, prev: SchemaBase | None = None):
         self.__prev = prev
-        self.__validators: list[Callable[[t.Any], None]] = []
-        self.__transform: Callable[[O], t.Any] = lambda x: x
+        self.__validators: list[tuple[Callable[[t.Any], None], bool]] = []
+        self.__transform: Callable[[T], t.Any] = lambda x: x
 
     def ensure(
         self,
-        func: Callable[[O], bool],
+        func: Callable[[T], bool],
         /,
         *,
-        message: t.Any | Callable[[O], t.Any] = None,
+        message: t.Any | Callable[[T], t.Any] = None,
+        break_on_failure: bool = False,
     ):
 
         def validate(value):
@@ -104,44 +103,48 @@ class Schema(t.Generic[P, I, O], SchemaBase[P, O]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        self.__validators.append(validate)
+        self.__validators.append((validate, break_on_failure))
         return self
 
     def transform(
         self,
-        func: Callable[[I], T],
+        func: Callable[[T], P],
         /,
         *,
-        message: t.Any | Callable[[I], t.Any] = None,
+        message: t.Any | Callable[[T], t.Any] = None,
     ):
         def decorator(value):
             try:
                 return func(value)
             except Exception as e:
+                if isinstance(e, ValidationError):
+                    raise e
                 msg = message(value) if callable(message) else message
                 raise ValidationError(msg or str(e)) from e
 
         self.__transform = decorator
-        return Schema[P, O, T](self)
+        return Schema[P](self)
 
-    def relay(self, other: SchemaBase[I, T], /):
+    def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
-    def parse(self, value: P, /) -> O:
+    def parse(self, value, /) -> T:
         if self.__prev:
             value = self.__prev.parse(value)
         error = ValidationError(empty)
-        for validate in self.__validators:
+        for validate, break_on_failure in self.__validators:
             try:
                 validate(value)
             except ValidationError as e:
                 error._concat(e)
+                if break_on_failure:
+                    break
         if not error._empty():
             raise error
-        return self.__transform(t.cast(O, value))
+        return self.__transform(value)
 
 
-class TypeSchema(Schema[P, I, O]):
+class TypeSchema(Schema[T]):
 
     __type: type
 
@@ -152,37 +155,72 @@ class TypeSchema(Schema[P, I, O]):
     def __init__(self):
         super().__init__()
 
-    def _transform(self, value: P):
+    def _transform(self, value):
         return value
 
-    def parse(self, value: P, /) -> O:
-        if not isinstance(value, self.__type):
-            raise ValidationError(
-                f"Expected {self.__type.__name__}, received {type(value).__name__}"
+    def parse(self, value, /) -> T:
+        return (
+            (
+                Schema()
+                .ensure(
+                    lambda x: isinstance(x, self.__type),
+                    message=f"Expected {self.__type.__name__}, received {type(value).__name__}",
+                )
+                .transform(self._transform)
             )
-        return super().parse(self._transform(value))  # type: ignore
+            .relay(super())
+            .parse(value)
+        )
 
 
-class String(TypeSchema[str, str, str], type=str):
+class String(TypeSchema[str], type=str):
+    def min(self, value: int, /, **kwargs):
+        kwargs.setdefault("message", f"The minimum length of the string is {value}")
+        return self.ensure(lambda x: len(x) >= value, **kwargs)
+
+    def max(self, value: int, /, **kwargs):
+        kwargs.setdefault("message", f"The maximum length of the string is {value}")
+        return self.ensure(lambda x: len(x) <= value, **kwargs)
+
+
+class NumberMixin(Schema):
+    def gte(self, value: int | float, /, **kwargs):
+        kwargs.setdefault(
+            "message", f"The value should be greater than or equal to {value}"
+        )
+        return self.ensure(lambda x: x >= value, **kwargs)
+
+    def gt(self, value: int | float, /, **kwargs):
+        kwargs.setdefault("message", f"The value should be greater than {value}")
+        return self.ensure(lambda x: x > value, **kwargs)
+
+    def lte(self, value: int | float, /, **kwargs):
+        kwargs.setdefault(
+            "message", f"The value should be less than or equal to {value}"
+        )
+        return self.ensure(lambda x: x <= value, **kwargs)
+
+    def lt(self, value: int | float, /, **kwargs):
+        kwargs.setdefault("message", f"The value should be less than {value}")
+        return self.ensure(lambda x: x < value, **kwargs)
+
+
+class Integer(TypeSchema[int], NumberMixin, type=int):
     pass
 
 
-class Integer(TypeSchema[int, int, int], type=int):
+class Float(TypeSchema[float], NumberMixin, type=float):
     pass
 
 
-class Float(TypeSchema[float, float, float], type=float):
-    pass
-
-
-class Boolean(TypeSchema[bool, bool, bool], type=bool):
+class Boolean(TypeSchema[bool], type=bool):
     pass
 
 
 _NoneType = type(None)
 
 
-class NoneType(TypeSchema[_NoneType, _NoneType, _NoneType], type=_NoneType):
+class NoneType(TypeSchema[_NoneType], type=_NoneType):
     pass
 
 
@@ -190,7 +228,7 @@ class Any(TypeSchema, type=object):
     pass
 
 
-class Object(TypeSchema[t.Any, t.Any, dict], type=object):
+class Object(TypeSchema[dict], type=object):
     def __init__(self, fields: dict[str, Field], /):
         super().__init__()
         self.__fields = fields
@@ -237,17 +275,17 @@ class Object(TypeSchema[t.Any, t.Any, dict], type=object):
         return rv
 
 
-class List(TypeSchema[t.List[P], t.List[I], t.List[O]], type=list):
-    def __init__(self, schema: SchemaBase[P, O], /):
+class List(TypeSchema[t.List[T]], type=list):
+    def __init__(self, item: SchemaBase[T], /):
         super().__init__()
-        self.__schema = schema
+        self.__item = item
 
     def _transform(self, value):
         rv = []
         error = ValidationError(empty)
         for index, item in enumerate(value):
             try:
-                rv.append(self.__schema.parse(item))
+                rv.append(self.__item.parse(item))
             except ValidationError as exc:
                 error._setitem(index, exc)
         if not error._empty():

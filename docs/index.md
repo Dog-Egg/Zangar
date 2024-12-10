@@ -1,5 +1,7 @@
 # Tutorial
 
+Uses simple, composable logic to validate data.
+
 ## Installation
 
 ```sh
@@ -13,7 +15,9 @@ pip install git+https://github.com/Dog-Egg/Zangar
 
 ```
 
-Zangar defines "validation" and "transformation" methods through chain-like calls, which are invoked sequentially during parsing. This is the core of Zangar's implementation, and all the schemas defined below are built on this logic.
+Zangar's core validation logic for data consists of only two methods, defined as [`ensure`](#ensure) and [`transform`](#transform), which can be combined through chain-like calls.
+
+For example:
 
 ```py
 >>> name_to_greeting = (
@@ -32,6 +36,8 @@ zangar.exceptions.ValidationError: [{'msgs': ['Invalid value']}]
 
 ```
 
+All other validation methods provided by Zangar are implemented by combining `ensure` and `transform`.
+
 ### `ensure`
 
 `ensure` is used to define custom data validation rules and should return a boolean value.
@@ -47,6 +53,8 @@ zangar.exceptions.ValidationError: [{'msgs': ['Invalid value']}]
 'hello world'
 
 ```
+
+#### message
 
 A `message` can be provided for a validation method, which will be used when validation fails. If the `message` is a callable object, its return value will be used as the `message`.
 
@@ -75,6 +83,38 @@ zangar.exceptions.ValidationError: [{'msgs': ["The 'hello' is too short"]}]
 
 ```
 
+#### break_on_failure
+
+When multiple `ensure` methods are adjacent, even if one `ensure` fails, the subsequent `ensure` methods will still be executed by default.
+
+```py
+>>> try:
+...   (
+...     z.ensure(lambda s: len(s) >= 6, message='Password must be at least 6 characters')
+...      .ensure(lambda s: "!" not in s, message='Password must not contain !')
+...   ).parse('ab12!')
+... except z.ValidationError as e:
+...   e.format_errors()
+...
+[{'msgs': ['Password must be at least 6 characters', 'Password must not contain !']}]
+
+```
+
+The `break_on_failure` parameter controls whether the validation should terminate upon failure, preventing further validation from being propagated.
+
+```py
+>>> try:
+...   (
+...     z.ensure(lambda s: len(s) >= 6, break_on_failure=True, message='Password must be at least 6 characters')
+...      .ensure(lambda s: "!" not in s, message='Password must not contain !')
+...   ).parse('ab12!')
+... except z.ValidationError as e:
+...   e.format_errors()
+...
+[{'msgs': ['Password must be at least 6 characters']}]
+
+```
+
 ### `transform`
 
 To transform data during parsing, use the `transform` method.
@@ -86,6 +126,8 @@ To transform data during parsing, use the `transform` method.
 10
 
 ```
+
+#### message
 
 A `message` can be provided for a transformation method, which will be used when transformation fails. If the `message` is a callable object, its return value will be used as the `message`.
 
@@ -118,15 +160,37 @@ It is equivalent to the following code:
 
 ```
 
-## Types
+### `.parse`
 
-The types defined below do not provide type conversion, so they need to be used in conjunction with [`transform`](#transform).
+Given any schema, you can call its `.parse` method to check data is valid. If it is, a value is returned with full type information! Otherwise, an error is thrown.
 
 ```py
->>> my_int = z.transform(int).relay(z.int())
+>>> string = z.str()
 
->>> my_int.parse('42')
-42
+>>> string.parse("hello")
+'hello'
+
+>>> string.parse(123)
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'msgs': ['Expected str, received int']}]
+
+```
+
+## Types
+
+The various type schemas defined below are implemented using [`transform`](#transform) and [`ensure`](#ensure), which means you can completely define your own type schemas. For example:
+
+```py
+>>> z.str().min(1).max(20).parse('Hello')
+'Hello'
+
+# equivalent to:
+>>> (
+...   z.ensure(lambda x: isinstance(x, str), break_on_failure=True)
+...   .ensure(lambda x: len(x) >= 0)
+...   .ensure(lambda x: len(x) <= 20)
+... ).parse('Hello')
+'Hello'
 
 ```
 
@@ -138,19 +202,34 @@ The types defined below do not provide type conversion, so they need to be used 
 
 ```
 
-### Integer
+#### methods
 
 ```py
->>> z.int().parse(1)
-1
+>>> string = z.str().min(1) # Validate the minimum length of a string.
+>>> string = z.str().max(20) # Validate the maximum length of a string.
 
 ```
 
-### Float
+### Number
 
 ```py
+# Integer
+>>> z.int().parse(1)
+1
+
+# Float
 >>> z.float().parse(1.0)
 1.0
+
+```
+
+#### methods
+
+```py
+>>> number = z.int().gt(0)  # Validate the number is greater than 0.
+>>> number = z.int().gte(0) # Validate the number is greater than or equal to 0.
+>>> number = z.int().lte(10) # Validate the number is less than or equal to 10.
+>>> number = z.int().lt(10) # Validate the number is less than 10.
 
 ```
 
