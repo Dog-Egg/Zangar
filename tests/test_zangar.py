@@ -109,3 +109,19 @@ class TestNumber:
         ]
 
         assert my_int.parse(50) == 50
+
+
+def test_branch():
+    main = z.int()
+    branch_1 = main.gt(0)
+    branch_2 = main.lt(0)
+
+    assert branch_1.parse(1) == 1
+    with pytest.raises(z.ValidationError) as e:
+        branch_1.parse(0)
+    assert e.value.format_errors() == [{"msgs": ["The value should be greater than 0"]}]
+
+    assert branch_2.parse(-1) == -1
+    with pytest.raises(z.ValidationError) as e:
+        branch_2.parse(0)
+    assert e.value.format_errors() == [{"msgs": ["The value should be less than 0"]}]

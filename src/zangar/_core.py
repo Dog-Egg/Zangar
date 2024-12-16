@@ -82,10 +82,15 @@ class Field(t.Generic[T]):
 
 class Schema(t.Generic[T], SchemaBase[T]):
 
-    def __init__(self, prev: Schema | None = None):
+    def __init__(
+        self,
+        prev: Schema | None = None,
+        validator: tuple[Callable[[T], None], bool] | None = None,
+        transform: Callable[[T], t.Any] = lambda x: x,
+    ):
         self._prev = prev
-        self._validator: tuple[Callable[[T], None], bool] | None = None
-        self._transform_func: Callable[[T], t.Any] = lambda x: x
+        self._validator = validator
+        self._transform = transform
 
     def ensure(
         self,
@@ -119,8 +124,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        self._validator = (validate, break_on_failure)
-        return return_class(self)
+        return return_class(self, validator=(validate, break_on_failure))
 
     def transform(
         self,
@@ -138,8 +142,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
                 msg = message(value) if callable(message) else message
                 raise ValidationError(msg or str(e)) from e
 
-        self._transform_func = decorator
-        return Schema[P](self)
+        return Schema[P](self, transform=decorator)
 
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
@@ -159,12 +162,16 @@ class Schema(t.Generic[T], SchemaBase[T]):
                     validate(value)
                 except ValidationError as e:
                     error._concat(e)
-                if not error._empty() and break_on_failure:
-                    raise error
+                    if break_on_failure:
+                        break
             else:
                 if not error._empty():
                     raise error
-                value = n._transform_func(value)
+                value = n._transform(value)
+
+        if not error._empty():
+            raise error
+
         return value
 
 
@@ -186,10 +193,10 @@ class TypeSchema(Schema[T]):
                 lambda x: isinstance(x, self.__type),
                 message=lambda x: f"Expected {self.__type.__name__}, received {type(x).__name__}",
             )
-            .transform(self._transform)
+            .transform(self._pretransform)
         )
 
-    def _transform(self, value):
+    def _pretransform(self, value):
         return value
 
 
@@ -266,7 +273,7 @@ class Object(TypeSchema[dict], type=object):
         _fields.update(fields)
         return Object(_fields)
 
-    def _transform(self, value):
+    def _pretransform(self, value):
         rv = {}
         error = ValidationError(empty)
 
@@ -308,7 +315,7 @@ class List(TypeSchema[t.List[T]], type=list):
         super().__init__()
         self.__item = item
 
-    def _transform(self, value):
+    def _pretransform(self, value):
         rv = []
         error = ValidationError(empty)
         for index, item in enumerate(value):
