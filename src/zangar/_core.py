@@ -81,10 +81,11 @@ class Field(t.Generic[T]):
 
 
 class Schema(t.Generic[T], SchemaBase[T]):
-    def __init__(self, prev: SchemaBase | None = None):
-        self.__prev = prev
-        self.__validators: list[tuple[Callable[[t.Any], None], bool]] = []
-        self.__transform: Callable[[T], t.Any] = lambda x: x
+
+    def __init__(self, prev: Schema | None = None):
+        self._prev = prev
+        self._validator: tuple[Callable[[T], None], bool] | None = None
+        self._transform_func: Callable[[T], t.Any] = lambda x: x
 
     def ensure(
         self,
@@ -93,8 +94,23 @@ class Schema(t.Generic[T], SchemaBase[T]):
         *,
         message: t.Any | Callable[[T], t.Any] = None,
         break_on_failure: bool = False,
-    ):
+    ) -> Schema[T]:
+        return self._ensure(
+            func,
+            message=message,
+            break_on_failure=break_on_failure,
+            return_class=Schema[T],
+        )
 
+    def _ensure(
+        self,
+        func: Callable[[T], bool],
+        /,
+        *,
+        message: t.Any | Callable[[T], t.Any] = None,
+        break_on_failure: bool = False,
+        return_class: type[S],
+    ) -> S:
         def validate(value):
             if not func(value):
                 if callable(message):
@@ -103,8 +119,8 @@ class Schema(t.Generic[T], SchemaBase[T]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        self.__validators.append((validate, break_on_failure))
-        return self
+        self._validator = (validate, break_on_failure)
+        return return_class(self)
 
     def transform(
         self,
@@ -122,26 +138,37 @@ class Schema(t.Generic[T], SchemaBase[T]):
                 msg = message(value) if callable(message) else message
                 raise ValidationError(msg or str(e)) from e
 
-        self.__transform = decorator
+        self._transform_func = decorator
         return Schema[P](self)
 
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
     def parse(self, value, /) -> T:
-        if self.__prev:
-            value = self.__prev.parse(value)
+        node: Schema = self
+        nodes: list[Schema] = [node]
+        while node._prev:
+            nodes.append(node._prev)
+            node = node._prev
+
         error = ValidationError(empty)
-        for validate, break_on_failure in self.__validators:
-            try:
-                validate(value)
-            except ValidationError as e:
-                error._concat(e)
-                if break_on_failure:
-                    break
-        if not error._empty():
-            raise error
-        return self.__transform(value)
+        for n in reversed(nodes):
+            if n._validator:
+                validate, break_on_failure = n._validator
+                try:
+                    validate(value)
+                except ValidationError as e:
+                    error._concat(e)
+                if not error._empty() and break_on_failure:
+                    raise error
+            else:
+                if not error._empty():
+                    raise error
+                value = n._transform_func(value)
+        return value
+
+
+S = t.TypeVar("S", bound=Schema)
 
 
 class TypeSchema(Schema[T]):
@@ -153,34 +180,35 @@ class TypeSchema(Schema[T]):
         return super().__init_subclass__()
 
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            Schema()
+            .ensure(
+                lambda x: isinstance(x, self.__type),
+                message=lambda x: f"Expected {self.__type.__name__}, received {type(x).__name__}",
+            )
+            .transform(self._transform)
+        )
 
     def _transform(self, value):
         return value
 
-    def parse(self, value, /) -> T:
-        return (
-            (
-                Schema()
-                .ensure(
-                    lambda x: isinstance(x, self.__type),
-                    message=f"Expected {self.__type.__name__}, received {type(value).__name__}",
-                )
-                .transform(self._transform)
-            )
-            .relay(super())
-            .parse(value)
-        )
 
-
-class String(TypeSchema[str], type=str):
+class StringMixin(Schema):
     def min(self, value: int, /, **kwargs):
         kwargs.setdefault("message", f"The minimum length of the string is {value}")
-        return self.ensure(lambda x: len(x) >= value, **kwargs)
+        return self._ensure(
+            lambda x: len(x) >= value, return_class=StringMixin, **kwargs
+        )
 
     def max(self, value: int, /, **kwargs):
         kwargs.setdefault("message", f"The maximum length of the string is {value}")
-        return self.ensure(lambda x: len(x) <= value, **kwargs)
+        return self._ensure(
+            lambda x: len(x) <= value, return_class=StringMixin, **kwargs
+        )
+
+
+class String(TypeSchema[str], StringMixin, type=str):
+    pass
 
 
 class NumberMixin(Schema):
@@ -188,21 +216,21 @@ class NumberMixin(Schema):
         kwargs.setdefault(
             "message", f"The value should be greater than or equal to {value}"
         )
-        return self.ensure(lambda x: x >= value, **kwargs)
+        return self._ensure(lambda x: x >= value, return_class=NumberMixin, **kwargs)
 
     def gt(self, value: int | float, /, **kwargs):
         kwargs.setdefault("message", f"The value should be greater than {value}")
-        return self.ensure(lambda x: x > value, **kwargs)
+        return self._ensure(lambda x: x > value, return_class=NumberMixin, **kwargs)
 
     def lte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", f"The value should be less than or equal to {value}"
         )
-        return self.ensure(lambda x: x <= value, **kwargs)
+        return self._ensure(lambda x: x <= value, return_class=NumberMixin, **kwargs)
 
     def lt(self, value: int | float, /, **kwargs):
         kwargs.setdefault("message", f"The value should be less than {value}")
-        return self.ensure(lambda x: x < value, **kwargs)
+        return self._ensure(lambda x: x < value, return_class=NumberMixin, **kwargs)
 
 
 class Integer(TypeSchema[int], NumberMixin, type=int):
