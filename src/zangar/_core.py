@@ -80,17 +80,32 @@ class Field(t.Generic[T]):
         return self
 
 
+class TransformationValidator:
+    def __init__(self, func) -> None:
+        self.__func = func
+
+    def __call__(self, value):
+        return self.__func(value)
+
+
+class EnsuranceValidator:
+    def __init__(self, func, break_on_failure) -> None:
+        self.__func = func
+        self.break_on_failure = break_on_failure
+
+    def __call__(self, value):
+        return self.__func(value)
+
+
 class Schema(t.Generic[T], SchemaBase[T]):
 
     def __init__(
         self,
         prev: Schema | None = None,
-        validator: tuple[Callable[[T], None], bool] | None = None,
-        transform: Callable[[T], t.Any] = lambda x: x,
+        validator: TransformationValidator | EnsuranceValidator | None = None,
     ):
         self._prev = prev
         self._validator = validator
-        self._transform = transform
 
     def ensure(
         self,
@@ -124,7 +139,9 @@ class Schema(t.Generic[T], SchemaBase[T]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        return return_class(self, validator=(validate, break_on_failure))
+        return return_class(
+            self, validator=EnsuranceValidator(validate, break_on_failure)
+        )
 
     def transform(
         self,
@@ -133,7 +150,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
         *,
         message: t.Any | Callable[[T], t.Any] = None,
     ):
-        def decorator(value):
+        def validate(value):
             try:
                 return func(value)
             except Exception as e:
@@ -142,7 +159,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
                 msg = message(value) if callable(message) else message
                 raise ValidationError(msg or str(e)) from e
 
-        return Schema[P](self, transform=decorator)
+        return Schema[P](self, validator=TransformationValidator(validate))
 
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
@@ -156,18 +173,18 @@ class Schema(t.Generic[T], SchemaBase[T]):
 
         error = ValidationError(empty)
         for n in reversed(nodes):
-            if n._validator:
-                validate, break_on_failure = n._validator
+            validator = n._validator
+            if isinstance(validator, EnsuranceValidator):
                 try:
-                    validate(value)
+                    validator(value)
                 except ValidationError as e:
                     error._concat(e)
-                    if break_on_failure:
+                    if validator.break_on_failure:
                         break
-            else:
+            elif isinstance(validator, TransformationValidator):
                 if not error._empty():
                     raise error
-                value = n._transform(value)
+                value = validator(value)
 
         if not error._empty():
             raise error
