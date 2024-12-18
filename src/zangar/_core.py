@@ -104,7 +104,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
         prev: Schema | None = None,
         validator: TransformationValidator | EnsuranceValidator | None = None,
     ):
-        self._prev = prev
+        self.__prev = prev
         self._validator = validator
 
     def ensure(
@@ -164,15 +164,14 @@ class Schema(t.Generic[T], SchemaBase[T]):
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
-    def parse(self, value, /) -> T:
-        node: Schema = self
-        nodes: list[Schema] = [node]
-        while node._prev:
-            nodes.append(node._prev)
-            node = node._prev
+    def __iterate_chain(self):
+        if self.__prev is not None:
+            yield from self.__prev.__iterate_chain()
+        yield self
 
+    def parse(self, value, /) -> T:
         error = ValidationError(empty)
-        for n in reversed(nodes):
+        for n in self.__iterate_chain():
             validator = n._validator
             if isinstance(validator, EnsuranceValidator):
                 try:
