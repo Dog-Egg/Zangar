@@ -115,22 +115,6 @@ class Schema(t.Generic[T], SchemaBase[T]):
         message: t.Any | Callable[[T], t.Any] = None,
         break_on_failure: bool = False,
     ) -> Schema[T]:
-        return self._ensure(
-            func,
-            message=message,
-            break_on_failure=break_on_failure,
-            return_class=Schema[T],
-        )
-
-    def _ensure(
-        self,
-        func: Callable[[T], bool],
-        /,
-        *,
-        message: t.Any | Callable[[T], t.Any] = None,
-        break_on_failure: bool = False,
-        return_class: type[S],
-    ) -> S:
         def validate(value):
             if not func(value):
                 if callable(message):
@@ -139,9 +123,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        return return_class(
-            self, validator=EnsuranceValidator(validate, break_on_failure)
-        )
+        return Schema(self, validator=EnsuranceValidator(validate, break_on_failure))
 
     def transform(
         self,
@@ -216,51 +198,50 @@ class TypeSchema(Schema[T]):
         return value
 
 
-class StringMixin(Schema):
+class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
         kwargs.setdefault("message", f"The minimum length of the string is {value}")
-        return self._ensure(
-            lambda x: len(x) >= value, return_class=StringMixin, **kwargs
-        )
+        return StringMethods(self.ensure(lambda x: len(x) >= value, **kwargs))
 
     def max(self, value: int, /, **kwargs):
         kwargs.setdefault("message", f"The maximum length of the string is {value}")
-        return self._ensure(
-            lambda x: len(x) <= value, return_class=StringMixin, **kwargs
-        )
+        return StringMethods(self.ensure(lambda x: len(x) <= value, **kwargs))
+
+    def strip(self, *args, **kwargs):
+        return StringMethods(self.transform((lambda s: s.strip(*args, **kwargs))))
 
 
-class String(TypeSchema[str], StringMixin, type=str):
+class String(TypeSchema[str], StringMethods, type=str):
     pass
 
 
-class NumberMixin(Schema):
+class NumberMethods(Schema):
     def gte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", f"The value should be greater than or equal to {value}"
         )
-        return self._ensure(lambda x: x >= value, return_class=NumberMixin, **kwargs)
+        return NumberMethods(self.ensure(lambda x: x >= value, **kwargs))
 
     def gt(self, value: int | float, /, **kwargs):
         kwargs.setdefault("message", f"The value should be greater than {value}")
-        return self._ensure(lambda x: x > value, return_class=NumberMixin, **kwargs)
+        return NumberMethods(self.ensure(lambda x: x > value, **kwargs))
 
     def lte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", f"The value should be less than or equal to {value}"
         )
-        return self._ensure(lambda x: x <= value, return_class=NumberMixin, **kwargs)
+        return NumberMethods(self.ensure(lambda x: x <= value, **kwargs))
 
     def lt(self, value: int | float, /, **kwargs):
         kwargs.setdefault("message", f"The value should be less than {value}")
-        return self._ensure(lambda x: x < value, return_class=NumberMixin, **kwargs)
+        return NumberMethods(self.ensure(lambda x: x < value, **kwargs))
 
 
-class Integer(TypeSchema[int], NumberMixin, type=int):
+class Integer(TypeSchema[int], NumberMethods, type=int):
     pass
 
 
-class Float(TypeSchema[float], NumberMixin, type=float):
+class Float(TypeSchema[float], NumberMethods, type=float):
     pass
 
 
