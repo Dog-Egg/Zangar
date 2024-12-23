@@ -1,4 +1,9 @@
 site_name: Zangar
+nav:
+  - Home: index.md
+  - Types: types.md
+  - Methods: methods.md
+  - Exceptions: exceptions.md
 theme:
   name: material
 markdown_extensions:
