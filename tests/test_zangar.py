@@ -64,7 +64,7 @@ class TestObject:
         )
         with pytest.raises(z.ValidationError) as e:
             obj.parse({})
-        assert e.value.format_errors() == [{"msgs": ["a is required"]}]
+        assert e.value.format_errors() == [{"loc": ["a"], "msgs": ["a is required"]}]
 
     def test_parse_object(self):
         assert z.object({"a": z.field(z.str())}).parse(SimpleNamespace(a="Tom")) == {

@@ -289,7 +289,9 @@ class Object(TypeSchema[dict], type=object):
 
             if field_value is empty:
                 if field._required:
-                    raise ValidationError(field._required_message)
+                    error._setitem(alias, ValidationError(field._required_message))
+                    continue
+
                 default = field._get_default()
                 if default is not empty:
                     rv[fieldname] = default
