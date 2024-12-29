@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import typing as t
 from collections.abc import Callable, Mapping
 from operator import getitem
@@ -257,6 +258,10 @@ class NoneType(TypeSchema[_NoneType], type=_NoneType):
 
 
 class Any(TypeSchema, type=object):
+    pass
+
+
+class Datetime(TypeSchema[datetime.datetime], type=datetime.datetime):
     pass
 
 

@@ -8,12 +8,13 @@
 ## Primitives
 
 ```
->>> my_str = z.str()       # Validate that the data is of type `str`.
->>> my_int = z.int()       # Validate that the data is of type `int`.
->>> my_float = z.float()   # Validate that the data is of type `float`.
->>> my_bool = z.bool()     # Validate that the data is of type `bool`.
->>> my_none = z.none()     # Validate that the data is of type `None`.
->>> my_any = z.any()       # Validate that the data is of any type.
+>>> my_str = z.str()             # Validate that the data is of type `str`.
+>>> my_int = z.int()             # Validate that the data is of type `int`.
+>>> my_float = z.float()         # Validate that the data is of type `float`.
+>>> my_bool = z.bool()           # Validate that the data is of type `bool`.
+>>> my_none = z.none()           # Validate that the data is of type `None`.
+>>> my_datatime = z.datetime()   # Validate that the data is of type `datetime`.
+>>> my_any = z.any()             # Validate that the data is of any type.
 
 ```
 
