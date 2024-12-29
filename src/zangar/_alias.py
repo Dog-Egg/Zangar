@@ -16,6 +16,7 @@ __all__ = [
     "bool",
     "none",
     "any",
+    "datetime",
     "object",
     "field",
     "list",
@@ -30,6 +31,7 @@ any = z.Any
 object = z.Object
 field = z.Field
 list = z.List
+datetime = z.Datetime
 
 
 T = t.TypeVar("T")

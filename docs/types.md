@@ -8,12 +8,13 @@
 ## Primitives
 
 ```
->>> my_str = z.str()       # Validate that the data is of type `str`.
->>> my_int = z.int()       # Validate that the data is of type `int`.
->>> my_float = z.float()   # Validate that the data is of type `float`.
->>> my_bool = z.bool()     # Validate that the data is of type `bool`.
->>> my_none = z.none()     # Validate that the data is of type `None`.
->>> my_any = z.any()       # Validate that the data is of any type.
+>>> my_str = z.str()             # Validate that the data is of type `str`.
+>>> my_int = z.int()             # Validate that the data is of type `int`.
+>>> my_float = z.float()         # Validate that the data is of type `float`.
+>>> my_bool = z.bool()           # Validate that the data is of type `bool`.
+>>> my_none = z.none()           # Validate that the data is of type `None`.
+>>> my_datatime = z.datetime()   # Validate that the data is of type `datetime`.
+>>> my_any = z.any()             # Validate that the data is of any type.
 
 ```
 
@@ -41,11 +42,37 @@ These schemas are simple type validations and do not provide type conversion. He
 
 ## Object
 
+`object` is a schema with fields, it can parse any object and return a dict.
+
 ```py
 >>> dog = z.object({
 ...     'name': z.field(z.str()),
 ...     'breed': z.field(z.str()),
 ... })
+
+```
+
+The `object` field, when parsing an object, will use its field name to get the value of the key for [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) objects, and the value of the attribute for other objects.
+
+```py
+# Parsing a Mapping object
+
+>>> dog.parse({
+...     'name': 'Fido',
+...     'breed': 'bulldog'
+... })
+{'name': 'Fido', 'breed': 'bulldog'}
+
+```
+
+```py
+# Parsing other objects
+
+>>> from types import SimpleNamespace
+
+>>> obj = SimpleNamespace(name='Fido', breed='bulldog')
+>>> dog.parse(obj)
+{'name': 'Fido', 'breed': 'bulldog'}
 
 ```
 
