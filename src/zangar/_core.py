@@ -12,41 +12,10 @@ T = t.TypeVar("T")
 P = t.TypeVar("P")
 
 
-class SchemaBase(t.Generic[T]):
-    def parse(self, value, /) -> T:
-        raise NotImplementedError
-
-    def __or__(self, other: SchemaBase[P]):
-        return Union(self, other)
-
-
-class Union(t.Generic[T, P], SchemaBase[t.Union[T, P]]):
-    def __init__(self, a: SchemaBase[T], b: SchemaBase[P], /):
-        self.__unions = (a, b)
-
-    def parse(self, value, /) -> T | P:
-        error = ValidationError(empty)
-        for item in self.__unions:
-            try:
-                return item.parse(t.cast(t.Any, value))
-            except ValidationError as e:
-                error._concat(e)
-        raise error
-
-    def __repr__(self) -> str:
-        items: list[str] = []
-        for item in self.__unions:
-            if isinstance(item, Union):
-                items.append(repr(item))
-            else:
-                items.append(item.__class__.__name__)
-        return " | ".join(items)
-
-
 class Field(t.Generic[T]):
     def __init__(
         self,
-        schema: SchemaBase[T],
+        schema: Schema[T],
         /,
         *,
         alias: str | None = None,
@@ -98,7 +67,7 @@ class EnsuranceValidator:
         return self.__func(value)
 
 
-class Schema(t.Generic[T], SchemaBase[T]):
+class Schema(t.Generic[T]):
 
     def __init__(
         self,
@@ -107,6 +76,9 @@ class Schema(t.Generic[T], SchemaBase[T]):
     ):
         self.__prev = prev
         self._validator = validator
+
+    def __or__(self, other: Schema[P]) -> Union[T, P]:
+        return Union(self, other)
 
     def ensure(
         self,
@@ -144,7 +116,7 @@ class Schema(t.Generic[T], SchemaBase[T]):
 
         return Schema[P](self, validator=TransformationValidator(validate))
 
-    def relay(self, other: SchemaBase[P], /):
+    def relay(self, other: Schema[P], /):
         return self.transform(other.parse)
 
     def __iterate_chain(self):
@@ -172,6 +144,31 @@ class Schema(t.Generic[T], SchemaBase[T]):
             raise error
 
         return value
+
+
+class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
+    def __init__(self, a: Schema[T], b: Schema[P], /):
+        self.__unions = (a, b)
+
+        def transform(value):
+            error = ValidationError(empty)
+            for item in self.__unions:
+                try:
+                    return item.parse(t.cast(t.Any, value))
+                except ValidationError as e:
+                    error._concat(e)
+            raise error
+
+        super().__init__(Schema().transform(transform))
+
+    def __repr__(self) -> str:
+        items: list[str] = []
+        for item in self.__unions:
+            if isinstance(item, Union):
+                items.append(repr(item))
+            else:
+                items.append(item.__class__.__name__)
+        return " | ".join(items)
 
 
 S = t.TypeVar("S", bound=Schema)
@@ -315,7 +312,7 @@ class Object(TypeSchema[dict], type=object):
 
 
 class List(TypeSchema[t.List[T]], type=list):
-    def __init__(self, item: SchemaBase[T], /):
+    def __init__(self, item: Schema[T], /):
         super().__init__()
         self.__item = item
 
