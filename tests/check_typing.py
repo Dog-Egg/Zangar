@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+from typing import TypeVar
 
 import zangar as z
 
@@ -23,6 +24,9 @@ r6 = str_or_none.parse(None)
 r7: list[int] = z.list(z.int()).parse([1, 2])
 
 
+# dataclass
+
+
 @dataclasses.dataclass
 class Point:
     x: int
@@ -30,3 +34,16 @@ class Point:
 
 
 r8: Point = z.dataclass(Point).parse({"x": 1, "y": 2})
+
+
+# Schema Interafce
+
+T = TypeVar("T")
+
+
+def your_function(schema: z.Schema[T]) -> T:
+    # do something
+    return schema.parse(...)
+
+
+r9: int = your_function(z.int())
