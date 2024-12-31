@@ -36,7 +36,9 @@ zangar.exceptions.ValidationError: [{'msgs': ['Invalid value']}]
 
 All other validation methods provided by Zangar are implemented by combining `ensure` and `transform`.
 
-## `.ensure`
+## Schema
+
+### `.ensure`
 
 `ensure` is used to define custom data validation rules and should return a boolean value.
 
@@ -52,7 +54,7 @@ zangar.exceptions.ValidationError: [{'msgs': ['Invalid value']}]
 
 ```
 
-### message
+#### message
 
 A `message` can be provided for a validation method, which will be used when validation fails. If the `message` is a callable object, its return value will be used as the `message`.
 
@@ -81,7 +83,7 @@ zangar.exceptions.ValidationError: [{'msgs': ["The 'hello' is too short"]}]
 
 ```
 
-### break_on_failure
+#### break_on_failure
 
 When multiple `ensure` methods are adjacent, even if one `ensure` fails, the subsequent `ensure` methods will still be executed by default.
 
@@ -113,7 +115,7 @@ The `break_on_failure` parameter controls whether the validation should terminat
 
 ```
 
-## `.transform`
+### `.transform`
 
 To transform data during parsing, use the `transform` method.
 
@@ -125,7 +127,7 @@ To transform data during parsing, use the `transform` method.
 
 ```
 
-### message
+#### message
 
 A `message` can be provided for a transformation method, which will be used when transformation fails. If the `message` is a callable object, its return value will be used as the `message`.
 
@@ -145,7 +147,7 @@ zangar.exceptions.ValidationError: [{'msgs': ["Invalid integer: 'a'"]}]
 
 ```
 
-## `.relay`
+### `.relay`
 
 The `relay` method is simply a shortcut for invoking another schema for parsing using `transform`.
 It is equivalent to the following code:
@@ -158,7 +160,7 @@ It is equivalent to the following code:
 
 ```
 
-## `.parse`
+### `.parse`
 
 Given any schema, you can call its `.parse` method to check data is valid. If it is, a value is returned with full type information! Otherwise, an error is thrown.
 
