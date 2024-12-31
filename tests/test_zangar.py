@@ -88,6 +88,28 @@ class TestList:
 
 
 class TestUnion:
+
+    def test_parse(self):
+        union = z.int() | z.none()
+
+        assert union.parse(None) is None
+        assert union.parse(1) == 1
+        with pytest.raises(z.ValidationError) as e:
+            union.parse("string")
+        assert e.value.format_errors() == [
+            {"msgs": ["Expected int, received str", "Expected NoneType, received str"]},
+        ]
+
+        # next transform
+        schema = union.transform(lambda _: "string")
+        assert schema.parse(None) == "string"
+        assert schema.parse(1) == "string"
+        with pytest.raises(z.ValidationError) as e:
+            schema.parse("string")
+        assert e.value.format_errors() == [
+            {"msgs": ["Expected int, received str", "Expected NoneType, received str"]},
+        ]
+
     def test_order(self):
         assert repr(z.str() | z.int() | z.bool()) == "String | Integer | Boolean"
 

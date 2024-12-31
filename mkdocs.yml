@@ -3,6 +3,7 @@ nav:
   - Home: index.md
   - Types: types.md
   - Methods: methods.md
+  - Dataclass: dataclass.md
   - Exceptions: exceptions.md
 theme:
   name: material
