@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import dataclasses
+
 import zangar as z
 
 r1: int = z.transform(int).parse("1")
@@ -19,3 +21,12 @@ r6: str | None = str_or_none.parse("1")
 r6 = str_or_none.parse(None)
 
 r7: list[int] = z.list(z.int()).parse([1, 2])
+
+
+@dataclasses.dataclass
+class Point:
+    x: int
+    y: int
+
+
+r8: Point = z.dataclass(Point).parse({"x": 1, "y": 2})

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 import datetime
 import typing as t
 from collections.abc import Callable, Mapping
@@ -10,6 +11,27 @@ from .exceptions import ValidationError
 
 T = t.TypeVar("T")
 P = t.TypeVar("P")
+
+
+class SchemaBase(t.Generic[T], abc.ABC):
+    @abc.abstractmethod
+    def __or__(self, other: SchemaBase[P]) -> SchemaBase[T | P]: ...
+
+    @abc.abstractmethod
+    def parse(self, value, /) -> T: ...
+
+    @abc.abstractmethod
+    def ensure(
+        self, func: Callable[[T], bool], /, *, message: t.Any = None
+    ) -> SchemaBase[T]: ...
+
+    @abc.abstractmethod
+    def transform(
+        self, func: Callable[[T], P], /, *, message: t.Any = None
+    ) -> SchemaBase[P]: ...
+
+    @abc.abstractmethod
+    def relay(self, other: SchemaBase[P], /) -> SchemaBase[P]: ...
 
 
 class Field(t.Generic[T]):
@@ -67,17 +89,18 @@ class EnsuranceValidator:
         return self.__func(value)
 
 
-class Schema(t.Generic[T]):
+class Schema(SchemaBase[T]):
 
     def __init__(
         self,
+        *,
         prev: Schema | None = None,
         validator: TransformationValidator | EnsuranceValidator | None = None,
     ):
         self.__prev = prev
         self._validator = validator
 
-    def __or__(self, other: Schema[P]) -> Union[T, P]:
+    def __or__(self, other: SchemaBase[P]) -> Union[T, P]:
         return Union(self, other)
 
     def ensure(
@@ -96,7 +119,9 @@ class Schema(t.Generic[T]):
                     msg = message
                 raise ValidationError(msg or "Invalid value")
 
-        return Schema(self, validator=EnsuranceValidator(validate, break_on_failure))
+        return Schema(
+            prev=self, validator=EnsuranceValidator(validate, break_on_failure)
+        )
 
     def transform(
         self,
@@ -114,9 +139,9 @@ class Schema(t.Generic[T]):
                 msg = message(value) if callable(message) else message
                 raise ValidationError(msg or str(e)) from e
 
-        return Schema[P](self, validator=TransformationValidator(validate))
+        return Schema[P](prev=self, validator=TransformationValidator(validate))
 
-    def relay(self, other: Schema[P], /):
+    def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
     def __iterate_chain(self):
@@ -147,7 +172,7 @@ class Schema(t.Generic[T]):
 
 
 class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
-    def __init__(self, a: Schema[T], b: Schema[P], /):
+    def __init__(self, a: SchemaBase[T], b: SchemaBase[P], /):
         self.__unions = (a, b)
 
         def transform(value):
@@ -159,7 +184,7 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
                     error._concat(e)
             raise error
 
-        super().__init__(Schema().transform(transform))
+        super().__init__(prev=Schema().transform(transform))
 
     def __repr__(self) -> str:
         items: list[str] = []
@@ -184,7 +209,7 @@ class TypeSchema(Schema[T]):
 
     def __init__(self):
         super().__init__(
-            Schema()
+            prev=Schema()
             .ensure(
                 lambda x: isinstance(x, self.__type),
                 message=lambda x: f"Expected {self.__type.__name__}, received {type(x).__name__}",
@@ -199,14 +224,14 @@ class TypeSchema(Schema[T]):
 class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
         kwargs.setdefault("message", f"The minimum length of the string is {value}")
-        return StringMethods(self.ensure(lambda x: len(x) >= value, **kwargs))
+        return StringMethods(prev=self.ensure(lambda x: len(x) >= value, **kwargs))
 
     def max(self, value: int, /, **kwargs):
         kwargs.setdefault("message", f"The maximum length of the string is {value}")
-        return StringMethods(self.ensure(lambda x: len(x) <= value, **kwargs))
+        return StringMethods(prev=self.ensure(lambda x: len(x) <= value, **kwargs))
 
     def strip(self, *args, **kwargs):
-        return StringMethods(self.transform((lambda s: s.strip(*args, **kwargs))))
+        return StringMethods(prev=self.transform((lambda s: s.strip(*args, **kwargs))))
 
 
 class String(TypeSchema[str], StringMethods, type=str):
@@ -218,21 +243,21 @@ class NumberMethods(Schema):
         kwargs.setdefault(
             "message", f"The value should be greater than or equal to {value}"
         )
-        return NumberMethods(self.ensure(lambda x: x >= value, **kwargs))
+        return NumberMethods(prev=self.ensure(lambda x: x >= value, **kwargs))
 
     def gt(self, value: int | float, /, **kwargs):
         kwargs.setdefault("message", f"The value should be greater than {value}")
-        return NumberMethods(self.ensure(lambda x: x > value, **kwargs))
+        return NumberMethods(prev=self.ensure(lambda x: x > value, **kwargs))
 
     def lte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", f"The value should be less than or equal to {value}"
         )
-        return NumberMethods(self.ensure(lambda x: x <= value, **kwargs))
+        return NumberMethods(prev=self.ensure(lambda x: x <= value, **kwargs))
 
     def lt(self, value: int | float, /, **kwargs):
         kwargs.setdefault("message", f"The value should be less than {value}")
-        return NumberMethods(self.ensure(lambda x: x < value, **kwargs))
+        return NumberMethods(prev=self.ensure(lambda x: x < value, **kwargs))
 
 
 class Integer(TypeSchema[int], NumberMethods, type=int):
