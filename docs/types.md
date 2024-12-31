@@ -130,22 +130,3 @@ You can add additional fields to an object schema with the .extend method.
 ... })
 
 ```
-
-## Unions
-
-Zangar provides a way to create a union schema using the `|` operator, where the data is parsed sequentially from left to right.
-
-```py
->>> int_or_str = z.int() | z.str()
-
->>> int_or_str.parse(1)
-1
-
->>> int_or_str.parse('1')
-'1'
-
->>> int_or_str.parse(None)
-Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ['Expected int, received NoneType', 'Expected str, received NoneType']}]
-
-```

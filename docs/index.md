@@ -175,3 +175,36 @@ Traceback (most recent call last):
 zangar.exceptions.ValidationError: [{'msgs': ['Expected str, received int']}]
 
 ```
+
+## Unions
+
+Zangar provides a way to create a union schema using the `|` operator, where the data is parsed sequentially from left to right.
+
+```py
+>>> int_or_str = z.int() | z.str()
+
+>>> int_or_str.parse(1)
+1
+
+>>> int_or_str.parse('1')
+'1'
+
+>>> int_or_str.parse(None)
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'msgs': ['Expected int, received NoneType', 'Expected str, received NoneType']}]
+
+```
+
+## Typing
+
+`z.Schema` is an interface, you can use `z.Schema[T]` to specify the type of the data. This can be helpful for static type checking.
+
+```py
+from typing import TypeVar
+
+T = TypeVar('T')
+
+def your_function(schema: z.Schema[T]) -> T:
+    # do something
+    return schema.parse(...)
+```
