@@ -327,15 +327,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#unions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Unions
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -503,15 +494,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#unions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Unions
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -615,20 +597,6 @@
 <div class="language-py highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog_with_age</span> <span class="o">=</span> <span class="n">dog</span><span class="o">.</span><span class="n">extend</span><span class="p">({</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="o">...</span>   <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()),</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="o">...</span> <span class="p">})</span>
-</span></code></pre></div>
-<h2 id="unions">Unions</h2>
-<p>Zangar provides a way to create a union schema using the <code>|</code> operator, where the data is parsed sequentially from left to right.</p>
-<div class="language-py highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span> <span class="o">|</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="mi">1</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="s1">&#39;1&#39;</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Expected int, received NoneType&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected str, received NoneType&#39;</span><span class="p">]}]</span>
 </span></code></pre></div>
 
 
