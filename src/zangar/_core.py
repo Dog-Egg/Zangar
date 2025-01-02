@@ -37,7 +37,7 @@ class SchemaBase(t.Generic[T], abc.ABC):
 class Field(t.Generic[T]):
     def __init__(
         self,
-        schema: Schema[T],
+        schema: SchemaBase[T],
         /,
         *,
         alias: str | None = None,
@@ -337,7 +337,7 @@ class Object(TypeSchema[dict], type=object):
 
 
 class List(TypeSchema[t.List[T]], type=list):
-    def __init__(self, item: Schema[T], /):
+    def __init__(self, item: SchemaBase[T], /):
         super().__init__()
         self.__item = item
 
