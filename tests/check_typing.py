@@ -47,3 +47,8 @@ def your_function(schema: z.Schema[T]) -> T:
 
 
 r9: int = your_function(z.int())
+
+
+def collections(schema: z.Schema):
+    z.list(schema)
+    z.object({"a": z.field(schema)})

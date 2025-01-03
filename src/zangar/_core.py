@@ -37,7 +37,7 @@ class SchemaBase(t.Generic[T], abc.ABC):
 class Field(t.Generic[T]):
     def __init__(
         self,
-        schema: Schema[T],
+        schema: SchemaBase[T],
         /,
         *,
         alias: str | None = None,
@@ -199,20 +199,25 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
 S = t.TypeVar("S", bound=Schema)
 
 
-class TypeSchema(Schema[T]):
+class TypeSchema(Schema[T], abc.ABC):
 
-    __type: type
+    @abc.abstractmethod
+    def _expected_type(self) -> type: ...
 
-    def __init_subclass__(cls, type: type) -> None:
-        cls.__type = type
-        return super().__init_subclass__()
+    def _convert(self, value):
+        return value
 
     def __init__(self):
+        expected_type = self._expected_type()
         super().__init__(
             prev=Schema()
+            .transform(
+                self._convert,
+                message=lambda x: f"Cannot convert the value {x!r} to {expected_type.__name__}",
+            )
             .ensure(
-                lambda x: isinstance(x, self.__type),
-                message=lambda x: f"Expected {self.__type.__name__}, received {type(x).__name__}",
+                lambda x: isinstance(x, expected_type),
+                message=lambda x: f"Expected {expected_type.__name__}, received {type(x).__name__}",
             )
             .transform(self._pretransform)
         )
@@ -234,8 +239,9 @@ class StringMethods(Schema):
         return StringMethods(prev=self.transform((lambda s: s.strip(*args, **kwargs))))
 
 
-class String(TypeSchema[str], StringMethods, type=str):
-    pass
+class String(TypeSchema[str], StringMethods):
+    def _expected_type(self) -> type:
+        return str
 
 
 class NumberMethods(Schema):
@@ -260,34 +266,43 @@ class NumberMethods(Schema):
         return NumberMethods(prev=self.ensure(lambda x: x < value, **kwargs))
 
 
-class Integer(TypeSchema[int], NumberMethods, type=int):
-    pass
+class Integer(TypeSchema[int], NumberMethods):
+    def _expected_type(self) -> type:
+        return int
 
 
-class Float(TypeSchema[float], NumberMethods, type=float):
-    pass
+class Float(TypeSchema[float], NumberMethods):
+    def _expected_type(self) -> type:
+        return float
 
 
-class Boolean(TypeSchema[bool], type=bool):
-    pass
+class Boolean(TypeSchema[bool]):
+    def _expected_type(self) -> type:
+        return bool
 
 
 _NoneType = type(None)
 
 
-class NoneType(TypeSchema[_NoneType], type=_NoneType):
-    pass
+class NoneType(TypeSchema[_NoneType]):
+    def _expected_type(self) -> type:
+        return _NoneType
 
 
-class Any(TypeSchema, type=object):
-    pass
+class Any(TypeSchema):
+    def _expected_type(self) -> type:
+        return object
 
 
-class Datetime(TypeSchema[datetime.datetime], type=datetime.datetime):
-    pass
+class Datetime(TypeSchema[datetime.datetime]):
+    def _expected_type(self) -> type:
+        return datetime.datetime
 
 
-class Object(TypeSchema[dict], type=object):
+class Object(TypeSchema[dict]):
+    def _expected_type(self) -> type:
+        return object
+
     def __init__(self, fields: dict[str, Field], /):
         super().__init__()
         self.__fields = fields
@@ -336,8 +351,11 @@ class Object(TypeSchema[dict], type=object):
         return rv
 
 
-class List(TypeSchema[t.List[T]], type=list):
-    def __init__(self, item: Schema[T], /):
+class List(TypeSchema[t.List[T]]):
+    def _expected_type(self) -> type:
+        return list
+
+    def __init__(self, item: SchemaBase[T] | None = None, /):
         super().__init__()
         self.__item = item
 
@@ -345,10 +363,12 @@ class List(TypeSchema[t.List[T]], type=list):
         rv = []
         error = ValidationError(empty)
         for index, item in enumerate(value):
-            try:
-                rv.append(self.__item.parse(item))
-            except ValidationError as exc:
-                error._setitem(index, exc)
+            if self.__item is not None:
+                try:
+                    item = self.__item.parse(item)
+                except ValidationError as exc:
+                    error._setitem(index, exc)
+            rv.append(item)
         if not error._empty():
             raise error
         return rv
