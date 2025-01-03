@@ -147,3 +147,14 @@ def test_branch():
     with pytest.raises(z.ValidationError) as e:
         branch_2.parse(0)
     assert e.value.format_errors() == [{"msgs": ["The value should be less than 0"]}]
+
+
+class TestConversions:
+    def test_list(self):
+        assert z.to.list().parse((1, 2, 3)) == [1, 2, 3]
+
+        with pytest.raises(z.ValidationError) as e:
+            z.to.list().parse(1)
+        assert e.value.format_errors() == [
+            {"msgs": ["Cannot convert the value 1 to list"]}
+        ]

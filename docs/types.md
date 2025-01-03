@@ -130,3 +130,44 @@ You can add additional fields to an object schema with the .extend method.
 ... })
 
 ```
+
+## Conversions
+
+### `str`
+
+```py
+>>> assert z.to.str().parse(1) == '1'
+
+# equivalent to:
+>>> assert z.transform(str).parse(1) == '1'
+
+```
+
+### `int`
+
+```py
+>>> assert z.to.int().parse('1') == 1
+>>> assert z.to.int().parse('1.0') == 1
+
+>>> z.to.int().parse(1.2)
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'msgs': ['1.2 is not a valid integer']}]
+
+```
+
+This is the conversion function for `int`.
+
+```py
+{{ source_code('zangar._conversions.int_convert') }}
+
+```
+
+### `list`
+
+```py
+>>> assert z.to.list().parse((1, 2, 3)) == [1, 2, 3]
+
+# equivalent to:
+>>> assert z.transform(list).parse((1, 2, 3)) == [1, 2, 3]
+
+```
