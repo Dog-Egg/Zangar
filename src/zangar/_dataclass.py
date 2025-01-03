@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import typing
 from typing import TypeVar, get_args, get_origin
 
 from . import _alias as z
@@ -16,7 +17,8 @@ def dataclass(cls: type[T], /) -> Schema[T]:
         if "zangar_schema" in field.metadata:
             schema = field.metadata["zangar_schema"]
         else:
-            schema = _resolve_type(field.type)  # type: ignore
+            hints = typing.get_type_hints(cls)
+            schema = _resolve_type(hints[field.name])
 
         f = z.field(schema)
         if (
