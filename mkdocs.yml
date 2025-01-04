@@ -4,6 +4,7 @@ nav:
   - Types: types.md
   - Methods: methods.md
   - Dataclass: dataclass.md
+  - Circular Reference: circular_reference.md
   - Exceptions: exceptions.md
 theme:
   name: material

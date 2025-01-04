@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import datetime
+import sys
 import typing as t
 from collections.abc import Callable, Mapping
 from operator import getitem
@@ -372,3 +373,13 @@ class List(TypeSchema[t.List[T]]):
         if not error._empty():
             raise error
         return rv
+
+
+def ref(name: str, /):
+    frame = sys._getframe(1)
+
+    def transform(value):
+        schema: Schema = frame.f_locals[name]
+        return schema.parse(value)
+
+    return Schema().transform(transform)

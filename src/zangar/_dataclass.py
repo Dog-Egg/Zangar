@@ -13,12 +13,19 @@ T = TypeVar("T")
 def dataclass(cls: type[T], /) -> Schema[T]:
     fields = dataclasses.fields(cls)  # type: ignore
     object_fields = {}
+    try:
+        hints = typing.get_type_hints(cls)
+    except KeyError:
+        # An exception will be thrown when running in the document.
+        hints = None
+
     for field in fields:
         if "zangar_schema" in field.metadata:
             schema = field.metadata["zangar_schema"]
         else:
-            hints = typing.get_type_hints(cls)
-            schema = _resolve_type(hints[field.name])
+            schema = _resolve_type(
+                hints[field.name] if hints else typing.cast(type, field.type)
+            )
 
         f = z.field(schema)
         if (
