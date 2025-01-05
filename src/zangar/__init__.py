@@ -4,7 +4,7 @@ from ._alias import *
 from ._conversions import to
 from ._core import SchemaBase as Schema
 from ._core import ref
-from ._dataclass import dataclass
+from .dataclass import dataclass
 from .exceptions import ValidationError
 
 __version__ = __get_version((0, 1, 0, "alpha", 0))
