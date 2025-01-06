@@ -54,35 +54,6 @@ zangar.exceptions.ValidationError: [{'msgs': ['Invalid value']}]
 
 ```
 
-#### message
-
-A `message` can be provided for a validation method, which will be used when validation fails. If the `message` is a callable object, its return value will be used as the `message`.
-
-```py
->>> my_data = z.ensure(lambda s: len(s) > 5, message='Too short')
-
->>> my_data.parse('hello')
-Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ['Too short']}]
-
-```
-
-Use a callable object as the message.
-
-```py
->>> my_data = (
-...   z.ensure(
-...       lambda s: len(s) > 5,
-...       message=lambda s: f"The {s!r} is too short"
-...   )
-... )
-
->>> my_data.parse('hello')
-Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ["The 'hello' is too short"]}]
-
-```
-
 #### break_on_failure
 
 When multiple `ensure` methods are adjacent, even if one `ensure` fails, the subsequent `ensure` methods will still be executed by default.
@@ -124,26 +95,6 @@ To transform data during parsing, use the `transform` method.
 
 >>> to_int.parse('10')
 10
-
-```
-
-#### message
-
-A `message` can be provided for a transformation method, which will be used when transformation fails. If the `message` is a callable object, its return value will be used as the `message`.
-
-```py
->>> z.transform(lambda x: int(x), message='Invalid integer').parse('a')
-Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ['Invalid integer']}]
-
-```
-
-Use a callable object as the message.
-
-```py
->>> z.transform(lambda x: int(x), message=lambda x: f'Invalid integer: {x!r}').parse('a')
-Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ["Invalid integer: 'a'"]}]
 
 ```
 

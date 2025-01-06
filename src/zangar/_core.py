@@ -208,17 +208,23 @@ class TypeSchema(Schema[T], abc.ABC):
     def _convert(self, value):
         return value
 
-    def __init__(self):
+    def __init__(self, *, message=None):
         expected_type = self._expected_type()
         super().__init__(
             prev=Schema()
             .transform(
                 self._convert,
-                message=lambda x: f"Cannot convert the value {x!r} to {expected_type.__name__}",
+                message=message
+                or (
+                    lambda x: f"Cannot convert the value {x!r} to {expected_type.__name__}"
+                ),
             )
             .ensure(
                 lambda x: isinstance(x, expected_type),
-                message=lambda x: f"Expected {expected_type.__name__}, received {type(x).__name__}",
+                message=message
+                or (
+                    lambda x: f"Expected {expected_type.__name__}, received {type(x).__name__}"
+                ),
             )
             .transform(self._pretransform)
         )

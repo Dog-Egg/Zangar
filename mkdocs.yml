@@ -3,6 +3,7 @@ nav:
   - Home: index.md
   - Types: types.md
   - Methods: methods.md
+  - Messages: messages.md
   - Dataclass: dataclass.md
   - Circular Reference: circular_reference.md
   - Exceptions: exceptions.md
@@ -16,6 +17,9 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.details
+  - admonition
+
 plugins:
   - macros:
       module_name: docs/macros
