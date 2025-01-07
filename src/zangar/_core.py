@@ -8,6 +8,7 @@ from collections.abc import Callable, Mapping
 from operator import getitem
 
 from ._common import Empty, empty
+from ._messages import IncompleteMessage, get_message
 from .exceptions import ValidationError
 
 T = t.TypeVar("T")
@@ -46,7 +47,7 @@ class Field(t.Generic[T]):
         self.__schema = schema
         self.__alias = alias
         self._required = True
-        self._required_message: str = "This field is required"
+        self._required_message = None
         self.__default: Callable[[], T] | T | Empty = empty
 
     def _get_default(self):
@@ -114,11 +115,18 @@ class Schema(SchemaBase[T]):
     ) -> Schema[T]:
         def validate(value):
             if not func(value):
-                if callable(message):
-                    msg = message(value)
+                if isinstance(message, IncompleteMessage):
+                    msg = get_message(
+                        name=message.name,
+                        message=None,
+                        value=value,
+                        ctx=message.ctx,
+                    )
                 else:
-                    msg = message
-                raise ValidationError(msg or "Invalid value")
+                    msg = get_message(
+                        name="ensure_failed", message=message, value=value
+                    )
+                raise ValidationError(msg)
 
         return Schema(
             prev=self, validator=EnsuranceValidator(validate, break_on_failure)
@@ -137,8 +145,21 @@ class Schema(SchemaBase[T]):
             except Exception as e:
                 if isinstance(e, ValidationError):
                     raise e
-                msg = message(value) if callable(message) else message
-                raise ValidationError(msg or str(e)) from e
+                if isinstance(message, IncompleteMessage):
+                    msg = get_message(
+                        name=message.name,
+                        message=None,
+                        value=value,
+                        ctx=message.ctx,
+                    )
+                else:
+                    msg = get_message(
+                        name="transform_failed",
+                        message=message,
+                        value=value,
+                        ctx={"exc": e},
+                    )
+                raise ValidationError(msg) from e
 
         return Schema[P](prev=self, validator=TransformationValidator(validate))
 
@@ -215,15 +236,15 @@ class TypeSchema(Schema[T], abc.ABC):
             .transform(
                 self._convert,
                 message=message
-                or (
-                    lambda x: f"Cannot convert the value {x!r} to {expected_type.__name__}"
+                or IncompleteMessage(
+                    name="type_convertion", ctx={"expected_type": expected_type}
                 ),
             )
             .ensure(
                 lambda x: isinstance(x, expected_type),
                 message=message
-                or (
-                    lambda x: f"Expected {expected_type.__name__}, received {type(x).__name__}"
+                or IncompleteMessage(
+                    name="type_check", ctx={"expected_type": expected_type}
                 ),
             )
             .transform(self._pretransform)
@@ -235,11 +256,15 @@ class TypeSchema(Schema[T], abc.ABC):
 
 class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
-        kwargs.setdefault("message", f"The minimum length of the string is {value}")
+        kwargs.setdefault(
+            "message", IncompleteMessage(name="str_min", ctx={"min": value})
+        )
         return StringMethods(prev=self.ensure(lambda x: len(x) >= value, **kwargs))
 
     def max(self, value: int, /, **kwargs):
-        kwargs.setdefault("message", f"The maximum length of the string is {value}")
+        kwargs.setdefault(
+            "message", IncompleteMessage(name="str_max", ctx={"max": value})
+        )
         return StringMethods(prev=self.ensure(lambda x: len(x) <= value, **kwargs))
 
     def strip(self, *args, **kwargs):
@@ -254,22 +279,26 @@ class String(TypeSchema[str], StringMethods):
 class NumberMethods(Schema):
     def gte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
-            "message", f"The value should be greater than or equal to {value}"
+            "message", IncompleteMessage(name="number_gte", ctx={"gte": value})
         )
         return NumberMethods(prev=self.ensure(lambda x: x >= value, **kwargs))
 
     def gt(self, value: int | float, /, **kwargs):
-        kwargs.setdefault("message", f"The value should be greater than {value}")
+        kwargs.setdefault(
+            "message", IncompleteMessage(name="number_gt", ctx={"gt": value})
+        )
         return NumberMethods(prev=self.ensure(lambda x: x > value, **kwargs))
 
     def lte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
-            "message", f"The value should be less than or equal to {value}"
+            "message", IncompleteMessage(name="number_lte", ctx={"lte": value})
         )
         return NumberMethods(prev=self.ensure(lambda x: x <= value, **kwargs))
 
     def lt(self, value: int | float, /, **kwargs):
-        kwargs.setdefault("message", f"The value should be less than {value}")
+        kwargs.setdefault(
+            "message", IncompleteMessage(name="number_lt", ctx={"lt": value})
+        )
         return NumberMethods(prev=self.ensure(lambda x: x < value, **kwargs))
 
 
@@ -338,7 +367,12 @@ class Object(TypeSchema[dict]):
 
             if field_value is empty:
                 if field._required:
-                    error._setitem(alias, ValidationError(field._required_message))
+                    message = get_message(
+                        name="field_required",
+                        message=field._required_message,
+                        value=None,
+                    )
+                    error._setitem(alias, ValidationError(message))
                     continue
 
                 default = field._get_default()

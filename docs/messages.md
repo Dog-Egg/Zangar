@@ -40,7 +40,7 @@ zangar.exceptions.ValidationError: [{'msgs': ["Invalid integer: 'a'"]}]
 
 ```
 
-## Type Messages
+## Type messages
 
 API like `z.int` and `z.to.int` are implemented based on `ensure` and `transform`, and they also support the above-mentioned custom message mechanism.
 
@@ -66,11 +66,15 @@ zangar.exceptions.ValidationError: [{'loc': ['username'], 'msgs': ['Username is 
 
 !!! warning
 
-    Required field message does not accept a function as its argument.
+    If the required field message is a function, the function's argument will be a `None`.
 
-## Different Messages
+## Different messages
 
 Message can be in any form you need, not just a string.
+
+!!! note
+
+    In practical scenarios, the frontend often needs the backend to provide an error code rather than an exact error message. This is because the frontend may have its own multilingual settings or custom text requirements.
 
 ```python
 import enum
@@ -78,6 +82,7 @@ import json
 
 
 class ErrorCode(enum.Enum):
+    INVALID = 1000, 'Invalid value.'
     REQUIRED = 1001, 'This field is required.'
     IS_EMAIL = 1002, 'Must provide a valid email address.'
 
@@ -110,4 +115,66 @@ schema = z.object({
   }
 ]
 
+```
+
+## Modify default messages
+
+The default messages in Zangar's validation methods are all string types. Overriding these default messages one by one can be costly. Therefore, Zangar offers a context object that allows modifying default messages wherever needed.
+
+```python
+import zangar as z
+
+class MyDefaultMessages(z.DefaultMessages):
+    def default(self, name: str, value, ctx: dict):
+        if name == 'field_required':
+            return {
+                'error': 1001,
+                'reason': 'This field is required.'
+            }
+        return {
+            'error': 1000,
+            'reason': super().default(name, value, ctx),
+        }
+```
+
+```py
+>>> with MyDefaultMessages():
+...     try:
+...         z.object({
+...             'username': z.field(z.str().min(6)),
+...             'password': z.field(z.str())
+...         }).parse({'username': 'user'})
+...     except z.ValidationError as e:
+...         print(json.dumps(e.format_errors(), indent=2))
+[
+  {
+    "loc": [
+      "username"
+    ],
+    "msgs": [
+      {
+        "error": 1000,
+        "reason": "The minimum length of the string is 6"
+      }
+    ]
+  },
+  {
+    "loc": [
+      "password"
+    ],
+    "msgs": [
+      {
+        "error": 1001,
+        "reason": "This field is required."
+      }
+    ]
+  }
+]
+
+```
+
+This is the source code for Zangar `DefaultMessages.default`.
+
+```py
+{{ source_code('zangar._messages:DefaultMessages.default') }}
 ```

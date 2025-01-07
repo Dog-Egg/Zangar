@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import pytest
 
 import zangar as z
+from zangar.exceptions import ValidationError
 
 
 def test_schema():
@@ -135,13 +136,15 @@ class TestNumber:
 
 def test_branch():
     main = z.int()
-    branch_1 = main.gt(0)
+    branch_1 = main.gte(0)
     branch_2 = main.lt(0)
 
-    assert branch_1.parse(1) == 1
+    assert branch_1.parse(0) == 0
     with pytest.raises(z.ValidationError) as e:
-        branch_1.parse(0)
-    assert e.value.format_errors() == [{"msgs": ["The value should be greater than 0"]}]
+        branch_1.parse(-1)
+    assert e.value.format_errors() == [
+        {"msgs": ["The value should be greater than or equal to 0"]}
+    ]
 
     assert branch_2.parse(-1) == -1
     with pytest.raises(z.ValidationError) as e:
