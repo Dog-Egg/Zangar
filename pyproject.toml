@@ -11,3 +11,6 @@ Issues = "https://github.com/Dog-Egg/Zangar/issues"
 
 [tool.setuptools.dynamic]
 version = { attr = "zangar.__version__" }
+
+[tool.isort]
+profile = "black"
