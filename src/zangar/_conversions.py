@@ -1,4 +1,4 @@
-from ._core import Integer, List, String
+from ._types import Integer, List, String
 from .exceptions import ValidationError
 
 
