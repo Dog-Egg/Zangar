@@ -5,7 +5,7 @@ import typing as t
 from collections.abc import Callable
 
 from ._common import empty
-from ._messages import IncompleteMessage, get_message
+from ._messages import DefaultMessage, get_message
 from .exceptions import ValidationError
 
 T = t.TypeVar("T")
@@ -74,18 +74,16 @@ class Schema(SchemaBase[T]):
     ) -> Schema[T]:
         def validate(value):
             if not func(value):
-                if isinstance(message, IncompleteMessage):
-                    msg = get_message(
-                        name=message.name,
-                        message=None,
+                raise ValidationError(
+                    get_message(
+                        message=(
+                            message
+                            if message is not None
+                            else DefaultMessage(name="ensure_failed")
+                        ),
                         value=value,
-                        ctx=message.ctx,
                     )
-                else:
-                    msg = get_message(
-                        name="ensure_failed", message=message, value=value
-                    )
-                raise ValidationError(msg)
+                )
 
         return Schema(
             prev=self, validator=EnsuranceValidator(validate, break_on_failure)
@@ -104,21 +102,16 @@ class Schema(SchemaBase[T]):
             except Exception as e:
                 if isinstance(e, ValidationError):
                     raise e
-                if isinstance(message, IncompleteMessage):
-                    msg = get_message(
-                        name=message.name,
-                        message=None,
+                raise ValidationError(
+                    get_message(
+                        message=(
+                            message
+                            if message is not None
+                            else DefaultMessage(name="transform_failed", ctx={"exc": e})
+                        ),
                         value=value,
-                        ctx=message.ctx,
                     )
-                else:
-                    msg = get_message(
-                        name="transform_failed",
-                        message=message,
-                        value=value,
-                        ctx={"exc": e},
-                    )
-                raise ValidationError(msg) from e
+                ) from e
 
         return Schema[P](prev=self, validator=TransformationValidator(validate))
 

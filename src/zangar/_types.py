@@ -8,7 +8,7 @@ from operator import getitem
 
 from ._common import Empty, empty
 from ._core import Schema, SchemaBase
-from ._messages import IncompleteMessage, get_message
+from ._messages import DefaultMessage, get_message
 from .exceptions import ValidationError
 
 T = t.TypeVar("T")
@@ -66,16 +66,22 @@ class TypeSchema(Schema[T], abc.ABC):
             prev=Schema()
             .transform(
                 self._convert,
-                message=message
-                or IncompleteMessage(
-                    name="type_convertion", ctx={"expected_type": expected_type}
+                message=(
+                    message
+                    if message is not None
+                    else DefaultMessage(
+                        name="type_convertion", ctx={"expected_type": expected_type}
+                    )
                 ),
             )
             .ensure(
                 lambda x: isinstance(x, expected_type),
-                message=message
-                or IncompleteMessage(
-                    name="type_check", ctx={"expected_type": expected_type}
+                message=(
+                    message
+                    if message is not None
+                    else DefaultMessage(
+                        name="type_check", ctx={"expected_type": expected_type}
+                    )
                 ),
             )
             .transform(self._pretransform)
@@ -87,15 +93,11 @@ class TypeSchema(Schema[T], abc.ABC):
 
 class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
-        kwargs.setdefault(
-            "message", IncompleteMessage(name="str_min", ctx={"min": value})
-        )
+        kwargs.setdefault("message", DefaultMessage(name="str_min", ctx={"min": value}))
         return StringMethods(prev=self.ensure(lambda x: len(x) >= value, **kwargs))
 
     def max(self, value: int, /, **kwargs):
-        kwargs.setdefault(
-            "message", IncompleteMessage(name="str_max", ctx={"max": value})
-        )
+        kwargs.setdefault("message", DefaultMessage(name="str_max", ctx={"max": value}))
         return StringMethods(prev=self.ensure(lambda x: len(x) <= value, **kwargs))
 
     def strip(self, *args, **kwargs):
@@ -110,25 +112,25 @@ class String(TypeSchema[str], StringMethods):
 class NumberMethods(Schema):
     def gte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
-            "message", IncompleteMessage(name="number_gte", ctx={"gte": value})
+            "message", DefaultMessage(name="number_gte", ctx={"gte": value})
         )
         return NumberMethods(prev=self.ensure(lambda x: x >= value, **kwargs))
 
     def gt(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
-            "message", IncompleteMessage(name="number_gt", ctx={"gt": value})
+            "message", DefaultMessage(name="number_gt", ctx={"gt": value})
         )
         return NumberMethods(prev=self.ensure(lambda x: x > value, **kwargs))
 
     def lte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
-            "message", IncompleteMessage(name="number_lte", ctx={"lte": value})
+            "message", DefaultMessage(name="number_lte", ctx={"lte": value})
         )
         return NumberMethods(prev=self.ensure(lambda x: x <= value, **kwargs))
 
     def lt(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
-            "message", IncompleteMessage(name="number_lt", ctx={"lt": value})
+            "message", DefaultMessage(name="number_lt", ctx={"lt": value})
         )
         return NumberMethods(prev=self.ensure(lambda x: x < value, **kwargs))
 
@@ -198,12 +200,19 @@ class Object(TypeSchema[dict]):
 
             if field_value is empty:
                 if field._required:
-                    message = get_message(
-                        name="field_required",
-                        message=field._required_message,
-                        value=None,
+                    error._setitem(
+                        alias,
+                        ValidationError(
+                            get_message(
+                                message=(
+                                    field._required_message
+                                    if field._required_message is not None
+                                    else DefaultMessage(name="field_required")
+                                ),
+                                value=None,
+                            )
+                        ),
                     )
-                    error._setitem(alias, ValidationError(message))
                     continue
 
                 default = field._get_default()
