@@ -44,12 +44,20 @@ These schemas are simple type validations and do not provide type conversion. He
 
 `object` is a schema with fields, it can parse any object and return a dict.
 
-```py
->>> dog = z.object({
-...     'name': z.field(z.str()),
-...     'breed': z.field(z.str()),
-... })
+```python
+dog = z.object({
+    'name': z.field(z.str()),
+    'breed': z.field(z.str()),
+})
+```
 
+If you do not need to make any changes to the field, you can omit `field`. The above definition can be simplified to the following code:
+
+```python
+dog = z.object({
+    'name': z.str(),
+    'breed': z.str(),
+})
 ```
 
 The `object` field, when parsing an object, will use its field name to get the value of the key for [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) objects, and the value of the attribute for other objects.
@@ -98,7 +106,7 @@ Fields are required by default, but this method allows them to be made optional.
 
 ```py
 >>> dog = z.object({
-...     'name': z.field(z.str()),
+...     'name': z.str(),
 ...     'breed': z.field(z.str()).optional(),
 ... })
 
@@ -111,7 +119,7 @@ It is also possible to provide a default value for the optional field.
 
 ```py
 >>> dog = z.object({
-...     'name': z.field(z.str()),
+...     'name': z.str(),
 ...     'breed': z.field(z.str()).optional(default='unknown'),
 ... })
 
@@ -126,7 +134,7 @@ You can add additional fields to an object schema with the .extend method.
 
 ```py
 >>> dog_with_age = dog.extend({
-...   'age': z.field(z.int()),
+...   'age': z.int(),
 ... })
 
 ```

@@ -172,14 +172,20 @@ class Object(TypeSchema[dict]):
     def _expected_type(self) -> type:
         return object
 
-    def __init__(self, fields: dict[str, Field], /):
+    def __init__(self, fields: dict[str, Field | SchemaBase], /):
         super().__init__()
-        self.__fields = fields
+        self.__fields: dict[str, Field] = {}
+        for name, field in fields.items():
+            if not isinstance(field, Field):
+                self.__fields[name] = Field(field)
+            else:
+                self.__fields[name] = field
 
-    def extend(self, fields: dict[str, Field], /):
-        _fields = self.__fields.copy()
-        _fields.update(fields)
-        return Object(_fields)
+    def extend(self, fields: dict[str, Field | SchemaBase], /):
+        new_fields = {}
+        new_fields.update(self.__fields)
+        new_fields.update(fields)
+        return Object(fields)
 
     def _pretransform(self, value):
         rv = {}

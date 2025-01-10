@@ -11,7 +11,7 @@ import zangar as z
 class Node(SimpleNamespace): ...
 
 tree = Node(
-    name='n1', 
+    name='n1',
     children=[Node(
         name='n2'
     )
@@ -24,7 +24,7 @@ However, in Python, this definition is incorrect.
 
 ```py hl_lines="4"
 >>> node_schema = z.object({
-...     'name': z.field(z.str()),
+...     'name': z.str(),
 ...     'children': z.field(
 ...         z.list(node_schema)
 ...     ).optional()
@@ -38,7 +38,7 @@ The correct approach is to use `ref` to replace the parts that are circularly re
 
 ```py hl_lines="4"
 >>> node_schema = z.object({
-...     'name': z.field(z.str()),
+...     'name': z.str(),
 ...     'children': z.field(
 ...         z.list(z.ref('node_schema'))
 ...     ).optional()

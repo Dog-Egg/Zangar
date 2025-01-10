@@ -141,8 +141,8 @@ class MyDefaultMessages(z.DefaultMessages):
 >>> with MyDefaultMessages():
 ...     try:
 ...         z.object({
-...             'username': z.field(z.str().min(6)),
-...             'password': z.field(z.str())
+...             'username': z.str().min(6),
+...             'password': z.str()
 ...         }).parse({'username': 'user'})
 ...     except z.ValidationError as e:
 ...         print(json.dumps(e.format_errors(), indent=2))

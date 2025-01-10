@@ -51,4 +51,4 @@ r9: int = your_function(z.int())
 
 def collections(schema: z.Schema):
     z.list(schema)
-    z.object({"a": z.field(schema)})
+    z.object({"a": schema})
