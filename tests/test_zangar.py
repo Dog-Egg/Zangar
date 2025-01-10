@@ -82,11 +82,17 @@ class TestObject:
                             "start_time": z.field(z.datetime(), alias="startTime"),
                             "end_time": z.field(z.datetime(), alias="endTime"),
                         }
-                    ).ensure_fields(
+                    )
+                    .ensure_fields(
                         ["start_time"],
                         lambda o: o["start_time"] < o["end_time"],
                         message="The start time must be younger than the end time",
                     )
+                    .ensure_fields(
+                        ["end_time"],
+                        lambda o: o["end_time"] > o["start_time"],
+                        message="The end time must be older than the start time",
+                    ),
                 )
             }
         )
@@ -103,7 +109,16 @@ class TestObject:
             {
                 "loc": ["time_range", "startTime"],
                 "msgs": ["The start time must be younger than the end time"],
-            }
+            },
+            {
+                "loc": [
+                    "time_range",
+                    "endTime",
+                ],
+                "msgs": [
+                    "The end time must be older than the start time",
+                ],
+            },
         ]
 
         assert schema.parse(

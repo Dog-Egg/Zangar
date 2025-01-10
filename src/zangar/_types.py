@@ -169,6 +169,16 @@ class Datetime(TypeSchema[datetime.datetime]):
 
 
 class ObjectMixin(Schema[T]):
+    def __init__(self, object: Object | None = None, prev=None):
+        super().__init__(prev=prev)
+        self.___object = object
+
+    @property
+    def __object(self) -> Object:
+        if self.___object is None:
+            return t.cast(Object, self)
+        return self.___object
+
     def ensure_fields(
         self,
         fieldnames: list[str],
@@ -177,18 +187,16 @@ class ObjectMixin(Schema[T]):
         *,
         message: t.Any | Callable[[T], t.Any] = None,
     ):
-        assert isinstance(self, Object)
-
         def inner_func(value):
             if func(value):
                 return True
             error = ValidationError(empty)
             for fieldname in fieldnames:
                 error._set_child(
-                    self._name_to_alias[fieldname],
+                    self.__object._name_to_alias[fieldname],
                     ValidationError(
                         get_message(
-                            message=(
+                            (
                                 message
                                 if message is not None
                                 else DefaultMessage(name="ensure_failed")
@@ -199,14 +207,20 @@ class ObjectMixin(Schema[T]):
                 )
             raise error
 
-        return ObjectMixin(prev=self.ensure(inner_func))
+        return ObjectMixin(prev=self.ensure(inner_func), object=self.__object)
 
 
 class Object(TypeSchema[dict], ObjectMixin[dict]):
     def _expected_type(self) -> type:
         return object
 
-    def __init__(self, fields: dict[str, Field | SchemaBase], /):
+    def __init__(
+        self,
+        fields: (
+            dict[str, Field] | dict[str, SchemaBase] | dict[str, Field | SchemaBase]
+        ),
+        /,
+    ):
         super().__init__()
         self.__fields: dict[str, Field] = {}
         for name, field in fields.items():
@@ -222,7 +236,7 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
             self._alias_to_name[alias] = name
 
     def extend(self, fields: dict[str, Field | SchemaBase], /):
-        new_fields = {}
+        new_fields: dict[str, Field | SchemaBase] = {}
         new_fields.update(self.__fields)
         new_fields.update(fields)
         return Object(fields)
