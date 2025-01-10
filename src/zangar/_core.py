@@ -131,7 +131,7 @@ class Schema(SchemaBase[T]):
                 try:
                     validator(value)
                 except ValidationError as e:
-                    error._concat(e)
+                    error._set_peer(e)
                     if validator.break_on_failure:
                         break
             elif isinstance(validator, TransformationValidator):
@@ -155,7 +155,7 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
                 try:
                     return item.parse(t.cast(t.Any, value))
                 except ValidationError as e:
-                    error._concat(e)
+                    error._set_peer(e)
             raise error
 
         super().__init__(prev=Schema().transform(transform))

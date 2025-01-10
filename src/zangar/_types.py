@@ -168,7 +168,41 @@ class Datetime(TypeSchema[datetime.datetime]):
         return datetime.datetime
 
 
-class Object(TypeSchema[dict]):
+class ObjectMixin(Schema[T]):
+    def ensure_fields(
+        self,
+        fieldnames: list[str],
+        func: Callable[[T], bool],
+        /,
+        *,
+        message: t.Any | Callable[[T], t.Any] = None,
+    ):
+        assert isinstance(self, Object)
+
+        def inner_func(value):
+            if func(value):
+                return True
+            error = ValidationError(empty)
+            for fieldname in fieldnames:
+                error._set_child(
+                    self._name_to_alias[fieldname],
+                    ValidationError(
+                        get_message(
+                            message=(
+                                message
+                                if message is not None
+                                else DefaultMessage(name="ensure_failed")
+                            ),
+                            value=value,
+                        )
+                    ),
+                )
+            raise error
+
+        return ObjectMixin(prev=self.ensure(inner_func))
+
+
+class Object(TypeSchema[dict], ObjectMixin[dict]):
     def _expected_type(self) -> type:
         return object
 
@@ -181,6 +215,12 @@ class Object(TypeSchema[dict]):
             else:
                 self.__fields[name] = field
 
+        self._name_to_alias, self._alias_to_name = {}, {}
+        for name, field in self.__fields.items():
+            alias = field._alias or name
+            self._name_to_alias[name] = alias
+            self._alias_to_name[alias] = name
+
     def extend(self, fields: dict[str, Field | SchemaBase], /):
         new_fields = {}
         new_fields.update(self.__fields)
@@ -192,7 +232,7 @@ class Object(TypeSchema[dict]):
         error = ValidationError(empty)
 
         for fieldname, field in self.__fields.items():
-            alias = fieldname if field._alias is None else field._alias
+            alias = self._name_to_alias[fieldname]
             if isinstance(value, Mapping):
                 try:
                     field_value = getitem(value, alias)
@@ -206,7 +246,7 @@ class Object(TypeSchema[dict]):
 
             if field_value is empty:
                 if field._required:
-                    error._setitem(
+                    error._set_child(
                         alias,
                         ValidationError(
                             get_message(
@@ -228,7 +268,7 @@ class Object(TypeSchema[dict]):
                 try:
                     field_value = field.parse(field_value)
                 except ValidationError as e:
-                    error._setitem(alias, e)
+                    error._set_child(alias, e)
                 else:
                     rv[fieldname] = field_value
 
@@ -254,7 +294,7 @@ class List(TypeSchema[t.List[T]]):
                 try:
                     item = self.__item.parse(item)
                 except ValidationError as exc:
-                    error._setitem(index, exc)
+                    error._set_child(index, exc)
             rv.append(item)
         if not error._empty():
             raise error

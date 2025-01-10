@@ -84,9 +84,51 @@ The `object` field, when parsing an object, will use its field name to get the v
 
 ```
 
-### Field
+### `.extend`
 
-#### `alias`
+You can add additional fields to an object schema with the `.extend` method.
+
+```py
+>>> dog_with_age = dog.extend({
+...   'age': z.int(),
+... })
+
+```
+
+### `.ensure_fields`
+
+```python
+my_schema = z.object({
+    'start_time': z.field(z.datetime()),
+    'end_time': z.field(z.datetime()),
+})
+```
+
+```py
+>>> from datetime import datetime
+
+>>> my_schema.ensure(lambda data: data['end_time'] > data['start_time'], message='The end time cannot be later than the start time').parse({
+...     'start_time': datetime(2000, 1, 2),
+...     'end_time': datetime(2000, 1, 1),
+... })
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'msgs': ['The end time cannot be later than the start time']}]
+
+```
+
+```py
+>>> my_schema.ensure_fields(['end_time'], lambda data: data['end_time'] > data['start_time'], message='The end time cannot be later than the start time').parse({
+...     'start_time': datetime(2000, 1, 2),
+...     'end_time': datetime(2000, 1, 1),
+... })
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time cannot be later than the start time']}]
+
+```
+
+## Field
+
+### `alias`
 
 You can assign alias to external data corresponding to field, which will be mapped to field name during parsing.
 
@@ -100,7 +142,7 @@ You can assign alias to external data corresponding to field, which will be mapp
 
 ```
 
-#### `.optional`
+### `.optional`
 
 Fields are required by default, but this method allows them to be made optional.
 
@@ -125,17 +167,6 @@ It is also possible to provide a default value for the optional field.
 
 >>> dog.parse({'name': 'Fido'})
 {'name': 'Fido', 'breed': 'unknown'}
-
-```
-
-### `.extend`
-
-You can add additional fields to an object schema with the .extend method.
-
-```py
->>> dog_with_age = dog.extend({
-...   'age': z.int(),
-... })
 
 ```
 

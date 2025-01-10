@@ -1,3 +1,4 @@
+import datetime
 from types import SimpleNamespace
 
 import pytest
@@ -70,6 +71,53 @@ class TestObject:
     def test_parse_object(self):
         assert z.object({"a": z.field(z.str())}).parse(SimpleNamespace(a="Tom")) == {
             "a": "Tom"
+        }
+
+    def test_ensure_fields(self):
+        schema = z.object(
+            {
+                "time_range": z.field(
+                    z.object(
+                        {
+                            "start_time": z.field(z.datetime(), alias="startTime"),
+                            "end_time": z.field(z.datetime(), alias="endTime"),
+                        }
+                    ).ensure_fields(
+                        ["start_time"],
+                        lambda o: o["start_time"] < o["end_time"],
+                        message="The start time must be younger than the end time",
+                    )
+                )
+            }
+        )
+        with pytest.raises(z.ValidationError) as e:
+            schema.parse(
+                {
+                    "time_range": {
+                        "startTime": datetime.datetime(2025, 1, 2),
+                        "endTime": datetime.datetime(2025, 1, 1),
+                    }
+                }
+            )
+        assert e.value.format_errors() == [
+            {
+                "loc": ["time_range", "startTime"],
+                "msgs": ["The start time must be younger than the end time"],
+            }
+        ]
+
+        assert schema.parse(
+            {
+                "time_range": {
+                    "startTime": datetime.datetime(2025, 1, 1),
+                    "endTime": datetime.datetime(2025, 1, 2),
+                }
+            }
+        ) == {
+            "time_range": {
+                "start_time": datetime.datetime(2025, 1, 1),
+                "end_time": datetime.datetime(2025, 1, 2),
+            }
         }
 
 
