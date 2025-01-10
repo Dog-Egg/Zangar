@@ -8,7 +8,7 @@ from typing import TypeVar, get_args, get_origin
 
 from . import _alias as z
 from ._core import Schema, Union
-from ._messages import IncompleteMessage
+from ._messages import DefaultMessage
 
 T = TypeVar("T")
 
@@ -72,7 +72,7 @@ class Converter:
             raise NotImplementedError(t, type(t))
         return z.ensure(
             lambda x: isinstance(x, t),
-            message=IncompleteMessage(name="type_check", ctx={"expected_type": t}),
+            message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
         )
 
     def resolve_complex_type(self, tp):

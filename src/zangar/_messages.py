@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from contextvars import ContextVar, Token
-from dataclasses import dataclass
 from typing import Any
 
 
@@ -57,21 +56,22 @@ _default_messages_var: ContextVar[DefaultMessages] = ContextVar(
 )
 
 
+class DefaultMessage:
+    def __init__(self, *, name, ctx: dict | None = None) -> None:
+        self.__name = name
+        self.__ctx = ctx
+
+    def __call__(self, value):
+        default_messages = _default_messages_var.get()
+        return default_messages.default(
+            name=self.__name, value=value, ctx=self.__ctx or {}
+        )
+
+
 def get_message(
-    name: str,
     message: Any | Callable[[Any], Any] | None,
     value: Any,
-    ctx: dict | None = None,
 ):
-    if message is None:
-        default_messages = _default_messages_var.get()
-        return default_messages.default(name=name, value=value, ctx=ctx or {})
     if callable(message):
         return message(value)
     return message
-
-
-@dataclass
-class IncompleteMessage:
-    name: str
-    ctx: dict

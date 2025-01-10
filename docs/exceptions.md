@@ -25,9 +25,7 @@
 >>> try:
 ...     z.object(
 ...         {
-...             "names": z.field(
-...                 z.list(name_schema)
-...             ),
+...             "names": z.list(name_schema),
 ...         }
 ...     ).parse(
 ...         {
