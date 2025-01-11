@@ -48,6 +48,12 @@ class DefaultMessages:
         if name == "number_lt":
             return f"The value should be less than {ctx['lt']}"
 
+        if name == "datetime_is_aware":
+            return "The datetime should be aware"
+
+        if name == "datetime_is_naive":
+            return "The datetime should be naive"
+
         return "Invalid value"
 
 

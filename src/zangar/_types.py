@@ -163,7 +163,22 @@ class Any(TypeSchema):
         return object
 
 
-class Datetime(TypeSchema[datetime.datetime]):
+class DatetimeMethods(Schema[datetime.datetime]):
+    def __is_aware(self, d):
+        return d.tzinfo is not None and d.tzinfo.utcoffset(d) is not None
+
+    def is_aware(self, **kwargs):
+        kwargs.setdefault("message", DefaultMessage(name="datetime_is_aware"))
+        return DatetimeMethods(prev=self.ensure(self.__is_aware, **kwargs))
+
+    def is_naive(self, **kwargs):
+        kwargs.setdefault("message", DefaultMessage(name="datetime_is_naive"))
+        return DatetimeMethods(
+            prev=self.ensure(lambda x: not self.__is_aware(x), **kwargs)
+        )
+
+
+class Datetime(TypeSchema[datetime.datetime], DatetimeMethods):
     def _expected_type(self) -> type:
         return datetime.datetime
 

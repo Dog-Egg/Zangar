@@ -108,3 +108,13 @@ Validate the number is less than or equal to a given value.
 >>> number = z.int().ensure(lambda x: x <= 10)
 
 ```
+
+## Datetime
+
+### `is_aware`
+
+Validate the datetime is aware.
+
+### `is_naive`
+
+Validate the datetime is naive.
