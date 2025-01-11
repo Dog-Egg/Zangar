@@ -670,7 +670,13 @@
 </span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;number_lt&quot;</span><span class="p">:</span>
 </span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a>            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;The value should be less than </span><span class="si">{</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;lt&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>
-</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>        <span class="k">return</span> <span class="s2">&quot;Invalid value&quot;</span>
+</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;datetime_is_aware&quot;</span><span class="p">:</span>
+</span><span id="__span-10-35"><a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a>            <span class="k">return</span> <span class="s2">&quot;The datetime should be aware&quot;</span>
+</span><span id="__span-10-36"><a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a>
+</span><span id="__span-10-37"><a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a>        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;datetime_is_naive&quot;</span><span class="p">:</span>
+</span><span id="__span-10-38"><a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a>            <span class="k">return</span> <span class="s2">&quot;The datetime should be naive&quot;</span>
+</span><span id="__span-10-39"><a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a>
+</span><span id="__span-10-40"><a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a>        <span class="k">return</span> <span class="s2">&quot;Invalid value&quot;</span>
 </span></code></pre></div>
 
 
