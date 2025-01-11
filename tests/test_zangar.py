@@ -224,3 +224,23 @@ class TestConversions:
         assert e.value.format_errors() == [
             {"msgs": ["Cannot convert the value 1 to list"]}
         ]
+
+
+class TestDatetime:
+    def test_is_aware(self):
+        assert (
+            z.datetime()
+            .is_aware()
+            .parse(datetime.datetime.now(tz=datetime.timezone.utc))
+        )
+        with pytest.raises(z.ValidationError) as e:
+            z.datetime().is_aware().parse(datetime.datetime.now())
+        assert e.value.format_errors() == [{"msgs": ["The datetime should be aware"]}]
+
+    def test_is_naive(self):
+        assert z.datetime().is_naive().parse(datetime.datetime.now())
+        with pytest.raises(z.ValidationError) as e:
+            z.datetime().is_naive().parse(
+                datetime.datetime.now(tz=datetime.timezone.utc)
+            )
+        assert e.value.format_errors() == [{"msgs": ["The datetime should be naive"]}]
