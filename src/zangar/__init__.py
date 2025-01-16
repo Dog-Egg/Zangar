@@ -5,7 +5,7 @@ from ._conversions import to
 from ._core import SchemaBase as Schema
 from ._functional import ref
 from ._messages import DefaultMessages
-from .dataclass import dataclass
+from .dataclass import dataclass, dc
 from .exceptions import ValidationError
 
 __version__ = __get_version((0, 1, 0, "alpha", 0))
