@@ -10,7 +10,7 @@
       
       
       
-        <link rel="next" href="types/">
+        <link rel="next" href="type_schemas/primitives/">
       
       
       <link rel="icon" href="assets/images/favicon.png">
@@ -309,12 +309,47 @@
   
   
   
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Type Schemas
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Type Schemas
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="types/" class="md-nav__link">
+      <a href="type_schemas/primitives/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Types
+    Primitives
   </span>
   
 
@@ -322,23 +357,74 @@
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="methods/" class="md-nav__link">
+      <a href="type_schemas/objects/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Methods
+    Objects
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="type_schemas/dataclasses/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dataclasses
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="type_schemas/methods/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Type Methods
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -355,26 +441,6 @@
   
   <span class="md-ellipsis">
     Messages
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="dataclass/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Dataclass
   </span>
   
 
@@ -653,17 +719,14 @@ It is equivalent to the following code:</p>
 </span></code></pre></div>
 <h2 id="unions">Unions</h2>
 <p>Zangar provides a way to create a union schema using the <code>|</code> operator, where the data is parsed sequentially from left to right.</p>
-<div class="language-py highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span> <span class="o">|</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<div class="language-py highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_none</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span> <span class="o">|</span> <span class="n">z</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="mi">1</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">int_or_none</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">int_or_none</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
 </span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="s1">&#39;1&#39;</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_str</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Expected int, received NoneType&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected str, received NoneType&#39;</span><span class="p">]}]</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">int_or_none</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Expected int, received str&#39;</span><span class="p">,</span> <span class="s1">&#39;Expected NoneType, received str&#39;</span><span class="p">]}]</span>
 </span></code></pre></div>
 <h2 id="typing">Typing</h2>
 <p><code>z.Schema</code> is an interface, you can use <code>z.Schema[T]</code> to specify the type of the data. This can be helpful for static type checking.</p>
