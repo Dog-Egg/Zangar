@@ -1,4 +1,4 @@
-from ._types import Integer, List, String
+from ._types import Float, Integer, List, String
 from .exceptions import ValidationError
 
 
@@ -26,9 +26,15 @@ class StringConversion(String):
         return str(value)
 
 
+class FloatConversion(Float):
+    def _convert(self, value):
+        return float(value)
+
+
 class Namespace:
     str = StringConversion
     int = IntegerConversion
+    float = FloatConversion
     list = ListConversion
 
 
