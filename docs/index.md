@@ -132,17 +132,14 @@ zangar.exceptions.ValidationError: [{'msgs': ['Expected str, received int']}]
 Zangar provides a way to create a union schema using the `|` operator, where the data is parsed sequentially from left to right.
 
 ```py
->>> int_or_str = z.int() | z.str()
+>>> int_or_none = z.int() | z.none()
 
->>> int_or_str.parse(1)
-1
+>>> assert int_or_none.parse(1) == 1
+>>> assert int_or_none.parse(None) is None
 
->>> int_or_str.parse('1')
-'1'
-
->>> int_or_str.parse(None)
+>>> int_or_none.parse('a')
 Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ['Expected int, received NoneType', 'Expected str, received NoneType']}]
+zangar.exceptions.ValidationError: [{'msgs': ['Expected int, received str', 'Expected NoneType, received str']}]
 
 ```
 
