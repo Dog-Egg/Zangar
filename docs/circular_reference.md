@@ -12,9 +12,12 @@ class Node(SimpleNamespace): ...
 
 tree = Node(
     name='n1',
-    children=[Node(
-        name='n2'
-    )
+    children=[
+        Node(name='n2'),
+        Node(
+            name='n3',
+            children=[Node(name='n4')]
+        ),
 ])
 ```
 
@@ -45,6 +48,6 @@ The correct approach is to use `ref` to replace the parts that are circularly re
 ... })
 
 >>> node_schema.parse(tree)
-{'name': 'n1', 'children': [{'name': 'n2'}]}
+{'name': 'n1', 'children': [{'name': 'n2'}, {'name': 'n3', 'children': [{'name': 'n4'}]}]}
 
 ```

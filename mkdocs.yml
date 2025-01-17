@@ -1,10 +1,12 @@
 site_name: Zangar
 nav:
   - Home: index.md
-  - Types: types.md
-  - Methods: methods.md
+  - Type Schemas:
+      - Primitives: type_schemas/primitives.md
+      - Objects: type_schemas/objects.md
+      - Dataclasses: type_schemas/dataclasses.md
+      - Type Methods: type_schemas/methods.md
   - Messages: messages.md
-  - Dataclass: dataclass.md
   - Circular Reference: circular_reference.md
   - Exceptions: exceptions.md
 theme:
