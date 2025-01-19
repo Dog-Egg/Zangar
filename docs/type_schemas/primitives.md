@@ -62,6 +62,16 @@ This is the conversion function for `int`.
 
 ```
 
+### `float`
+
+```py
+>>> assert z.to.float().parse('1.0') == 1.0
+
+# equivalent to:
+>>> assert z.transform(float).parse('1.0') == 1.0
+
+```
+
 ### `list`
 
 ```py

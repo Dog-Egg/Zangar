@@ -1,7 +1,6 @@
 [project]
 name = "Zangar"
 dynamic = ["version"]
-dependencies = ["python-dateutil"]
 authors = [{ name = "Lee", email = "294622946@qq.com" }]
 requires-python = ">=3.8"
 
