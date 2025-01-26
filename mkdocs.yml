@@ -9,8 +9,12 @@ nav:
   - Messages: messages.md
   - Circular Reference: circular_reference.md
   - Exceptions: exceptions.md
+  - Utilities:
+      - OpenAPI-Spec Support: openapi.md
 theme:
   name: material
+  features:
+    - navigation.expand
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
