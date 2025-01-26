@@ -22,7 +22,7 @@ class Field(t.Generic[T]):
         *,
         alias: str | None = None,
     ) -> None:
-        self.__schema = schema
+        self._schema = schema
         self.__alias = alias
         self._required = True
         self._required_message = None
@@ -38,7 +38,7 @@ class Field(t.Generic[T]):
         return self.__alias
 
     def parse(self, value, /):
-        return self.__schema.parse(value)
+        return self._schema.parse(value)
 
     def optional(self, *, default: T | Callable[[], T] | Empty = empty):
         self._required = False
@@ -60,9 +60,11 @@ class TypeSchema(Schema[T], abc.ABC):
     def _convert(self, value):
         return value
 
-    def __init__(self, *, message=None):
+    def __init__(self, *, message=None, **kwargs):
         expected_type = self._expected_type()
+        kwargs.setdefault("meta", {"type": expected_type})
         super().__init__(
+            **kwargs,
             prev=Schema()
             .transform(
                 self._convert,
@@ -84,7 +86,7 @@ class TypeSchema(Schema[T], abc.ABC):
                     )
                 ),
             )
-            .transform(self._pretransform)
+            .transform(self._pretransform),
         )
 
     def _pretransform(self, value):
@@ -94,11 +96,17 @@ class TypeSchema(Schema[T], abc.ABC):
 class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="str_min", ctx={"min": value}))
-        return StringMethods(prev=self.ensure(lambda x: len(x) >= value, **kwargs))
+        return StringMethods(
+            prev=self.ensure(lambda x: len(x) >= value, **kwargs),
+            meta={"min": value},
+        )
 
     def max(self, value: int, /, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="str_max", ctx={"max": value}))
-        return StringMethods(prev=self.ensure(lambda x: len(x) <= value, **kwargs))
+        return StringMethods(
+            prev=self.ensure(lambda x: len(x) <= value, **kwargs),
+            meta={"max": value},
+        )
 
     def strip(self, *args, **kwargs):
         return StringMethods(prev=self.transform((lambda s: s.strip(*args, **kwargs))))
@@ -114,25 +122,33 @@ class NumberMethods(Schema):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_gte", ctx={"gte": value})
         )
-        return NumberMethods(prev=self.ensure(lambda x: x >= value, **kwargs))
+        return NumberMethods(
+            prev=self.ensure(lambda x: x >= value, **kwargs), meta={"gte": value}
+        )
 
     def gt(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_gt", ctx={"gt": value})
         )
-        return NumberMethods(prev=self.ensure(lambda x: x > value, **kwargs))
+        return NumberMethods(
+            prev=self.ensure(lambda x: x > value, **kwargs), meta={"gt": value}
+        )
 
     def lte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_lte", ctx={"lte": value})
         )
-        return NumberMethods(prev=self.ensure(lambda x: x <= value, **kwargs))
+        return NumberMethods(
+            prev=self.ensure(lambda x: x <= value, **kwargs), meta={"lte": value}
+        )
 
     def lt(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_lt", ctx={"lt": value})
         )
-        return NumberMethods(prev=self.ensure(lambda x: x < value, **kwargs))
+        return NumberMethods(
+            prev=self.ensure(lambda x: x < value, **kwargs), meta={"lt": value}
+        )
 
 
 class Integer(TypeSchema[int], NumberMethods):
@@ -184,8 +200,8 @@ class Datetime(TypeSchema[datetime.datetime], DatetimeMethods):
 
 
 class ObjectMixin(Schema[T]):
-    def __init__(self, object: Object | None = None, prev=None):
-        super().__init__(prev=prev)
+    def __init__(self, object: Object | None = None, prev=None, **kwargs):
+        super().__init__(prev=prev, **kwargs)
         self.___object = object
 
     @property
@@ -236,7 +252,6 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
         ),
         /,
     ):
-        super().__init__()
         self.__fields: dict[str, Field] = {}
         for name, field in fields.items():
             if not isinstance(field, Field):
@@ -249,6 +264,7 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
             alias = field._alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
+        super().__init__(meta={"fields": self.__fields})
 
     def extend(self, fields: dict[str, Field | SchemaBase], /):
         new_fields: dict[str, Field | SchemaBase] = {}
@@ -312,18 +328,17 @@ class List(TypeSchema[t.List[T]]):
         return list
 
     def __init__(self, item: SchemaBase[T] | None = None, /):
-        super().__init__()
-        self.__item = item
+        self.__item = item or Any()
+        super().__init__(meta={"item": self.__item})
 
     def _pretransform(self, value):
         rv = []
         error = ValidationError(empty)
         for index, item in enumerate(value):
-            if self.__item is not None:
-                try:
-                    item = self.__item.parse(item)
-                except ValidationError as exc:
-                    error._set_child(index, exc)
+            try:
+                item = self.__item.parse(item)
+            except ValidationError as exc:
+                error._set_child(index, exc)
             rv.append(item)
         if not error._empty():
             raise error

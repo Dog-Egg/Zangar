@@ -57,9 +57,11 @@ class Schema(SchemaBase[T]):
         *,
         prev: Schema | None = None,
         validator: TransformationValidator | EnsuranceValidator | None = None,
+        meta: dict | None = None,
     ):
         self.__prev = prev
         self._validator = validator
+        self._meta: dict = meta or {}
 
     def __or__(self, other: SchemaBase[P]) -> Union[T, P]:
         return Union(self, other)
@@ -118,14 +120,14 @@ class Schema(SchemaBase[T]):
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
-    def __iterate_chain(self):
+    def _iterate_chain(self):
         if self.__prev is not None:
-            yield from self.__prev.__iterate_chain()
+            yield from self.__prev._iterate_chain()
         yield self
 
     def parse(self, value, /) -> T:
         error = ValidationError(empty)
-        for n in self.__iterate_chain():
+        for n in self._iterate_chain():
             validator = n._validator
             if isinstance(validator, EnsuranceValidator):
                 try:
@@ -147,22 +149,32 @@ class Schema(SchemaBase[T]):
 
 class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
     def __init__(self, a: SchemaBase[T], b: SchemaBase[P], /):
-        self.__unions = (a, b)
+        self.__schemas = (a, b)
 
         def transform(value):
             error = ValidationError(empty)
-            for item in self.__unions:
+            for item in self.__schemas:
                 try:
                     return item.parse(t.cast(t.Any, value))
                 except ValidationError as e:
                     error._set_peer(e)
             raise error
 
-        super().__init__(prev=Schema().transform(transform))
+        def iter_item(unions):
+            for i in unions:
+                if isinstance(i, Union):
+                    yield from iter_item(i.__schemas)
+                else:
+                    yield i
+
+        super().__init__(
+            prev=Schema().transform(transform),
+            meta={"union": iter_item(self.__schemas)},
+        )
 
     def __repr__(self) -> str:
         items: list[str] = []
-        for item in self.__unions:
+        for item in self.__schemas:
             if isinstance(item, Union):
                 items.append(repr(item))
             else:
