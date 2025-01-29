@@ -2,7 +2,6 @@ import json
 import os
 
 import jsonschema
-import pytest
 
 import zangar as z
 from zangar.compilation import OpenAPI30Compiler
@@ -151,3 +150,45 @@ class TestOpenAPI30:
 
     def test_none(self):
         assert self.compile(z.none()) == {"enum": [None]}
+
+    def test_default(self):
+        assert self.compile(
+            z.object(
+                {
+                    "a1": z.field(z.str()).optional(default="test"),
+                    "a2": z.field(z.str()).optional(default=lambda: "test"),
+                }
+            )
+        ) == {
+            "type": "object",
+            "properties": {
+                "a1": {
+                    "type": "string",
+                    "default": "test",
+                },
+                "a2": {
+                    "type": "string",
+                },
+            },
+        }
+
+    def test_dataclass(self):
+        from dataclasses import dataclass, field
+
+        @dataclass
+        class C:
+            a: str = field(default="test")
+            b: str = field(default_factory=lambda: "test")
+
+        assert self.compile(z.dataclass(C)) == {
+            "type": "object",
+            "properties": {
+                "a": {
+                    "type": "string",
+                    "default": "test",
+                },
+                "b": {
+                    "type": "string",
+                },
+            },
+        }

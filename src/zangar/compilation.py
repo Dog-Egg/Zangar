@@ -48,6 +48,10 @@ class OpenAPI30Compiler:
                 for name, field in meta["fields"].items():
                     key = name if field._alias is None else field._alias
                     properties[key] = self._compile(field._schema, rv)
+                    if field._default is not field._empty and not callable(
+                        field._default
+                    ):
+                        properties[key].update(default=field._default)
                     if field._required:
                         required.append(key)
                 rv.update(type="object")
