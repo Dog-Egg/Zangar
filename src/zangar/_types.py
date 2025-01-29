@@ -15,6 +15,8 @@ T = t.TypeVar("T")
 
 
 class Field(t.Generic[T]):
+    _empty = empty
+
     def __init__(
         self,
         schema: SchemaBase[T],
@@ -26,12 +28,12 @@ class Field(t.Generic[T]):
         self.__alias = alias
         self._required = True
         self._required_message = None
-        self.__default: Callable[[], T] | T | Empty = empty
+        self._default: Callable[[], T] | T | Empty = empty
 
     def _get_default(self):
-        if callable(self.__default):
-            return self.__default()
-        return self.__default
+        if callable(self._default):
+            return self._default()
+        return self._default
 
     @property
     def _alias(self):
@@ -42,7 +44,7 @@ class Field(t.Generic[T]):
 
     def optional(self, *, default: T | Callable[[], T] | Empty = empty):
         self._required = False
-        self.__default = default
+        self._default = default
         return self
 
     def required(self, /, *, message=None):

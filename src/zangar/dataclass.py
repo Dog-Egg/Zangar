@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import datetime
 import sys
 import types
 import typing
@@ -64,6 +65,15 @@ def _process_ensure_fields(
     return schema
 
 
+TYPE_MAPPING = {
+    int: z.int,
+    str: z.str,
+    float: z.float,
+    bool: z.bool,
+    datetime.datetime: z.datetime,
+}
+
+
 class Converter:
 
     def __init__(self):
@@ -95,11 +105,13 @@ class Converter:
                 else:
                     object_field = z.field(schema)
 
-            if (
-                dc_field.default is not dataclasses.MISSING
-                or dc_field.default_factory is not dataclasses.MISSING
-            ):
-                object_field = object_field.optional()
+            default: typing.Any = z.field._empty
+            if dc_field.default is not dataclasses.MISSING:
+                default = dc_field.default
+            elif dc_field.default_factory is not dataclasses.MISSING:
+                default = dc_field.default_factory
+            if default is not z.field._empty:
+                object_field = object_field.optional(default=default)
             object_fields[dc_field.name] = object_field
         object_schema = z.object(object_fields)
         schema = object_schema.transform(lambda d: cls(**d))
@@ -122,6 +134,9 @@ class Converter:
 
         if not isinstance(t, type):
             raise NotImplementedError(t, type(t))
+
+        if t in TYPE_MAPPING:
+            return TYPE_MAPPING[t]()
         return z.ensure(
             lambda x: isinstance(x, t),
             message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
