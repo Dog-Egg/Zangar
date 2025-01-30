@@ -35,3 +35,38 @@ assert OpenAPI30Compiler().compile(
     'required': ['name', 'age', 'address']
 }
 ```
+
+## Additional OAS schema object properties
+
+```python
+
+def is_email(string):
+    return '@' in string
+
+
+assert OpenAPI30Compiler().compile(z.object({
+    'username': z.str().ensure(is_email, meta={
+        'oas': {
+            'format': 'email'
+        }
+    }),
+    'password': z.str(meta={
+        'oas': {
+            'format': 'password'
+        }
+    }),
+})) == {
+    'type': 'object',
+    'properties': {
+        'username': {
+            'type': 'string',
+            'format': 'email'
+        },
+        'password': {
+            'type': 'string',
+            'format': 'password'
+        }
+    },
+    'required': ['username', 'password']
+}
+```

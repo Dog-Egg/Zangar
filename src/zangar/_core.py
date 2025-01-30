@@ -50,6 +50,11 @@ class EnsuranceValidator:
         return self.__func(value)
 
 
+_USER_META_KEYS = {
+    "oas",
+}
+
+
 class Schema(SchemaBase[T]):
 
     def __init__(
@@ -61,6 +66,14 @@ class Schema(SchemaBase[T]):
     ):
         self.__prev = prev
         self._validator = validator
+
+        # check meta
+        if meta is not None:
+            for key in meta:
+                if isinstance(key, str) and key.startswith("$"):
+                    continue
+                if key not in _USER_META_KEYS:
+                    raise ValueError(f"Invalid meta key: {key}")
         self._meta: dict = meta or {}
 
     def __or__(self, other: SchemaBase[P]) -> Union[T, P]:
@@ -73,6 +86,7 @@ class Schema(SchemaBase[T]):
         *,
         message: t.Any | Callable[[T], t.Any] = None,
         break_on_failure: bool = False,
+        meta: dict | None = None,
     ) -> Schema[T]:
         def validate(value):
             if not func(value):
@@ -88,7 +102,9 @@ class Schema(SchemaBase[T]):
                 )
 
         return Schema(
-            prev=self, validator=EnsuranceValidator(validate, break_on_failure)
+            prev=self,
+            validator=EnsuranceValidator(validate, break_on_failure),
+            meta=meta,
         )
 
     def transform(
@@ -97,6 +113,7 @@ class Schema(SchemaBase[T]):
         /,
         *,
         message: t.Any | Callable[[T], t.Any] = None,
+        meta: dict | None = None,
     ):
         def validate(value):
             try:
@@ -115,7 +132,9 @@ class Schema(SchemaBase[T]):
                     )
                 ) from e
 
-        return Schema[P](prev=self, validator=TransformationValidator(validate))
+        return Schema[P](
+            prev=self, validator=TransformationValidator(validate), meta=meta
+        )
 
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
@@ -169,7 +188,7 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
 
         super().__init__(
             prev=Schema().transform(transform),
-            meta={"union": iter_item(self.__schemas)},
+            meta={"$union": iter_item(self.__schemas)},
         )
 
     def __repr__(self) -> str:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 import datetime
 import typing as t
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Hashable, Mapping
 from operator import getitem
 
 from ._common import Empty, empty
@@ -64,7 +64,7 @@ class TypeSchema(Schema[T], abc.ABC):
 
     def __init__(self, *, message=None, **kwargs):
         expected_type = self._expected_type()
-        kwargs.setdefault("meta", {"type": expected_type})
+        _set(kwargs, ["meta", "$type"], expected_type)
         super().__init__(
             **kwargs,
             prev=Schema()
@@ -100,14 +100,14 @@ class StringMethods(Schema):
         kwargs.setdefault("message", DefaultMessage(name="str_min", ctx={"min": value}))
         return StringMethods(
             prev=self.ensure(lambda x: len(x) >= value, **kwargs),
-            meta={"min": value},
+            meta={"$min": value},
         )
 
     def max(self, value: int, /, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="str_max", ctx={"max": value}))
         return StringMethods(
             prev=self.ensure(lambda x: len(x) <= value, **kwargs),
-            meta={"max": value},
+            meta={"$max": value},
         )
 
     def strip(self, *args, **kwargs):
@@ -125,7 +125,7 @@ class NumberMethods(Schema):
             "message", DefaultMessage(name="number_gte", ctx={"gte": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x >= value, **kwargs), meta={"gte": value}
+            prev=self.ensure(lambda x: x >= value, **kwargs), meta={"$gte": value}
         )
 
     def gt(self, value: int | float, /, **kwargs):
@@ -133,7 +133,7 @@ class NumberMethods(Schema):
             "message", DefaultMessage(name="number_gt", ctx={"gt": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x > value, **kwargs), meta={"gt": value}
+            prev=self.ensure(lambda x: x > value, **kwargs), meta={"$gt": value}
         )
 
     def lte(self, value: int | float, /, **kwargs):
@@ -141,7 +141,7 @@ class NumberMethods(Schema):
             "message", DefaultMessage(name="number_lte", ctx={"lte": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x <= value, **kwargs), meta={"lte": value}
+            prev=self.ensure(lambda x: x <= value, **kwargs), meta={"$lte": value}
         )
 
     def lt(self, value: int | float, /, **kwargs):
@@ -149,7 +149,7 @@ class NumberMethods(Schema):
             "message", DefaultMessage(name="number_lt", ctx={"lt": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x < value, **kwargs), meta={"lt": value}
+            prev=self.ensure(lambda x: x < value, **kwargs), meta={"$lt": value}
         )
 
 
@@ -266,7 +266,7 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
             alias = field._alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
-        super().__init__(meta={"fields": self.__fields})
+        super().__init__(meta={"$fields": self.__fields})
 
     def extend(self, fields: dict[str, Field | SchemaBase], /):
         new_fields: dict[str, Field | SchemaBase] = {}
@@ -331,7 +331,7 @@ class List(TypeSchema[t.List[T]]):
 
     def __init__(self, item: SchemaBase[T] | None = None, /):
         self.__item = item or Any()
-        super().__init__(meta={"item": self.__item})
+        super().__init__(meta={"$item": self.__item})
 
     def _pretransform(self, value):
         rv = []
@@ -345,3 +345,24 @@ class List(TypeSchema[t.List[T]]):
         if not error._empty():
             raise error
         return rv
+
+
+def _set(data: dict, path: list[Hashable], value):
+    return _set_with(data, path, lambda _: value)
+
+
+def _set_with(data: dict, path: list[Hashable], setter: Callable[[t.Any], t.Any]):
+    """
+    >>> data = {}
+    >>> _set_with(data, ["a", "b"], lambda x: (x or []) + [1])
+    {'a': {'b': [1]}}
+    >>> _set_with(data, ["a", "b"], lambda x: (x or []) + [2])
+    {'a': {'b': [1, 2]}}
+    """
+    d = data
+    for index, key in enumerate(path):
+        if index == len(path) - 1:
+            d[key] = setter(d.get(key))
+        else:
+            d = d.setdefault(key, {})
+    return data

@@ -244,3 +244,9 @@ class TestDatetime:
                 datetime.datetime.now(tz=datetime.timezone.utc)
             )
         assert e.value.format_errors() == [{"msgs": ["The datetime should be naive"]}]
+
+
+def test_meta_checking():
+    with pytest.raises(ValueError) as e:
+        z.int(meta={"type": "integer"})
+    assert e.value.args == ("Invalid meta key: type",)
