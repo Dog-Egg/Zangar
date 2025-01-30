@@ -192,3 +192,27 @@ class TestOpenAPI30:
                 },
             },
         }
+
+    def test_oas_meta(self):
+        assert OpenAPI30Compiler().compile(
+            z.object(
+                {
+                    "username": z.str().ensure(
+                        lambda x: True,
+                        meta={
+                            "oas": {
+                                "format": "email",
+                            },
+                        },
+                    ),
+                    "password": z.str(meta={"oas": {"format": "password"}}),
+                }
+            )
+        ) == {
+            "type": "object",
+            "properties": {
+                "username": {"type": "string", "format": "email"},
+                "password": {"type": "string", "format": "password"},
+            },
+            "required": ["username", "password"],
+        }
