@@ -78,6 +78,20 @@ class TestFieldDecorator:
             "@dc.field must decorate a class method or a static method",
         )
 
+    def test_field_not_found(self):
+        @dataclass
+        class C:
+            @z.dc.field("f")
+            @classmethod
+            def f_field(cls, schema):
+                return schema  # pragma: no cover
+
+        with pytest.raises(LookupError) as e:
+            z.dataclass(C)
+        assert e.value.args == (
+            "Field 'f' not found in <class 'test_dataclass.TestFieldDecorator.test_field_not_found.<locals>.C'>",
+        )
+
 
 class TestEnsureFieldsDecorator:
     def test_ensure_fields_decorator(self):

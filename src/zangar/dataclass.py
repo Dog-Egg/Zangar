@@ -163,9 +163,14 @@ class DecoratorCollector:
 
         for c in inspect.getmro(cls):
             if dataclasses.is_dataclass(c):
+                fieldnames = {f.name for f in dataclasses.fields(c)}
                 for obj in vars(c).values():
                     decorator = getattr(obj, _DECORATOR_KEY, None)
                     if isinstance(decorator, FieldDecorator):
+                        if decorator.fieldname not in fieldnames:
+                            raise LookupError(
+                                f"Field {decorator.fieldname!r} not found in {c}"
+                            )
                         self.field_decorators[decorator.fieldname] = decorator
                     elif isinstance(decorator, EnsureFieldsDecorator):
                         self.ensure_fields_decorators.append(decorator)
@@ -187,7 +192,7 @@ class DecoratorBase:
 
 
 class FieldDecorator(DecoratorBase):
-    def __init__(self, fieldname, /, alias: str | None = None):
+    def __init__(self, fieldname: str, /, *, alias: str | None = None):
         self.fieldname = fieldname
         self.alias = alias
 
@@ -206,7 +211,7 @@ class FieldDecorator(DecoratorBase):
 
 
 class EnsureFieldsDecorator(DecoratorBase):
-    def __init__(self, fieldnames: list[str], /, message=None):
+    def __init__(self, fieldnames: list[str], /, *, message=None):
         self.fieldnames = fieldnames
         self.message = message
 
