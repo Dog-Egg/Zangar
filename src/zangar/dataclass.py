@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
+import inspect
 import sys
 import types
 import typing
@@ -160,12 +161,14 @@ class DecoratorCollector:
         self.field_decorators: dict[str, FieldDecorator] = {}
         self.ensure_fields_decorators: list[EnsureFieldsDecorator] = []
 
-        for obj in vars(cls).values():
-            decorator = getattr(obj, _DECORATOR_KEY, None)
-            if isinstance(decorator, FieldDecorator):
-                self.field_decorators[decorator.fieldname] = decorator
-            elif isinstance(decorator, EnsureFieldsDecorator):
-                self.ensure_fields_decorators.append(decorator)
+        for c in inspect.getmro(cls):
+            if dataclasses.is_dataclass(c):
+                for obj in vars(c).values():
+                    decorator = getattr(obj, _DECORATOR_KEY, None)
+                    if isinstance(decorator, FieldDecorator):
+                        self.field_decorators[decorator.fieldname] = decorator
+                    elif isinstance(decorator, EnsureFieldsDecorator):
+                        self.ensure_fields_decorators.append(decorator)
 
 
 _DECORATOR_KEY = "zangar_decorator"
