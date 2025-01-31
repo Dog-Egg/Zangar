@@ -125,3 +125,37 @@ class TestEnsureFieldsDecorator:
                     return True  # pragma: no cover
 
         assert e.value.args == ("@dc.ensire_fields must decorate a instance method",)
+
+
+def test_decorators_in_inheritance():
+    """测试装饰器在继承过程中是否生效"""
+
+    @dataclass
+    class OnlyUsername:
+        username: str
+
+        @z.dc.field("username")
+        @classmethod
+        def _username_field(cls, schema: z.Schema[str]):
+            return schema.ensure(
+                lambda x: "!" not in x, message="username cannot contain !"
+            )
+
+    @dataclass
+    class User(OnlyUsername):
+        password: str
+
+    # incorrect
+    with pytest.raises(z.ValidationError) as e:
+        z.dataclass(User).parse({"username": "john!", "password": "123"})
+    assert e.value.format_errors() == [
+        {
+            "loc": ["username"],
+            "msgs": ["username cannot contain !"],
+        }
+    ]
+
+    # correct
+    assert z.dataclass(User).parse({"username": "john", "password": "123"}) == User(
+        username="john", password="123"
+    )
