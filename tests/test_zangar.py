@@ -135,6 +135,62 @@ class TestObject:
             }
         }
 
+    @staticmethod
+    def __get_required_fields(schema: z.object):
+        return [name for name, field in schema._fields.items() if field._required]
+
+    def test_required_fields(self):
+        obj = z.object(
+            {
+                "a": z.field(z.str()).optional(),
+                "b": z.field(z.str()).optional(),
+            }
+        )
+        assert self.__get_required_fields(obj) == []
+        assert self.__get_required_fields(obj.required_fields()) == ["a", "b"]
+        assert self.__get_required_fields(obj.required_fields([])) == []
+        assert self.__get_required_fields(obj.required_fields(["a"])) == ["a"]
+        assert self.__get_required_fields(obj.required_fields(["a", "b"])) == ["a", "b"]
+
+        with pytest.raises(ValueError) as e:
+            obj.required_fields(["c"])
+        assert e.value.args == ("Field 'c' not found in object schema",)
+
+    def test_optional_fields(self):
+        obj = z.object(
+            {
+                "a": z.field(z.str()),
+                "b": z.field(z.str()),
+            }
+        )
+        assert self.__get_required_fields(obj) == ["a", "b"]
+        assert self.__get_required_fields(obj.optional_fields()) == []
+        assert self.__get_required_fields(obj.optional_fields([])) == ["a", "b"]
+        assert self.__get_required_fields(obj.optional_fields(["a"])) == ["b"]
+        assert self.__get_required_fields(obj.optional_fields(["a", "b"])) == []
+
+    @staticmethod
+    def __get_fields(schema: z.object):
+        return list(schema._fields.keys())
+
+    def test_pick_fields(self):
+        obj = z.object(
+            {
+                "a": z.str(),
+                "b": z.str(),
+            }
+        )
+        assert self.__get_fields(obj.pick_fields(["a"])) == ["a"]
+
+    def test_omit_fields(self):
+        obj = z.object(
+            {
+                "a": z.str(),
+                "b": z.str(),
+            }
+        )
+        assert self.__get_fields(obj.omit_fields(["a"])) == ["b"]
+
 
 class TestList:
     def test_parse_wrong_type(self):

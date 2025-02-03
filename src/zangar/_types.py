@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import abc
+import copy
 import datetime
 import typing as t
-from collections.abc import Callable, Hashable, Mapping
+from collections.abc import Callable, Hashable, Iterable, Mapping
 from operator import getitem
 
 from ._common import Empty, empty
@@ -254,31 +255,68 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
         ),
         /,
     ):
-        self.__fields: dict[str, Field] = {}
+        self._fields: dict[str, Field] = {}
         for name, field in fields.items():
             if not isinstance(field, Field):
-                self.__fields[name] = Field(field)
+                self._fields[name] = Field(field)
             else:
-                self.__fields[name] = field
+                self._fields[name] = field
 
         self._name_to_alias, self._alias_to_name = {}, {}
-        for name, field in self.__fields.items():
+        for name, field in self._fields.items():
             alias = field._alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
-        super().__init__(meta={"$fields": self.__fields})
+        super().__init__(meta={"$fields": self._fields})
 
     def extend(self, fields: dict[str, Field | SchemaBase], /):
         new_fields: dict[str, Field | SchemaBase] = {}
-        new_fields.update(self.__fields)
+        new_fields.update(self._fields)
         new_fields.update(fields)
         return Object(fields)
+
+    def __check_fieldnames(self, fieldnames: Iterable[str], /):
+        for name in fieldnames:
+            if name not in self._fields:
+                raise ValueError(f"Field {name!r} not found in object schema")
+
+    def required_fields(self, fieldnames: Iterable[str] | None = None, /) -> Object:
+        if fieldnames is not None:
+            self.__check_fieldnames(fieldnames)
+
+        copy_fields: dict[str, Field] = {}
+        for name, field in self._fields.items():
+            copy_field = copy.copy(field)
+            if fieldnames is None or name in fieldnames:
+                copy_field.required()
+            else:
+                copy_field.optional()
+            copy_fields[name] = copy_field
+        return self.__class__(copy_fields)
+
+    def optional_fields(self, fieldnames: Iterable[str] | None = None, /) -> Object:
+        if fieldnames is not None:
+            self.__check_fieldnames(fieldnames)
+        if fieldnames is None:
+            return self.required_fields([])
+        return self.required_fields(set(self._fields) - set(fieldnames))
+
+    def pick_fields(self, fieldnames: Iterable[str], /) -> Object:
+        self.__check_fieldnames(fieldnames)
+        copy_fields = {}
+        for name in fieldnames:
+            copy_fields[name] = copy.copy(self._fields[name])
+        return self.__class__(copy_fields)
+
+    def omit_fields(self, fieldnames: Iterable[str], /) -> Object:
+        self.__check_fieldnames(fieldnames)
+        return self.pick_fields(set(self._fields) - set(fieldnames))
 
     def _pretransform(self, value):
         rv = {}
         error = ValidationError(empty)
 
-        for fieldname, field in self.__fields.items():
+        for fieldname, field in self._fields.items():
             alias = self._name_to_alias[fieldname]
             if isinstance(value, Mapping):
                 try:
