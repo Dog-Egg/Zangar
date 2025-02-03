@@ -84,6 +84,98 @@ zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time
 
 ```
 
+### `.optional_fields`
+
+Based on the current object schema fields, construct a new object schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#required_fields).
+
+```python
+z.object({
+    'username': z.str(),
+    'email': z.str()
+}).optional_fields()
+
+# equivalent to:
+z.object({
+    'username': z.field(z.str()).optional(),
+    'email': z.field(z.str()).optional()
+})
+```
+
+```python
+z.object({
+    'username': z.str(),
+    'email': z.str()
+}).optional_fields(['username'])
+
+# equivalent to:
+z.object({
+    'username': z.field(z.str()).optional(),
+    'email': z.str()
+})
+```
+
+### `.required_fields`
+
+Based on the current object schema fields, construct a new object schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#optional_fields).
+
+```python
+z.object({
+    'username': z.field(z.str()).optional(),
+    'email': z.field(z.str()).optional()
+}).required_fields()
+
+# equivalent to:
+z.object({
+    'username': z.str(),
+    'email': z.str()
+})
+```
+
+```python
+z.object({
+    'username': z.field(z.str()).optional(),
+    'email': z.field(z.str()).optional()
+}).required_fields(['username'])
+
+# equivalent to:
+z.object({
+    'username': z.str(),
+    'email': z.field(z.str()).optional()
+})
+```
+
+### `.pick_fields`
+
+Construct a new object schema by selecting the specified fields. The opposite of [`.omit_fields`](#omit_fields).
+
+```python
+z.object({
+    'username': z.str(),
+    'email': z.str()
+}).pick_fields(['username'])
+
+# equivalent to:
+z.object({
+    'username': z.str()
+})
+```
+
+### `.omit_fields`
+
+Construct a new object schema by excluding the specified fields. The opposite of [`.pick_fields`](#pick_fields).
+
+```python
+z.object({
+    'username': z.str(),
+    'email': z.str()
+}).omit_fields(['username'])
+
+# equivalent to:
+z.object({
+    'email': z.str()
+})
+```
+
 ## `field`
 
 ### alias
