@@ -7,6 +7,7 @@ import sys
 import types
 import typing
 from collections.abc import Callable
+from functools import partial
 from typing import TypeVar, get_args, get_origin
 
 from zangar._types import Field
@@ -21,7 +22,7 @@ T = TypeVar("T")
 
 
 def dataclass(cls: type[T], /) -> SchemaBase[T]:
-    return Converter().dataclass(cls)
+    return _dataclass(cls, {})
 
 
 class Proxy:
@@ -75,85 +76,82 @@ TYPE_MAPPING = {
 }
 
 
-class Converter:
+def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
+    if cls in cache:
+        return typing.cast(Schema, Proxy(lambda: cache[cls]))
+    cache[cls] = None  # None is a placeholder
 
-    def __init__(self):
-        self._cached: dict[type, SchemaBase | None] = {}
+    dc_fields = dataclasses.fields(cls)  # type: ignore
+    object_fields: dict[str, Field] = {}
+    try:
+        hints = typing.get_type_hints(cls)
+    except KeyError:
+        hints = {}
 
-    def dataclass(self, cls: type[T]) -> SchemaBase[T]:
-        if cls in self._cached:
-            return typing.cast(Schema, Proxy(lambda: self._cached[cls]))
-        self._cached[cls] = None  # None is a placeholder
+    decorators = DecoratorCollector(cls)
 
-        dc_fields = dataclasses.fields(cls)  # type: ignore
-        object_fields: dict[str, Field] = {}
-        try:
-            hints = typing.get_type_hints(cls)
-        except KeyError:
-            hints = {}
-
-        decorators = DecoratorCollector(cls)
-
-        for dc_field in dc_fields:
-            if "zangar_schema" in dc_field.metadata:
-                object_field = z.field(dc_field.metadata["zangar_schema"])
+    for dc_field in dc_fields:
+        if "zangar_schema" in dc_field.metadata:
+            object_field = z.field(dc_field.metadata["zangar_schema"])
+        else:
+            schema = resolve_type(hints.get(dc_field.name, dc_field.type), cache)
+            if dc_field.name in decorators.field_decorators:
+                decorator = decorators.field_decorators[dc_field.name]
+                schema = getattr(cls, decorator.method_name)(schema)
+                object_field = z.field(schema, alias=decorator.alias)
             else:
-                schema = self.resolve_type(hints.get(dc_field.name, dc_field.type))
-                if dc_field.name in decorators.field_decorators:
-                    decorator = decorators.field_decorators[dc_field.name]
-                    schema = getattr(cls, decorator.method_name)(schema)
-                    object_field = z.field(schema, alias=decorator.alias)
-                else:
-                    object_field = z.field(schema)
+                object_field = z.field(schema)
 
-            default: typing.Any = z.field._empty
-            if dc_field.default is not dataclasses.MISSING:
-                default = dc_field.default
-            elif dc_field.default_factory is not dataclasses.MISSING:
-                default = dc_field.default_factory
-            if default is not z.field._empty:
-                object_field = object_field.optional(default=default)
-            object_fields[dc_field.name] = object_field
-        object_schema = z.object(object_fields)
-        schema = object_schema.transform(lambda d: cls(**d))
-        schema = _process_ensure_fields(
-            schema,
-            decorators.ensure_fields_decorators,
-            object_schema._name_to_alias,
-        )
-        self._cached[cls] = schema
-        return schema
+        default: typing.Any = z.field._empty
+        if dc_field.default is not dataclasses.MISSING:
+            default = dc_field.default
+        elif dc_field.default_factory is not dataclasses.MISSING:
+            default = dc_field.default_factory
+        if default is not z.field._empty:
+            object_field = object_field.optional(default=default)
+        object_fields[dc_field.name] = object_field
+    object_schema = z.object(object_fields)
+    schema = object_schema.transform(lambda d: cls(**d))
+    schema = _process_ensure_fields(
+        schema,
+        decorators.ensure_fields_decorators,
+        object_schema._name_to_alias,
+    )
+    cache[cls] = schema
+    return schema
 
-    def resolve_type(self, t) -> SchemaBase:
-        if dataclasses.is_dataclass(t):
-            return self.dataclass(typing.cast(type, t))
 
-        values = self.resolve_complex_type(t)
-        if values is not None:
-            schema_cls, args = values
-            return schema_cls(*map(self.resolve_type, args))
+def resolve_type(t, cache: dict) -> SchemaBase:
+    if dataclasses.is_dataclass(t):
+        return _dataclass(typing.cast(type, t), cache)
 
-        if not isinstance(t, type):
-            raise NotImplementedError(t, type(t))
+    values = resolve_complex_type(t)
+    if values is not None:
+        schema_cls, args = values
+        return schema_cls(*map(partial(resolve_type, cache=cache), args))
 
-        if t in TYPE_MAPPING:
-            return TYPE_MAPPING[t]()
-        return z.ensure(
-            lambda x: isinstance(x, t),
-            message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
-        )
+    if not isinstance(t, type):
+        raise NotImplementedError(t, type(t))
 
-    def resolve_complex_type(self, tp):
-        origin = get_origin(tp)
-        if origin is None:
-            return None
-        if origin is list:
-            return (z.list, get_args(tp))
-        if sys.version_info >= (3, 10) and origin is types.UnionType:
-            return (Union, get_args(tp))
-        if origin is typing.Union:
-            return (Union, get_args(tp))
-        raise NotImplementedError(tp)
+    if t in TYPE_MAPPING:
+        return TYPE_MAPPING[t]()
+    return z.ensure(
+        lambda x: isinstance(x, t),
+        message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
+    )
+
+
+def resolve_complex_type(tp):
+    origin = get_origin(tp)
+    if origin is None:
+        return None
+    if origin is list:
+        return (z.list, get_args(tp))
+    if sys.version_info >= (3, 10) and origin is types.UnionType:
+        return (Union, get_args(tp))
+    if origin is typing.Union:
+        return (Union, get_args(tp))
+    raise NotImplementedError(tp)
 
 
 class DecoratorCollector:
