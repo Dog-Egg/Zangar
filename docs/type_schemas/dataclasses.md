@@ -54,26 +54,44 @@ zangar.exceptions.ValidationError: [{'loc': ['mylist', 1, 'y'], 'msgs': ['Expect
 
 ```
 
-## `@dc.field`
+## `@dc.field_manual`
+
+Used to customize the field.
+
+```python
+from typing import List
+
+@dataclass
+class C:
+    my_list: List[int]
+
+    @z.dc.field_manual('my_list')
+    @staticmethod
+    def customize_my_list():
+        return z.to.list(z.to.int())
+
+assert z.dataclass(C).parse(
+        {"my_list": (1, '2', 3)}
+    ) == C(my_list=[1, 2, 3])
+```
+
+## `@dc.field_assisted`
 
 Used to customize the field.
 
 ```python
 @dataclass
-class InventoryItem:
-    """Class for keeping track of an item in inventory."""
-    name: str
-    unit_price: float
-    quantity_on_hand: int = 0
+class C:
+    my_list: List[int]
 
-    @z.dc.field('unit_price')
-    @classmethod
-    def customize_unit_price(cls, schema):
-        return z.transform(float)
+    @z.dc.field_assisted('my_list')
+    @staticmethod
+    def customize_my_list(schema: z.Schema[List[int]]):
+        return z.to.list().relay(schema)
 
-assert z.dataclass(InventoryItem).parse(
-        {"name": "necklace", "unit_price": "12.50"}
-    ) == InventoryItem(name="necklace", unit_price=12.5, quantity_on_hand=0)
+assert z.dataclass(C).parse(
+        {"my_list": (1, 2, 3)}
+    ) == C(my_list=[1, 2, 3])
 ```
 
 ## `@dc.ensure_fields`

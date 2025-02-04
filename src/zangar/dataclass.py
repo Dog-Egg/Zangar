@@ -6,7 +6,9 @@ import inspect
 import sys
 import types
 import typing
+import warnings
 from collections.abc import Callable
+from functools import partial
 from typing import TypeVar, get_args, get_origin
 
 from zangar._types import Field
@@ -21,7 +23,7 @@ T = TypeVar("T")
 
 
 def dataclass(cls: type[T], /) -> SchemaBase[T]:
-    return Converter().dataclass(cls)
+    return _dataclass(cls, {})
 
 
 class Proxy:
@@ -75,85 +77,92 @@ TYPE_MAPPING = {
 }
 
 
-class Converter:
+def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
+    if cls in cache:
+        return typing.cast(Schema, Proxy(lambda: cache[cls]))
+    cache[cls] = None  # None is a placeholder
 
-    def __init__(self):
-        self._cached: dict[type, SchemaBase | None] = {}
+    dc_fields = dataclasses.fields(cls)  # type: ignore
+    object_fields: dict[str, Field] = {}
+    try:
+        hints = typing.get_type_hints(cls)
+    except KeyError:
+        hints = {}
 
-    def dataclass(self, cls: type[T]) -> SchemaBase[T]:
-        if cls in self._cached:
-            return typing.cast(Schema, Proxy(lambda: self._cached[cls]))
-        self._cached[cls] = None  # None is a placeholder
+    decorators = DecoratorCollector(cls)
 
-        dc_fields = dataclasses.fields(cls)  # type: ignore
-        object_fields: dict[str, Field] = {}
-        try:
-            hints = typing.get_type_hints(cls)
-        except KeyError:
-            hints = {}
-
-        decorators = DecoratorCollector(cls)
-
-        for dc_field in dc_fields:
-            if "zangar_schema" in dc_field.metadata:
-                object_field = z.field(dc_field.metadata["zangar_schema"])
-            else:
-                schema = self.resolve_type(hints.get(dc_field.name, dc_field.type))
-                if dc_field.name in decorators.field_decorators:
-                    decorator = decorators.field_decorators[dc_field.name]
-                    schema = getattr(cls, decorator.method_name)(schema)
-                    object_field = z.field(schema, alias=decorator.alias)
+    for dc_field in dc_fields:
+        if "zangar_schema" in dc_field.metadata:
+            warnings.warn(
+                '"zangar_schema" is deprecated, use @dc.field_assisted or @dc.field_manual instead',
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            object_field = z.field(dc_field.metadata["zangar_schema"])
+        else:
+            get_schema = partial(
+                resolve_type, hints.get(dc_field.name, dc_field.type), cache
+            )
+            if dc_field.name in decorators.field_decorators:
+                decorator = decorators.field_decorators[dc_field.name]
+                if isinstance(decorator, FieldAssistedDecorator):
+                    schema = getattr(cls, decorator.method_name)(get_schema())
                 else:
-                    object_field = z.field(schema)
+                    schema = getattr(cls, decorator.method_name)()
+                object_field = z.field(schema, alias=decorator.alias)
+            else:
+                object_field = z.field(get_schema())
 
-            default: typing.Any = z.field._empty
-            if dc_field.default is not dataclasses.MISSING:
-                default = dc_field.default
-            elif dc_field.default_factory is not dataclasses.MISSING:
-                default = dc_field.default_factory
-            if default is not z.field._empty:
-                object_field = object_field.optional(default=default)
-            object_fields[dc_field.name] = object_field
-        object_schema = z.object(object_fields)
-        schema = object_schema.transform(lambda d: cls(**d))
-        schema = _process_ensure_fields(
-            schema,
-            decorators.ensure_fields_decorators,
-            object_schema._name_to_alias,
-        )
-        self._cached[cls] = schema
-        return schema
+        default: typing.Any = z.field._empty
+        if dc_field.default is not dataclasses.MISSING:
+            default = dc_field.default
+        elif dc_field.default_factory is not dataclasses.MISSING:
+            default = dc_field.default_factory
+        if default is not z.field._empty:
+            object_field = object_field.optional(default=default)
+        object_fields[dc_field.name] = object_field
+    object_schema = z.object(object_fields)
+    schema = object_schema.transform(lambda d: cls(**d))
+    schema = _process_ensure_fields(
+        schema,
+        decorators.ensure_fields_decorators,
+        object_schema._name_to_alias,
+    )
+    cache[cls] = schema
+    return schema
 
-    def resolve_type(self, t) -> SchemaBase:
-        if dataclasses.is_dataclass(t):
-            return self.dataclass(typing.cast(type, t))
 
-        values = self.resolve_complex_type(t)
-        if values is not None:
-            schema_cls, args = values
-            return schema_cls(*map(self.resolve_type, args))
+def resolve_type(t, cache: dict) -> SchemaBase:
+    if dataclasses.is_dataclass(t):
+        return _dataclass(typing.cast(type, t), cache)
 
-        if not isinstance(t, type):
-            raise NotImplementedError(t, type(t))
+    values = resolve_complex_type(t)
+    if values is not None:
+        schema_cls, args = values
+        return schema_cls(*map(partial(resolve_type, cache=cache), args))
 
-        if t in TYPE_MAPPING:
-            return TYPE_MAPPING[t]()
-        return z.ensure(
-            lambda x: isinstance(x, t),
-            message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
-        )
+    if not isinstance(t, type):
+        raise NotImplementedError(t, type(t))
 
-    def resolve_complex_type(self, tp):
-        origin = get_origin(tp)
-        if origin is None:
-            return None
-        if origin is list:
-            return (z.list, get_args(tp))
-        if sys.version_info >= (3, 10) and origin is types.UnionType:
-            return (Union, get_args(tp))
-        if origin is typing.Union:
-            return (Union, get_args(tp))
-        raise NotImplementedError(tp)
+    if t in TYPE_MAPPING:
+        return TYPE_MAPPING[t]()
+    return z.ensure(
+        lambda x: isinstance(x, t),
+        message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
+    )
+
+
+def resolve_complex_type(tp):
+    origin = get_origin(tp)
+    if origin is None:
+        return None
+    if origin is list:
+        return (z.list, get_args(tp))
+    if sys.version_info >= (3, 10) and origin is types.UnionType:
+        return (Union, get_args(tp))
+    if origin is typing.Union:
+        return (Union, get_args(tp))
+    raise NotImplementedError(tp)
 
 
 class DecoratorCollector:
@@ -168,8 +177,12 @@ class DecoratorCollector:
                     decorator = getattr(obj, _DECORATOR_KEY, None)
                     if isinstance(decorator, FieldDecorator):
                         if decorator.fieldname not in fieldnames:
-                            raise LookupError(
-                                f"Field {decorator.fieldname!r} not found in {c}"
+                            raise RuntimeError(
+                                f"Field {decorator.fieldname!r} is not found"
+                            )
+                        if decorator.fieldname in self.field_decorators:
+                            raise RuntimeError(
+                                f"Field {decorator.fieldname!r} is already decorated"
                             )
                         self.field_decorators[decorator.fieldname] = decorator
                     elif isinstance(decorator, EnsureFieldsDecorator):
@@ -192,10 +205,24 @@ class DecoratorBase:
 
 
 class FieldDecorator(DecoratorBase):
+    __name: str
+
+    def __init_subclass__(cls, name):
+        cls.__name = name
+
     def __init__(self, fieldname: str, /, *, alias: str | None = None):
         self.fieldname = fieldname
         self.alias = alias
 
+    def __call__(self, method):
+        if not isinstance(method, (classmethod, staticmethod)):
+            raise ValueError(
+                f"@dc.{self.__name} must decorate a class method or a static method"
+            )
+        return super().__call__(method)
+
+
+class FieldAssistedDecorator(FieldDecorator, name="field_assisted"):
     def __call__(
         self,
         method: (
@@ -203,10 +230,18 @@ class FieldDecorator(DecoratorBase):
             | Callable[[typing.Any, SchemaBase[T]], SchemaBase[T]]
         ),
     ):
-        if not isinstance(method, (classmethod, staticmethod)):
-            raise ValueError(
-                "@dc.field must decorate a class method or a static method"
-            )
+        return super().__call__(method)
+
+
+class _DeprecatedFieldDecorator(FieldAssistedDecorator, name="field"):
+    pass
+
+
+class FieldManualDecorator(FieldDecorator, name="field_manual"):
+    def __call__(
+        self,
+        method: Callable[[], SchemaBase[T]] | Callable[[typing.Any], SchemaBase[T]],
+    ):
         return super().__call__(method)
 
 
@@ -222,7 +257,17 @@ class EnsureFieldsDecorator(DecoratorBase):
 
 
 class DecoratorNamespace:
-    field = FieldDecorator
+    @property
+    def field(self):
+        warnings.warn(
+            "@dc.field is deprecated, use @dc.field_assisted instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _DeprecatedFieldDecorator
+
+    field_assisted = FieldAssistedDecorator
+    field_manual = FieldManualDecorator
     ensure_fields = EnsureFieldsDecorator
 
 
