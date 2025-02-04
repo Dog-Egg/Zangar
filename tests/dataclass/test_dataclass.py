@@ -35,31 +35,13 @@ def test_complex_type():
     assert resolve_complex_type(hints["f"]) == (z.list, ())
 
 
-def test_zangar_schema_in_metadata():
-    ## Customize the field schema
-
-    from dataclasses import field
-
-    @dataclass
-    class InventoryItem:
-        """Class for keeping track of an item in inventory."""
-
-        name: str
-        unit_price: float = field(metadata={"zangar_schema": z.transform(float)})
-        quantity_on_hand: int = 0
-
-    assert z.dataclass(InventoryItem).parse(
-        {"name": "necklace", "unit_price": "12.50"}
-    ) == InventoryItem(name="necklace", unit_price=12.5, quantity_on_hand=0)
-
-
 class TestFieldDecorator:
     def test_field_decorator(self):
         @dataclass
         class C:
             f: str
 
-            @z.dc.field("f")
+            @z.dc.field_assisted("f")
             @staticmethod
             def f_field(schema: z.Schema[str]):
                 return schema.transform(lambda x: x.upper())
@@ -70,27 +52,44 @@ class TestFieldDecorator:
         with pytest.raises(ValueError) as e:
 
             class C:
-                @z.dc.field("f")
+                @z.dc.field_assisted("f")
                 def f_field(self, schema):
                     return schema  # pragma: no cover
 
         assert e.value.args == (
-            "@dc.field must decorate a class method or a static method",
+            "@dc.field_assisted must decorate a class method or a static method",
         )
 
     def test_field_not_found(self):
         @dataclass
         class C:
-            @z.dc.field("f")
+            @z.dc.field_assisted("f")
             @classmethod
             def f_field(cls, schema):
                 return schema  # pragma: no cover
 
-        with pytest.raises(LookupError) as e:
+        with pytest.raises(RuntimeError) as e:
             z.dataclass(C)
-        assert e.value.args == (
-            "Field 'f' not found in <class 'test_dataclass.TestFieldDecorator.test_field_not_found.<locals>.C'>",
-        )
+        assert e.value.args == ("Field 'f' is not found",)
+
+    def test_field_already_decorated(self):
+        @dataclass
+        class C:
+            f: int
+
+            @z.dc.field_assisted("f")
+            @classmethod
+            def f_field(cls, schema):
+                return schema  # pragma: no cover
+
+            @z.dc.field_assisted("f")
+            @classmethod
+            def f_field2(cls, schema):
+                return schema  # pragma: no cover
+
+        with pytest.raises(RuntimeError) as e:
+            z.dataclass(C)
+        assert e.value.args == ("Field 'f' is already decorated",)
 
 
 class TestEnsureFieldsDecorator:
@@ -148,7 +147,7 @@ def test_decorators_in_inheritance():
     class OnlyUsername:
         username: str
 
-        @z.dc.field("username")
+        @z.dc.field_assisted("username")
         @classmethod
         def _username_field(cls, schema: z.Schema[str]):
             return schema.ensure(

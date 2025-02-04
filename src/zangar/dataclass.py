@@ -6,6 +6,7 @@ import inspect
 import sys
 import types
 import typing
+import warnings
 from collections.abc import Callable
 from functools import partial
 from typing import TypeVar, get_args, get_origin
@@ -92,15 +93,25 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
 
     for dc_field in dc_fields:
         if "zangar_schema" in dc_field.metadata:
+            warnings.warn(
+                '"zangar_schema" is deprecated, use @dc.field_assisted or @dc.field_manual instead',
+                DeprecationWarning,
+                stacklevel=3,
+            )
             object_field = z.field(dc_field.metadata["zangar_schema"])
         else:
-            schema = resolve_type(hints.get(dc_field.name, dc_field.type), cache)
+            get_schema = partial(
+                resolve_type, hints.get(dc_field.name, dc_field.type), cache
+            )
             if dc_field.name in decorators.field_decorators:
                 decorator = decorators.field_decorators[dc_field.name]
-                schema = getattr(cls, decorator.method_name)(schema)
+                if isinstance(decorator, FieldAssistedDecorator):
+                    schema = getattr(cls, decorator.method_name)(get_schema())
+                else:
+                    schema = getattr(cls, decorator.method_name)()
                 object_field = z.field(schema, alias=decorator.alias)
             else:
-                object_field = z.field(schema)
+                object_field = z.field(get_schema())
 
         default: typing.Any = z.field._empty
         if dc_field.default is not dataclasses.MISSING:
@@ -166,8 +177,12 @@ class DecoratorCollector:
                     decorator = getattr(obj, _DECORATOR_KEY, None)
                     if isinstance(decorator, FieldDecorator):
                         if decorator.fieldname not in fieldnames:
-                            raise LookupError(
-                                f"Field {decorator.fieldname!r} not found in {c}"
+                            raise RuntimeError(
+                                f"Field {decorator.fieldname!r} is not found"
+                            )
+                        if decorator.fieldname in self.field_decorators:
+                            raise RuntimeError(
+                                f"Field {decorator.fieldname!r} is already decorated"
                             )
                         self.field_decorators[decorator.fieldname] = decorator
                     elif isinstance(decorator, EnsureFieldsDecorator):
@@ -190,10 +205,24 @@ class DecoratorBase:
 
 
 class FieldDecorator(DecoratorBase):
+    __name: str
+
+    def __init_subclass__(cls, name):
+        cls.__name = name
+
     def __init__(self, fieldname: str, /, *, alias: str | None = None):
         self.fieldname = fieldname
         self.alias = alias
 
+    def __call__(self, method):
+        if not isinstance(method, (classmethod, staticmethod)):
+            raise ValueError(
+                f"@dc.{self.__name} must decorate a class method or a static method"
+            )
+        return super().__call__(method)
+
+
+class FieldAssistedDecorator(FieldDecorator, name="field_assisted"):
     def __call__(
         self,
         method: (
@@ -201,10 +230,18 @@ class FieldDecorator(DecoratorBase):
             | Callable[[typing.Any, SchemaBase[T]], SchemaBase[T]]
         ),
     ):
-        if not isinstance(method, (classmethod, staticmethod)):
-            raise ValueError(
-                "@dc.field must decorate a class method or a static method"
-            )
+        return super().__call__(method)
+
+
+class _DeprecatedFieldDecorator(FieldAssistedDecorator, name="field"):
+    pass
+
+
+class FieldManualDecorator(FieldDecorator, name="field_manual"):
+    def __call__(
+        self,
+        method: Callable[[], SchemaBase[T]] | Callable[[typing.Any], SchemaBase[T]],
+    ):
         return super().__call__(method)
 
 
@@ -220,7 +257,17 @@ class EnsureFieldsDecorator(DecoratorBase):
 
 
 class DecoratorNamespace:
-    field = FieldDecorator
+    @property
+    def field(self):
+        warnings.warn(
+            "@dc.field is deprecated, use @dc.field_assisted instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _DeprecatedFieldDecorator
+
+    field_assisted = FieldAssistedDecorator
+    field_manual = FieldManualDecorator
     ensure_fields = EnsureFieldsDecorator
 
 
