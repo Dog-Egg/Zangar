@@ -4,7 +4,7 @@ import abc
 import copy
 import datetime
 import typing as t
-from collections.abc import Callable, Hashable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from operator import getitem
 
 from ._common import Empty, empty
@@ -65,7 +65,6 @@ class TypeSchema(Schema[T], abc.ABC):
 
     def __init__(self, *, message=None, **kwargs):
         expected_type = self._expected_type()
-        _set(kwargs, ["meta", "$type"], expected_type)
         super().__init__(
             **kwargs,
             prev=Schema()
@@ -255,6 +254,8 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
         ),
         /,
     ):
+        super().__init__()
+
         self._fields: dict[str, Field] = {}
         for name, field in fields.items():
             if not isinstance(field, Field):
@@ -267,7 +268,6 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
             alias = field._alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
-        super().__init__(meta={"$fields": self._fields})
 
     def extend(self, fields: dict[str, Field | SchemaBase], /):
         new_fields: dict[str, Field | SchemaBase] = {}
@@ -368,39 +368,18 @@ class List(TypeSchema[t.List[T]]):
         return list
 
     def __init__(self, item: SchemaBase[T] | None = None, /):
-        self.__item = item or Any()
-        super().__init__(meta={"$item": self.__item})
+        super().__init__()
+        self._item = item or Any()
 
     def _pretransform(self, value):
         rv = []
         error = ValidationError(empty)
         for index, item in enumerate(value):
             try:
-                item = self.__item.parse(item)
+                item = self._item.parse(item)
             except ValidationError as exc:
                 error._set_child(index, exc)
             rv.append(item)
         if not error._empty():
             raise error
         return rv
-
-
-def _set(data: dict, path: list[Hashable], value):
-    return _set_with(data, path, lambda _: value)
-
-
-def _set_with(data: dict, path: list[Hashable], setter: Callable[[t.Any], t.Any]):
-    """
-    >>> data = {}
-    >>> _set_with(data, ["a", "b"], lambda x: (x or []) + [1])
-    {'a': {'b': [1]}}
-    >>> _set_with(data, ["a", "b"], lambda x: (x or []) + [2])
-    {'a': {'b': [1, 2]}}
-    """
-    d = data
-    for index, key in enumerate(path):
-        if index == len(path) - 1:
-            d[key] = setter(d.get(key))
-        else:
-            d = d.setdefault(key, {})
-    return data
