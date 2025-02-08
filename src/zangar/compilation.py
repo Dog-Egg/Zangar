@@ -65,15 +65,6 @@ class OpenAPI30Compiler:
         elif len(results) == 1:
             spec.update(results[0])
 
-    def _compile_any(self, _, spec, __):
-        spec.update(nullable=True)
-
-    def _compile_datetime(self, _, spec, __):
-        spec.update(
-            type="string",
-            format="date-time",
-        )
-
     def _compile_none(self, _, spec, parent):
         if isinstance(parent, dict):
             parent["nullable"] = True
@@ -82,27 +73,20 @@ class OpenAPI30Compiler:
                 enum=[None],
             )
 
-    def _compile_other(self, _, spec, __, type):
-        spec.update(
-            type={
-                String: "string",
-                Integer: "integer",
-                Float: "number",
-                Boolean: "boolean",
-            }[type]
-        )
+    def _compile_type(self, _, spec, __, data: dict):
+        spec.update(data)
 
     _compilation_methods: dict[Hashable, Callable] = {
         Object: _compile_object,
         List: _compile_list,
         Union: _compile_union,
-        Any: _compile_any,
-        Datetime: _compile_datetime,
         NoneType: _compile_none,
-        String: partial(_compile_other, type=String),
-        Integer: partial(_compile_other, type=Integer),
-        Float: partial(_compile_other, type=Float),
-        Boolean: partial(_compile_other, type=Boolean),
+        Any: partial(_compile_type, data=dict(nullable=True)),
+        String: partial(_compile_type, data=dict(type="string")),
+        Integer: partial(_compile_type, data=dict(type="integer")),
+        Float: partial(_compile_type, data=dict(type="number")),
+        Boolean: partial(_compile_type, data=dict(type="boolean")),
+        Datetime: partial(_compile_type, data=dict(type="string", format="date-time")),
     }
 
     def _compile(self, schema: SchemaBase, parent: dict | None = None):
