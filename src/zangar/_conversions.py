@@ -1,5 +1,14 @@
-from ._types import Float, Integer, List, String
+import datetime
+
+from ._types import Datetime, Float, Integer, List, String
 from .exceptions import ValidationError
+
+try:
+    from dateutil.parser import isoparser
+except ImportError:
+    pass
+else:
+    dt_parser = isoparser("T")
 
 
 class ListConversion(List):
@@ -31,11 +40,19 @@ class FloatConversion(Float):
         return float(value)
 
 
+class DatetimeConversion(Datetime):
+    def _convert(self, value):
+        if isinstance(value, datetime.datetime):
+            return value
+        return dt_parser.isoparse(value)
+
+
 class Namespace:
     str = StringConversion
     int = IntegerConversion
     float = FloatConversion
     list = ListConversion
+    datetime = DatetimeConversion
 
 
 to = Namespace()
