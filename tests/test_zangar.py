@@ -301,6 +301,10 @@ class TestDatetime:
             )
         assert e.value.format_errors() == [{"msgs": ["The datetime should be naive"]}]
 
+    def test_to_datetime(self):
+        dt = datetime.datetime.now()
+        assert z.to.datetime().parse(dt) is dt
+
 
 def test_meta_checking():
     with pytest.raises(ValueError) as e:

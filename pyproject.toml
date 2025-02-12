@@ -3,6 +3,7 @@ name = "Zangar"
 dynamic = ["version"]
 authors = [{ name = "Lee", email = "294622946@qq.com" }]
 requires-python = ">=3.8"
+dependencies = ["python-dateutil"]
 
 [project.urls]
 Homepage = "https://github.com/Dog-Egg/Zangar"

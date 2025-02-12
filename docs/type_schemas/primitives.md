@@ -6,7 +6,7 @@ z.int()        # Validate that the data is of type `int`.
 z.float()      # Validate that the data is of type `float`.
 z.bool()       # Validate that the data is of type `bool`.
 z.none()       # Validate that the data is of type `None`.
-z.datetime()   # Validate that the data is of type `datetime`.
+z.datetime()   # Validate that the data is of type `datetime.datetime`.
 z.any()        # Validate that the data is of any type.
 ```
 
@@ -79,5 +79,18 @@ This is the conversion function for `int`.
 
 # equivalent to:
 >>> assert z.transform(list).parse((1, 2, 3)) == [1, 2, 3]
+
+```
+
+### `datetime`
+
+It can parse a [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) datetime string.
+
+```py
+>>> z.to.datetime().parse('20040503T173008+08')
+datetime.datetime(2004, 5, 3, 17, 30, 8, tzinfo=tzoffset(None, 28800))
+
+>>> z.to.datetime().parse('2004-W19')
+datetime.datetime(2004, 5, 3, 0, 0)
 
 ```
