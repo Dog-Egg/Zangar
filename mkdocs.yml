@@ -1,4 +1,6 @@
 site_name: Zangar
+repo_url: https://github.com/Dog-Egg/Zangar
+repo_name: Dog-Egg/Zangar
 nav:
   - Home: index.md
   - Type Schemas:
@@ -15,6 +17,8 @@ theme:
   name: material
   features:
     - navigation.expand
+  icon:
+    repo: fontawesome/brands/github
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -27,5 +31,6 @@ markdown_extensions:
   - admonition
 
 plugins:
+  - search
   - macros:
       module_name: docs/macros
