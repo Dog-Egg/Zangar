@@ -201,16 +201,15 @@ class Datetime(TypeSchema[datetime.datetime], DatetimeMethods):
         return datetime.datetime
 
 
-class ObjectMixin(Schema[T]):
-    def __init__(self, object: Object | None = None, prev=None, **kwargs):
-        super().__init__(prev=prev, **kwargs)
-        self.___object = object
-
-    @property
-    def __object(self) -> Object:
-        if self.___object is None:
-            return t.cast(Object, self)
-        return self.___object
+class ObjectMethod(Schema[T]):
+    def __init__(
+        self,
+        *args,
+        name_to_alias: dict[str, str],
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.__name_to_alias = name_to_alias
 
     def ensure_fields(
         self,
@@ -226,7 +225,7 @@ class ObjectMixin(Schema[T]):
             error = ValidationError(empty)
             for fieldname in fieldnames:
                 error._set_child(
-                    self.__object._name_to_alias[fieldname],
+                    self.__name_to_alias[fieldname],
                     ValidationError(
                         get_message(
                             (
@@ -240,10 +239,12 @@ class ObjectMixin(Schema[T]):
                 )
             raise error
 
-        return ObjectMixin(prev=self.ensure(inner_func), object=self.__object)
+        return ObjectMethod(
+            prev=self.ensure(inner_func), name_to_alias=self.__name_to_alias
+        )
 
 
-class Object(TypeSchema[dict], ObjectMixin[dict]):
+class Object(TypeSchema[dict], ObjectMethod[dict]):
     def _expected_type(self) -> type:
         return object
 
@@ -254,8 +255,6 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
         ),
         /,
     ):
-        super().__init__()
-
         self._fields: dict[str, Field] = {}
         for name, field in fields.items():
             if not isinstance(field, Field):
@@ -268,6 +267,8 @@ class Object(TypeSchema[dict], ObjectMixin[dict]):
             alias = field._alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
+
+        super().__init__(name_to_alias=self._name_to_alias)
 
     def extend(self, fields: dict[str, Field | SchemaBase], /):
         new_fields: dict[str, Field | SchemaBase] = {}
