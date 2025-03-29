@@ -20,6 +20,7 @@ __all__ = [
     "any",
     "datetime",
     "object",
+    "struct",
     "field",
     "list",
 ]
@@ -31,6 +32,7 @@ bool = _types.Boolean
 none = _types.NoneType
 any = _types.Any
 object = _types.Object
+struct = _types.Struct
 field = _types.Field
 list = _types.List
 datetime = _types.Datetime

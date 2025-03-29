@@ -4,6 +4,7 @@ import abc
 import copy
 import datetime
 import typing as t
+import warnings
 from collections.abc import Callable, Iterable, Mapping
 from operator import getitem
 
@@ -21,7 +22,6 @@ class Field(t.Generic[T]):
     def __init__(
         self,
         schema: SchemaBase[T],
-        /,
         *,
         alias: str | None = None,
     ) -> None:
@@ -201,7 +201,7 @@ class Datetime(TypeSchema[datetime.datetime], DatetimeMethods):
         return datetime.datetime
 
 
-class ObjectMethod(Schema[T]):
+class StructMethod(Schema[T]):
     def __init__(
         self,
         *args,
@@ -239,12 +239,12 @@ class ObjectMethod(Schema[T]):
                 )
             raise error
 
-        return ObjectMethod(
+        return StructMethod(
             prev=self.ensure(inner_func), name_to_alias=self.__name_to_alias
         )
 
 
-class Object(TypeSchema[dict], ObjectMethod[dict]):
+class Struct(TypeSchema[dict], StructMethod[dict]):
     def _expected_type(self) -> type:
         return object
 
@@ -274,14 +274,14 @@ class Object(TypeSchema[dict], ObjectMethod[dict]):
         new_fields: dict[str, Field | SchemaBase] = {}
         new_fields.update(self._fields)
         new_fields.update(fields)
-        return Object(fields)
+        return Struct(fields)
 
     def __check_fieldnames(self, fieldnames: Iterable[str], /):
         for name in fieldnames:
             if name not in self._fields:
-                raise ValueError(f"Field {name!r} not found in object schema")
+                raise ValueError(f"Field {name!r} not found in the struct schema")
 
-    def required_fields(self, fieldnames: Iterable[str] | None = None, /) -> Object:
+    def required_fields(self, fieldnames: Iterable[str] | None = None, /) -> Struct:
         if fieldnames is not None:
             self.__check_fieldnames(fieldnames)
 
@@ -295,21 +295,21 @@ class Object(TypeSchema[dict], ObjectMethod[dict]):
             copy_fields[name] = copy_field
         return self.__class__(copy_fields)
 
-    def optional_fields(self, fieldnames: Iterable[str] | None = None, /) -> Object:
+    def optional_fields(self, fieldnames: Iterable[str] | None = None, /) -> Struct:
         if fieldnames is not None:
             self.__check_fieldnames(fieldnames)
         if fieldnames is None:
             return self.required_fields([])
         return self.required_fields(set(self._fields) - set(fieldnames))
 
-    def pick_fields(self, fieldnames: Iterable[str], /) -> Object:
+    def pick_fields(self, fieldnames: Iterable[str], /) -> Struct:
         self.__check_fieldnames(fieldnames)
         copy_fields = {}
         for name in fieldnames:
             copy_fields[name] = copy.copy(self._fields[name])
         return self.__class__(copy_fields)
 
-    def omit_fields(self, fieldnames: Iterable[str], /) -> Object:
+    def omit_fields(self, fieldnames: Iterable[str], /) -> Struct:
         self.__check_fieldnames(fieldnames)
         return self.pick_fields(set(self._fields) - set(fieldnames))
 
@@ -362,6 +362,16 @@ class Object(TypeSchema[dict], ObjectMethod[dict]):
             raise error
 
         return rv
+
+
+class Object(Struct):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            "Object is deprecated, use Struct instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
 
 class List(TypeSchema[t.List[T]]):

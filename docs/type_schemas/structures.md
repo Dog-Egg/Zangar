@@ -1,9 +1,9 @@
-## `object`
+## `struct`
 
-`object` is a schema with fields, it can parse any object and return a dict.
+`struct` is a schema with fields, it can parse any object and return a dict.
 
 ```python
-dog = z.object({
+dog = z.struct({
     'name': z.field(z.str()),
     'breed': z.field(z.str()),
 })
@@ -12,13 +12,13 @@ dog = z.object({
 If you do not need to make any changes to the field, you can omit `field`. The above definition can be simplified to the following code:
 
 ```python
-dog = z.object({
+dog = z.struct({
     'name': z.str(),
     'breed': z.str(),
 })
 ```
 
-The `object` field, when parsing an object, will use its field name to get the value of the key for [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) objects, and the value of the attribute for other objects.
+The `struct` field, when parsing an object, will use its field name to get the value of the key for [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) objects, and the value of the attribute for other objects.
 
 ```py
 # Parsing a Mapping object
@@ -44,7 +44,7 @@ The `object` field, when parsing an object, will use its field name to get the v
 
 ### `.extend`
 
-You can add additional fields to an object schema with the `.extend` method.
+You can add additional fields to a struct schema with the `.extend` method.
 
 ```py
 >>> dog_with_age = dog.extend({
@@ -56,7 +56,7 @@ You can add additional fields to an object schema with the `.extend` method.
 ### `.ensure_fields`
 
 ```python
-my_schema = z.object({
+my_schema = z.struct({
     'start_time': z.field(z.datetime()),
     'end_time': z.field(z.datetime()),
 })
@@ -86,29 +86,29 @@ zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time
 
 ### `.optional_fields`
 
-Based on the current object schema fields, construct a new object schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#required_fields).
+Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#required_fields).
 
 ```python
-z.object({
+z.struct({
     'username': z.str(),
     'email': z.str()
 }).optional_fields()
 
 # equivalent to:
-z.object({
+z.struct({
     'username': z.field(z.str()).optional(),
     'email': z.field(z.str()).optional()
 })
 ```
 
 ```python
-z.object({
+z.struct({
     'username': z.str(),
     'email': z.str()
 }).optional_fields(['username'])
 
 # equivalent to:
-z.object({
+z.struct({
     'username': z.field(z.str()).optional(),
     'email': z.str()
 })
@@ -116,29 +116,29 @@ z.object({
 
 ### `.required_fields`
 
-Based on the current object schema fields, construct a new object schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#optional_fields).
+Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#optional_fields).
 
 ```python
-z.object({
+z.struct({
     'username': z.field(z.str()).optional(),
     'email': z.field(z.str()).optional()
 }).required_fields()
 
 # equivalent to:
-z.object({
+z.struct({
     'username': z.str(),
     'email': z.str()
 })
 ```
 
 ```python
-z.object({
+z.struct({
     'username': z.field(z.str()).optional(),
     'email': z.field(z.str()).optional()
 }).required_fields(['username'])
 
 # equivalent to:
-z.object({
+z.struct({
     'username': z.str(),
     'email': z.field(z.str()).optional()
 })
@@ -146,32 +146,32 @@ z.object({
 
 ### `.pick_fields`
 
-Construct a new object schema by selecting the specified fields. The opposite of [`.omit_fields`](#omit_fields).
+Construct a new structure schema by selecting the specified fields. The opposite of [`.omit_fields`](#omit_fields).
 
 ```python
-z.object({
+z.struct({
     'username': z.str(),
     'email': z.str()
 }).pick_fields(['username'])
 
 # equivalent to:
-z.object({
+z.struct({
     'username': z.str()
 })
 ```
 
 ### `.omit_fields`
 
-Construct a new object schema by excluding the specified fields. The opposite of [`.pick_fields`](#pick_fields).
+Construct a new structure schema by excluding the specified fields. The opposite of [`.pick_fields`](#pick_fields).
 
 ```python
-z.object({
+z.struct({
     'username': z.str(),
     'email': z.str()
 }).omit_fields(['username'])
 
 # equivalent to:
-z.object({
+z.struct({
     'email': z.str()
 })
 ```
@@ -183,7 +183,7 @@ z.object({
 You can assign alias to external data corresponding to field, which will be mapped to field name during parsing.
 
 ```py
->>> dog = z.object({
+>>> dog = z.struct({
 ...   'name': z.field(z.str(), alias='nickname'),
 ... })
 
@@ -197,7 +197,7 @@ You can assign alias to external data corresponding to field, which will be mapp
 Fields are required by default, but this method allows them to be made optional.
 
 ```py
->>> dog = z.object({
+>>> dog = z.struct({
 ...     'name': z.str(),
 ...     'breed': z.field(z.str()).optional(),
 ... })
@@ -210,7 +210,7 @@ Fields are required by default, but this method allows them to be made optional.
 It is also possible to provide a default value for the optional field.
 
 ```py
->>> dog = z.object({
+>>> dog = z.struct({
 ...     'name': z.str(),
 ...     'breed': z.field(z.str()).optional(default='unknown'),
 ... })

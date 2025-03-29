@@ -17,7 +17,7 @@ def test_DefaultMessages():
 
     with MyDefaultMessages():
         with pytest.raises(z.ValidationError) as e:
-            z.object({"a": z.field(z.str())}).parse({})
+            z.struct({"a": z.field(z.str())}).parse({})
         assert e.value.format_errors() == [{"loc": ["a"], "msgs": ["Required"]}]
 
         with pytest.raises(z.ValidationError) as e:
@@ -38,7 +38,7 @@ def test_DefaultMessages():
         ]
 
     with pytest.raises(z.ValidationError) as e:
-        z.object({"a": z.field(z.str())}).parse({})
+        z.struct({"a": z.field(z.str())}).parse({})
     assert e.value.format_errors() == [
         {"loc": ["a"], "msgs": ["This field is required"]}
     ]

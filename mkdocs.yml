@@ -5,7 +5,7 @@ nav:
   - Home: index.md
   - Type Schemas:
       - Primitives: type_schemas/primitives.md
-      - Objects: type_schemas/objects.md
+      - Structures: type_schemas/structures.md
       - Dataclasses: type_schemas/dataclasses.md
       - Type Methods: type_schemas/methods.md
   - Messages: messages.md

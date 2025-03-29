@@ -26,7 +26,7 @@ You might naturally think of defining the schema of this tree with the following
 However, in Python, this definition is incorrect.
 
 ```py hl_lines="4"
->>> node_schema = z.object({
+>>> node_schema = z.struct({
 ...     'name': z.str(),
 ...     'children': z.field(
 ...         z.list(node_schema)
@@ -40,7 +40,7 @@ NameError: name 'node_schema' is not defined
 The correct approach is to use `ref` to replace the parts that are circularly referenced.
 
 ```py hl_lines="4"
->>> node_schema = z.object({
+>>> node_schema = z.struct({
 ...     'name': z.str(),
 ...     'children': z.field(
 ...         z.list(z.ref('node_schema'))

@@ -56,7 +56,7 @@ z.to.int(message='Invalid integer')
 ## Required field message
 
 ```py
->>> z.object({
+>>> z.struct({
 ...     'username': z.field(z.str()).required(message='Username is required.'),
 ... }).parse({})
 Traceback (most recent call last):
@@ -91,7 +91,7 @@ def custom_default(o):
         return {'code': o.value[0], 'description': o.value[1]}
     raise TypeError(f'Cannot serialize object of {type(obj)}')
 
-schema = z.object({
+schema = z.struct({
     'username': z.field(z.str()).required(message=ErrorCode.REQUIRED)
 })
 ```
@@ -140,7 +140,7 @@ class MyDefaultMessages(z.DefaultMessages):
 ```py
 >>> with MyDefaultMessages():
 ...     try:
-...         z.object({
+...         z.struct({
 ...             'username': z.str().min(6),
 ...             'password': z.str()
 ...         }).parse({'username': 'user'})
