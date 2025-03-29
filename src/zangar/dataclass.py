@@ -92,17 +92,16 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
     decorators = DecoratorCollector(cls)
 
     for dc_field in dc_fields:
-        if "zangar_schema" in dc_field.metadata:
-            warnings.warn(
-                '"zangar_schema" is deprecated, use @dc.field_assisted or @dc.field_manual instead',
-                DeprecationWarning,
-                stacklevel=3,
-            )
-            object_field = z.field(dc_field.metadata["zangar_schema"])
+        get_schema = partial(
+            resolve_type, hints.get(dc_field.name, dc_field.type), cache
+        )
+
+        if "zangar" in dc_field.metadata:
+            metadata: dict = dc_field.metadata["zangar"].copy()
+            if "schema" not in metadata:
+                metadata["schema"] = get_schema()
+            object_field = z.field(**metadata)
         else:
-            get_schema = partial(
-                resolve_type, hints.get(dc_field.name, dc_field.type), cache
-            )
             if dc_field.name in decorators.field_decorators:
                 decorator = decorators.field_decorators[dc_field.name]
                 if isinstance(decorator, FieldAssistedDecorator):
@@ -195,6 +194,14 @@ _DECORATOR_KEY = "zangar_decorator"
 class DecoratorBase:
     method_name: str
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            "Decorators are deprecated",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+
     def __call__(self, method):
         setattr(method, _DECORATOR_KEY, self)
         try:
@@ -211,6 +218,7 @@ class FieldDecorator(DecoratorBase):
         cls.__name = name
 
     def __init__(self, fieldname: str, /, *, alias: str | None = None):
+        super().__init__()
         self.fieldname = fieldname
         self.alias = alias
 
@@ -247,6 +255,7 @@ class FieldManualDecorator(FieldDecorator, name="field_manual"):
 
 class EnsureFieldsDecorator(DecoratorBase):
     def __init__(self, fieldnames: list[str], /, *, message=None):
+        super().__init__()
         self.fieldnames = fieldnames
         self.message = message
 

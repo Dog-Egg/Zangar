@@ -6,6 +6,7 @@ The `dataclass` method converts a [`dataclasses.dataclass`](https://docs.python.
 
 ```python
 from dataclasses import dataclass
+
 import zangar as z
 
 @dataclass
@@ -54,64 +55,17 @@ zangar.exceptions.ValidationError: [{'loc': ['mylist', 1, 'y'], 'msgs': ['Expect
 
 ```
 
-## `@dc.field_manual`
-
-Used to customize the field.
+## Customize the field schema
 
 ```python
 from typing import List
+from dataclasses import dataclass, field
 
 @dataclass
 class C:
-    my_list: List[int]
-
-    @z.dc.field_manual('my_list')
-    @staticmethod
-    def customize_my_list():
-        return z.to.list(z.to.int())
+    my_list: List[int] = field(metadata={'zangar': {'schema': z.to.list(z.to.int())}})
 
 assert z.dataclass(C).parse(
         {"my_list": (1, '2', 3)}
     ) == C(my_list=[1, 2, 3])
-```
-
-## `@dc.field_assisted`
-
-Used to customize the field.
-
-```python
-@dataclass
-class C:
-    my_list: List[int]
-
-    @z.dc.field_assisted('my_list')
-    @staticmethod
-    def customize_my_list(schema: z.Schema[List[int]]):
-        return z.to.list().relay(schema)
-
-assert z.dataclass(C).parse(
-        {"my_list": (1, 2, 3)}
-    ) == C(my_list=[1, 2, 3])
-```
-
-## `@dc.ensure_fields`
-
-```python
-from datetime import datetime
-
-@dataclass
-class TimeRange:
-    start: datetime
-    end: datetime
-
-    @z.dc.ensure_fields(['end'], message='The end must be after the start')
-    def check_range(self):
-        return self.end > self.start
-```
-
-```py
->>> z.dataclass(TimeRange).parse({'start': datetime(2000, 1, 2), 'end': datetime(2000, 1, 1)})
-Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'loc': ['end'], 'msgs': ['The end must be after the start']}]
-
 ```

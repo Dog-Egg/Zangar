@@ -21,7 +21,6 @@ class Field(t.Generic[T]):
     def __init__(
         self,
         schema: SchemaBase[T],
-        /,
         *,
         alias: str | None = None,
     ) -> None:
