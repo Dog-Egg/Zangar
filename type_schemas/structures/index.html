@@ -16,15 +16,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
-        <title>Objects - Zangar</title>
+        <title>Structures - Zangar</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
       
       
 
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#object" class="md-skip">
+        <a href="#struct" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Objects
+              Structures
             
           </span>
         </div>
@@ -307,7 +307,7 @@
           
   
   <span class="md-ellipsis">
-    Objects
+    Structures
     
   </span>
   
@@ -319,7 +319,7 @@
         
   
   <span class="md-ellipsis">
-    Objects
+    Structures
     
   </span>
   
@@ -340,13 +340,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#object" class="md-nav__link">
+  <a href="#struct" class="md-nav__link">
     <span class="md-ellipsis">
-      object
+      struct
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="object">
+    <nav class="md-nav" aria-label="struct">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -656,13 +656,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#object" class="md-nav__link">
+  <a href="#struct" class="md-nav__link">
     <span class="md-ellipsis">
-      object
+      struct
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="object">
+    <nav class="md-nav" aria-label="struct">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -776,22 +776,22 @@
   
 
 
-  <h1>Objects</h1>
+  <h1>Structures</h1>
 
-<h2 id="object"><code>object</code></h2>
-<p><code>object</code> is a schema with fields, it can parse any object and return a dict.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<h2 id="struct"><code>struct</code></h2>
+<p><code>struct</code> is a schema with fields, it can parse any object and return a dict.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()),</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()),</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">})</span>
 </span></code></pre></div>
 <p>If you do not need to make any changes to the field, you can omit <code>field</code>. The above definition can be simplified to the following code:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">})</span>
 </span></code></pre></div>
-<p>The <code>object</code> field, when parsing an object, will use its field name to get the value of the key for <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping"><code>Mapping</code></a> objects, and the value of the attribute for other objects.</p>
+<p>The <code>struct</code> field, when parsing an object, will use its field name to get the value of the key for <a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping"><code>Mapping</code></a> objects, and the value of the attribute for other objects.</p>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Parsing a Mapping object</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span>
@@ -809,13 +809,13 @@
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">,</span> <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="s1">&#39;bulldog&#39;</span><span class="p">}</span>
 </span></code></pre></div>
 <h3 id="extend"><code>.extend</code></h3>
-<p>You can add additional fields to an object schema with the <code>.extend</code> method.</p>
+<p>You can add additional fields to a struct schema with the <code>.extend</code> method.</p>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog_with_age</span> <span class="o">=</span> <span class="n">dog</span><span class="o">.</span><span class="n">extend</span><span class="p">({</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">...</span>   <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">(),</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="o">...</span> <span class="p">})</span>
 </span></code></pre></div>
 <h3 id="ensure_fields"><code>.ensure_fields</code></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">my_schema</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">my_schema</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">datetime</span><span class="p">()),</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">datetime</span><span class="p">()),</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">})</span>
@@ -837,81 +837,81 @@
 </span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">],</span> <span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;The end time cannot be later than the start time&#39;</span><span class="p">]}]</span>
 </span></code></pre></div>
 <h3 id="optional_fields"><code>.optional_fields</code></h3>
-<p>Based on the current object schema fields, construct a new object schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of <a href="#required_fields"><code>.required_fields</code></a>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of <a href="#required_fields"><code>.required_fields</code></a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">})</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">()</span>
 </span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
 </span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="c1"># equivalent to:</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
 </span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
 </span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="p">})</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">})</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
 </span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
 </span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1"># equivalent to:</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
 </span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">})</span>
 </span></code></pre></div>
 <h3 id="required_fields"><code>.required_fields</code></h3>
-<p>Based on the current object schema fields, construct a new object schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of <a href="#optional_fields"><code>.optional_fields</code></a>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of <a href="#optional_fields"><code>.optional_fields</code></a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="p">})</span><span class="o">.</span><span class="n">required_fields</span><span class="p">()</span>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
 </span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1"># equivalent to:</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="p">})</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
 </span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="p">})</span><span class="o">.</span><span class="n">required_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
 </span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
 </span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1"># equivalent to:</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
 </span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="p">})</span>
 </span></code></pre></div>
 <h3 id="pick_fields"><code>.pick_fields</code></h3>
-<p>Construct a new object schema by selecting the specified fields. The opposite of <a href="#omit_fields"><code>.omit_fields</code></a>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<p>Construct a new structure schema by selecting the specified fields. The opposite of <a href="#omit_fields"><code>.omit_fields</code></a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">})</span><span class="o">.</span><span class="n">pick_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
 </span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="c1"># equivalent to:</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">})</span>
 </span></code></pre></div>
 <h3 id="omit_fields"><code>.omit_fields</code></h3>
-<p>Construct a new object schema by excluding the specified fields. The opposite of <a href="#pick_fields"><code>.pick_fields</code></a>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<p>Construct a new structure schema by excluding the specified fields. The opposite of <a href="#pick_fields"><code>.pick_fields</code></a>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="p">})</span><span class="o">.</span><span class="n">omit_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
 </span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
 </span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># equivalent to:</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
 </span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="p">})</span>
 </span></code></pre></div>
 <h2 id="field"><code>field</code></h2>
 <h3 id="alias">alias</h3>
 <p>You can assign alias to external data corresponding to field, which will be mapped to field name during parsing.</p>
-<div class="language-py highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-py highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="o">...</span>   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span> <span class="n">alias</span><span class="o">=</span><span class="s1">&#39;nickname&#39;</span><span class="p">),</span>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="o">...</span> <span class="p">})</span>
 </span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
@@ -920,7 +920,7 @@
 </span></code></pre></div>
 <h3 id="optional"><code>.optional</code></h3>
 <p>Fields are required by default, but this method allows them to be made optional.</p>
-<div class="language-py highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-py highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="o">...</span>     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="o">...</span>     <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="o">...</span> <span class="p">})</span>
@@ -929,7 +929,7 @@
 </span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">}</span>
 </span></code></pre></div>
 <p>It is also possible to provide a default value for the optional field.</p>
-<div class="language-py highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">object</span><span class="p">({</span>
+<div class="language-py highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="o">...</span>     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="o">...</span>     <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;unknown&#39;</span><span class="p">),</span>
 </span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="o">...</span> <span class="p">})</span>
@@ -986,7 +986,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
       
     
   </body>

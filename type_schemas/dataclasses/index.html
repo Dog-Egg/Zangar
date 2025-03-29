@@ -9,14 +9,14 @@
       
       
       
-        <link rel="prev" href="../objects/">
+        <link rel="prev" href="../structures/">
       
       
         <link rel="next" href="../methods/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
       
       
 
@@ -296,11 +296,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../objects/" class="md-nav__link">
+      <a href="../structures/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Objects
+    Structures
     
   </span>
   
@@ -389,27 +389,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dcfield_manual" class="md-nav__link">
+  <a href="#customize-the-field-schema" class="md-nav__link">
     <span class="md-ellipsis">
-      @dc.field_manual
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dcfield_assisted" class="md-nav__link">
-    <span class="md-ellipsis">
-      @dc.field_assisted
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dcensure_fields" class="md-nav__link">
-    <span class="md-ellipsis">
-      @dc.ensure_fields
+      Customize the field schema
     </span>
   </a>
   
@@ -635,27 +617,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dcfield_manual" class="md-nav__link">
+  <a href="#customize-the-field-schema" class="md-nav__link">
     <span class="md-ellipsis">
-      @dc.field_manual
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dcfield_assisted" class="md-nav__link">
-    <span class="md-ellipsis">
-      @dc.field_assisted
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dcensure_fields" class="md-nav__link">
-    <span class="md-ellipsis">
-      @dc.ensure_fields
+      Customize the field schema
     </span>
   </a>
   
@@ -686,14 +650,15 @@
 <p>The <code>dataclass</code> method converts a <a href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass"><code>dataclasses.dataclass</code></a> into a Zangar schema for data validation, and the resulting output is an instance of that dataclass.</p>
 <h2 id="create-a-dataclass">Create a dataclass</h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">zangar</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">z</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nd">@dataclass</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">InventoryItem</span><span class="p">:</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of an item in inventory.&quot;&quot;&quot;</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">quantity_on_hand</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">zangar</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">z</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nd">@dataclass</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">InventoryItem</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of an item in inventory.&quot;&quot;&quot;</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">quantity_on_hand</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 </span></code></pre></div>
 <div class="language-py highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># It&#39;s good!</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;necklace&quot;</span><span class="p">,</span> <span class="s1">&#39;unit_price&#39;</span><span class="p">:</span> <span class="mf">12.50</span><span class="p">})</span>
@@ -723,53 +688,17 @@
 </span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
 </span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mylist&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Expected int, received str&#39;</span><span class="p">]}]</span>
 </span></code></pre></div>
-<h2 id="dcfield_manual"><code>@dc.field_manual</code></h2>
-<p>Used to customize the field.</p>
+<h2 id="customize-the-field-schema">Customize the field schema</h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nd">@dataclass</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">my_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="nd">@z</span><span class="o">.</span><span class="n">dc</span><span class="o">.</span><span class="n">field_manual</span><span class="p">(</span><span class="s1">&#39;my_list&#39;</span><span class="p">)</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="nd">@staticmethod</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">customize_my_list</span><span class="p">():</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="k">return</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">int</span><span class="p">())</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>        <span class="p">{</span><span class="s2">&quot;my_list&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="p">)</span> <span class="o">==</span> <span class="n">C</span><span class="p">(</span><span class="n">my_list</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-</span></code></pre></div>
-<h2 id="dcfield_assisted"><code>@dc.field_assisted</code></h2>
-<p>Used to customize the field.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nd">@dataclass</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">my_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="nd">@z</span><span class="o">.</span><span class="n">dc</span><span class="o">.</span><span class="n">field_assisted</span><span class="p">(</span><span class="s1">&#39;my_list&#39;</span><span class="p">)</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="nd">@staticmethod</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">customize_my_list</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">Schema</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]):</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="k">return</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">list</span><span class="p">()</span><span class="o">.</span><span class="n">relay</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>        <span class="p">{</span><span class="s2">&quot;my_list&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="p">)</span> <span class="o">==</span> <span class="n">C</span><span class="p">(</span><span class="n">my_list</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-</span></code></pre></div>
-<h2 id="dcensure_fields"><code>@dc.ensure_fields</code></h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nd">@dataclass</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">TimeRange</span><span class="p">:</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">end</span><span class="p">:</span> <span class="n">datetime</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="nd">@z</span><span class="o">.</span><span class="n">dc</span><span class="o">.</span><span class="n">ensure_fields</span><span class="p">([</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;The end must be after the start&#39;</span><span class="p">)</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
-</span></code></pre></div>
-<div class="language-py highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">TimeRange</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)})</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span> <span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;The end must be after the start&#39;</span><span class="p">]}]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nd">@dataclass</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">my_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zangar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">int</span><span class="p">())}})</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>        <span class="p">{</span><span class="s2">&quot;my_list&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="p">)</span> <span class="o">==</span> <span class="n">C</span><span class="p">(</span><span class="n">my_list</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </span></code></pre></div>
 
 
@@ -820,7 +749,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.expand"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
       
     
   </body>
