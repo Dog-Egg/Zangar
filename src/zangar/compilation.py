@@ -14,8 +14,8 @@ from zangar._types import (
     Integer,
     List,
     NoneType,
-    Object,
     String,
+    Struct,
 )
 
 
@@ -31,7 +31,7 @@ class OpenAPI30Compiler:
     def compile(self, schema: SchemaBase):
         return self._compile(schema)
 
-    def _compile_object(self, schema, spec, _):
+    def _compile_struct(self, schema, spec, _):
         spec.update(type="object")
         properties = {}
         required = []
@@ -77,7 +77,7 @@ class OpenAPI30Compiler:
         spec.update(data)
 
     _compilation_methods: dict[Hashable, Callable] = {
-        Object: _compile_object,
+        Struct: _compile_struct,
         List: _compile_list,
         Union: _compile_union,
         NoneType: _compile_none,

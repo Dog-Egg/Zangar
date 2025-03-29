@@ -47,9 +47,9 @@ def test_multiple_error_messages():
     ]
 
 
-class TestObject:
+class TestStruct:
     def test_field_default(self):
-        obj = z.object(
+        obj = z.struct(
             {
                 "a": z.field(z.str()).optional(default="Tom"),
                 "b": z.field(z.str()).optional(default=lambda: "Tom"),
@@ -59,7 +59,7 @@ class TestObject:
         assert obj.parse({}) == {"a": "Tom", "b": "Tom"}
 
     def test_field_required(self):
-        obj = z.object(
+        obj = z.struct(
             {
                 "a": z.field(z.str()).required(message="a is required"),
             }
@@ -69,15 +69,15 @@ class TestObject:
         assert e.value.format_errors() == [{"loc": ["a"], "msgs": ["a is required"]}]
 
     def test_parse_object(self):
-        assert z.object({"a": z.field(z.str())}).parse(SimpleNamespace(a="Tom")) == {
+        assert z.struct({"a": z.field(z.str())}).parse(SimpleNamespace(a="Tom")) == {
             "a": "Tom"
         }
 
     def test_ensure_fields(self):
-        schema = z.object(
+        schema = z.struct(
             {
                 "time_range": z.field(
-                    z.object(
+                    z.struct(
                         {
                             "start_time": z.field(z.datetime(), alias="startTime"),
                             "end_time": z.field(z.datetime(), alias="endTime"),
@@ -136,11 +136,11 @@ class TestObject:
         }
 
     @staticmethod
-    def __get_required_fields(schema: z.object):
+    def __get_required_fields(schema: z.struct):
         return [name for name, field in schema._fields.items() if field._required]
 
     def test_required_fields(self):
-        obj = z.object(
+        obj = z.struct(
             {
                 "a": z.field(z.str()).optional(),
                 "b": z.field(z.str()).optional(),
@@ -154,10 +154,10 @@ class TestObject:
 
         with pytest.raises(ValueError) as e:
             obj.required_fields(["c"])
-        assert e.value.args == ("Field 'c' not found in object schema",)
+        assert e.value.args == ("Field 'c' not found in the struct schema",)
 
     def test_optional_fields(self):
-        obj = z.object(
+        obj = z.struct(
             {
                 "a": z.field(z.str()),
                 "b": z.field(z.str()),
@@ -170,11 +170,11 @@ class TestObject:
         assert self.__get_required_fields(obj.optional_fields(["a", "b"])) == []
 
     @staticmethod
-    def __get_fields(schema: z.object):
+    def __get_fields(schema: z.struct):
         return list(schema._fields.keys())
 
     def test_pick_fields(self):
-        obj = z.object(
+        obj = z.struct(
             {
                 "a": z.str(),
                 "b": z.str(),
@@ -183,7 +183,7 @@ class TestObject:
         assert self.__get_fields(obj.pick_fields(["a"])) == ["a"]
 
     def test_omit_fields(self):
-        obj = z.object(
+        obj = z.struct(
             {
                 "a": z.str(),
                 "b": z.str(),

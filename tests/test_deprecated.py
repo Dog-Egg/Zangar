@@ -1,5 +1,6 @@
 import datetime
 import linecache
+import typing
 from dataclasses import dataclass
 
 import pytest
@@ -32,6 +33,18 @@ class TestFieldDecorator:
                 return schema.transform(lambda x: x.upper())
 
         assert z.dataclass(C).parse({"f": "hello"}) == C(f="HELLO")
+
+    def test_field_manual_decorator(self):
+        @dataclass
+        class C:
+            my_list: typing.List[int]
+
+            @z.dc.field_manual("my_list")
+            @staticmethod
+            def customize_my_list():
+                return z.to.list(z.to.int())
+
+        assert z.dataclass(C).parse({"my_list": (1, "2", 3)}) == C(my_list=[1, 2, 3])
 
     def test_error(self):
         with pytest.raises(ValueError) as e:
@@ -157,3 +170,7 @@ def test_decorators_in_inheritance():
     assert z.dataclass(User).parse({"username": "john", "password": "123"}) == User(
         username="john", password="123"
     )
+
+
+def test_deprecated_object():
+    z.object({})

@@ -46,7 +46,7 @@ class TestOpenAPI30:
 
     def test_object_type(self):
         assert self.compile(
-            z.object(
+            z.struct(
                 {
                     "name": z.str(),
                 }
@@ -63,7 +63,7 @@ class TestOpenAPI30:
 
     def test_object_property_required_and_alias(self):
         assert self.compile(
-            z.object(
+            z.struct(
                 {
                     "name": z.field(z.str(), alias="name_alias").optional(),
                 },
@@ -153,7 +153,7 @@ class TestOpenAPI30:
 
     def test_default(self):
         assert self.compile(
-            z.object(
+            z.struct(
                 {
                     "a1": z.field(z.str()).optional(default="test"),
                     "a2": z.field(z.str()).optional(default=lambda: "test"),
@@ -195,7 +195,7 @@ class TestOpenAPI30:
 
     def test_oas_meta(self):
         assert OpenAPI30Compiler().compile(
-            z.object(
+            z.struct(
                 {
                     "username": z.str().ensure(
                         lambda x: True,

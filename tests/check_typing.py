@@ -11,7 +11,7 @@ r2: int = z.str().transform(lambda x: len(x)).ensure(lambda x: x > 1).parse("1")
 
 r3: None = z.none().parse(None)
 
-r4: dict = z.object({}).ensure(lambda x: "a" in x).parse(object())
+r4: dict = z.struct({}).ensure(lambda x: "a" in x).parse(object())
 
 int_or_str = z.int() | z.str()
 r5: int | str = int_or_str.parse(1)
@@ -51,4 +51,4 @@ r9: int = your_function(z.int())
 
 def collections(schema: z.Schema):
     z.list(schema)
-    z.object({"a": schema})
+    z.struct({"a": schema})

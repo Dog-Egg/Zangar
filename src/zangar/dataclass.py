@@ -83,7 +83,7 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
     cache[cls] = None  # None is a placeholder
 
     dc_fields = dataclasses.fields(cls)  # type: ignore
-    object_fields: dict[str, Field] = {}
+    struct_fields: dict[str, Field] = {}
     try:
         hints = typing.get_type_hints(cls)
     except KeyError:
@@ -100,7 +100,7 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
             metadata: dict = dc_field.metadata["zangar"].copy()
             if "schema" not in metadata:
                 metadata["schema"] = get_schema()
-            object_field = z.field(**metadata)
+            struct_field = z.field(**metadata)
         else:
             if dc_field.name in decorators.field_decorators:
                 decorator = decorators.field_decorators[dc_field.name]
@@ -108,9 +108,9 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
                     schema = getattr(cls, decorator.method_name)(get_schema())
                 else:
                     schema = getattr(cls, decorator.method_name)()
-                object_field = z.field(schema, alias=decorator.alias)
+                struct_field = z.field(schema, alias=decorator.alias)
             else:
-                object_field = z.field(get_schema())
+                struct_field = z.field(get_schema())
 
         default: typing.Any = z.field._empty
         if dc_field.default is not dataclasses.MISSING:
@@ -118,14 +118,14 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
         elif dc_field.default_factory is not dataclasses.MISSING:
             default = dc_field.default_factory
         if default is not z.field._empty:
-            object_field = object_field.optional(default=default)
-        object_fields[dc_field.name] = object_field
-    object_schema = z.object(object_fields)
-    schema = object_schema.transform(lambda d: cls(**d))
+            struct_field = struct_field.optional(default=default)
+        struct_fields[dc_field.name] = struct_field
+    struct = z.struct(struct_fields)
+    schema = struct.transform(lambda d: cls(**d))
     schema = _process_ensure_fields(
         schema,
         decorators.ensure_fields_decorators,
-        object_schema._name_to_alias,
+        struct._name_to_alias,
     )
     cache[cls] = schema
     return schema

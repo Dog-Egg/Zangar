@@ -23,7 +23,7 @@
 ... )
 
 >>> try:
-...     z.object(
+...     z.struct(
 ...         {
 ...             "names": z.list(name_schema),
 ...         }

@@ -5,10 +5,10 @@ import zangar as z
 from zangar.compilation import OpenAPI30Compiler
 
 assert OpenAPI30Compiler().compile(
-    z.object({
+    z.struct({
         "name": z.str(),
         "age": z.int().gte(0),
-        "address": z.object({
+        "address": z.struct({
             "street": z.str(),
             "city": z.str(),
             "state": z.str(),
@@ -44,7 +44,7 @@ def is_email(string):
     return '@' in string
 
 
-assert OpenAPI30Compiler().compile(z.object({
+assert OpenAPI30Compiler().compile(z.struct({
     'username': z.str().ensure(is_email, meta={
         'oas': {
             'format': 'email'
