@@ -69,3 +69,19 @@ assert z.dataclass(C).parse(
         {"my_list": (1, '2', 3)}
     ) == C(my_list=[1, 2, 3])
 ```
+
+## As a struct
+
+`zangar.dataclass` is implemented using `struct`, so you only need to call `.struct` to get the internal struct schema.
+
+```python
+@dataclass
+class C:
+    a: int
+    b: int
+    c: int
+
+assert z.dataclass(C).struct.pick_fields(['a', 'b']).parse(
+        {'a': 1, 'b': 2, 'c': 3}
+    ) == {'a': 1, 'b': 2}
+```

@@ -15,14 +15,16 @@ from zangar._types import Field
 
 from . import _alias as z
 from ._common import empty
-from ._core import Schema, SchemaBase, Union
+from ._core import SchemaBase, Union
 from ._messages import DefaultMessage, get_message
 from .exceptions import ValidationError
 
 T = TypeVar("T")
 
 
-def dataclass(cls: type[T], /) -> SchemaBase[T]:
+def dataclass(
+    cls: type[dataclasses._DataclassT], /
+) -> _DataclassWrapper[dataclasses._DataclassT]:
     return _dataclass(cls, {})
 
 
@@ -77,9 +79,11 @@ TYPE_MAPPING = {
 }
 
 
-def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
+def _dataclass(
+    cls: type[dataclasses._DataclassT], cache: dict
+) -> _DataclassWrapper[dataclasses._DataclassT]:
     if cls in cache:
-        return typing.cast(Schema, Proxy(lambda: cache[cls]))
+        return typing.cast(_DataclassWrapper, Proxy(lambda: cache[cls]))
     cache[cls] = None  # None is a placeholder
 
     dc_fields = dataclasses.fields(cls)  # type: ignore
@@ -128,7 +132,17 @@ def _dataclass(cls: type[T], cache: dict) -> SchemaBase[T]:
         struct._name_to_alias,
     )
     cache[cls] = schema
-    return schema
+    return _DataclassWrapper(struct, prev=schema)
+
+
+class _DataclassWrapper(z.Schema["dataclasses._DataclassT"]):
+    def __init__(self, struct: z.struct, prev):
+        super().__init__(prev=prev)
+        self.__struct = struct
+
+    @property
+    def struct(self):
+        return self.__struct
 
 
 def resolve_type(t, cache: dict) -> SchemaBase:
