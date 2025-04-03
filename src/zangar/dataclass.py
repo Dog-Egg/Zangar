@@ -22,10 +22,16 @@ from .exceptions import ValidationError
 T = TypeVar("T")
 
 
-def dataclass(
-    cls: type[dataclasses._DataclassT], /
-) -> _DataclassWrapper[dataclasses._DataclassT]:
-    return _dataclass(cls, {})
+# pylint: disable=invalid-name
+class dataclass(z.Schema):
+
+    def __init__(self, cls: type[dataclasses._DataclassT], /):
+        self.__wrapper = _dataclass(cls, {})
+        super().__init__(prev=self.__wrapper)
+
+    @property
+    def struct(self) -> z.struct:
+        return self.__wrapper.struct
 
 
 class Proxy:

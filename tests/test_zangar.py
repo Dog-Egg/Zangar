@@ -1,4 +1,5 @@
 import datetime
+import inspect
 from types import SimpleNamespace
 
 import pytest
@@ -310,3 +311,22 @@ def test_meta_checking():
     with pytest.raises(ValueError) as e:
         z.int(meta={"type": "integer"})
     assert e.value.args == ("Invalid meta key: type",)
+
+
+@pytest.mark.parametrize(
+    "cls",
+    [
+        z.any,
+        z.bool,
+        z.int,
+        z.float,
+        z.str,
+        z.to.datetime,
+        z.to.list,
+        z.to.str,
+        z.dataclass,
+        z.struct,
+    ],
+)
+def test_is_class(cls):
+    assert issubclass(cls, z.Schema)
