@@ -135,11 +135,14 @@ class TestOpenAPI30:
         assert self.compile(z.transform(int)) == {}
 
     def test_array(self):
-        assert self.compile(z.list()) == {
+        assert self.compile(
+            z.list(meta={"oas": {"description": "Array description"}})
+        ) == {
             "type": "array",
             "items": {
                 "nullable": True,
             },
+            "description": "Array description",
         }
         assert self.compile(z.list(z.int())) == {
             "type": "array",

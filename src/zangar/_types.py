@@ -378,8 +378,8 @@ class List(TypeSchema[t.List[T]]):
     def _expected_type(self) -> type:
         return list
 
-    def __init__(self, item: SchemaBase[T] | None = None, /):
-        super().__init__()
+    def __init__(self, item: SchemaBase[T] | None = None, /, **kwargs):
+        super().__init__(**kwargs)
         self._item = item or Any()
 
     def _pretransform(self, value):
