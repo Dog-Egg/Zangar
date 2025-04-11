@@ -13,24 +13,25 @@ from typing import TypeVar, get_args, get_origin
 
 from zangar._types import Field
 
-from . import _alias as z
+from . import _types
 from ._common import empty
-from ._core import SchemaBase, Union
+from ._core import Schema, SchemaBase, Union
 from ._messages import DefaultMessage, get_message
+from ._shortcuts import ensure
 from .exceptions import ValidationError
 
 T = TypeVar("T")
 
 
 # pylint: disable=invalid-name
-class dataclass(z.Schema):
+class dataclass(Schema):
 
     def __init__(self, cls: type[dataclasses._DataclassT], /):
         self.__wrapper = _dataclass(cls, {})
         super().__init__(prev=self.__wrapper)
 
     @property
-    def struct(self) -> z.struct:
+    def struct(self) -> _types.Struct:
         return self.__wrapper.struct
 
 
@@ -77,11 +78,11 @@ def _process_ensure_fields(
 
 
 TYPE_MAPPING = {
-    int: z.int,
-    str: z.str,
-    float: z.float,
-    bool: z.bool,
-    datetime.datetime: z.datetime,
+    int: _types.Integer,
+    str: _types.String,
+    float: _types.Float,
+    bool: _types.Boolean,
+    datetime.datetime: _types.Datetime,
 }
 
 
@@ -110,7 +111,7 @@ def _dataclass(
             metadata: dict = dc_field.metadata["zangar"].copy()
             if "schema" not in metadata:
                 metadata["schema"] = get_schema()
-            struct_field = z.field(**metadata)
+            struct_field = _types.Field(**metadata)
         else:
             if dc_field.name in decorators.field_decorators:
                 decorator = decorators.field_decorators[dc_field.name]
@@ -118,19 +119,19 @@ def _dataclass(
                     schema = getattr(cls, decorator.method_name)(get_schema())
                 else:
                     schema = getattr(cls, decorator.method_name)()
-                struct_field = z.field(schema, alias=decorator.alias)
+                struct_field = _types.Field(schema, alias=decorator.alias)
             else:
-                struct_field = z.field(get_schema())
+                struct_field = _types.Field(get_schema())
 
-        default: typing.Any = z.field._empty
+        default: typing.Any = _types.Field._empty
         if dc_field.default is not dataclasses.MISSING:
             default = dc_field.default
         elif dc_field.default_factory is not dataclasses.MISSING:
             default = dc_field.default_factory
-        if default is not z.field._empty:
+        if default is not _types.Field._empty:
             struct_field = struct_field.optional(default=default)
         struct_fields[dc_field.name] = struct_field
-    struct = z.struct(struct_fields)
+    struct = _types.Struct(struct_fields)
     schema = struct.transform(lambda d: cls(**d))
     schema = _process_ensure_fields(
         schema,
@@ -141,8 +142,8 @@ def _dataclass(
     return _DataclassWrapper(struct, prev=schema)
 
 
-class _DataclassWrapper(z.Schema["dataclasses._DataclassT"]):
-    def __init__(self, struct: z.struct, prev):
+class _DataclassWrapper(Schema["dataclasses._DataclassT"]):
+    def __init__(self, struct: _types.Struct, prev):
         super().__init__(prev=prev)
         self.__struct = struct
 
@@ -165,7 +166,7 @@ def resolve_type(t, cache: dict) -> SchemaBase:
 
     if t in TYPE_MAPPING:
         return TYPE_MAPPING[t]()
-    return z.ensure(
+    return ensure(
         lambda x: isinstance(x, t),
         message=DefaultMessage(name="type_check", ctx={"expected_type": t}),
     )
@@ -176,7 +177,7 @@ def resolve_complex_type(tp):
     if origin is None:
         return None
     if origin is list:
-        return (z.list, get_args(tp))
+        return (_types.List, get_args(tp))
     if sys.version_info >= (3, 10) and origin is types.UnionType:
         return (Union, get_args(tp))
     if origin is typing.Union:
