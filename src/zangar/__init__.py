@@ -2,9 +2,8 @@ from zangar.utils.version import get_version as __get_version
 
 from ._conversions import to
 from ._core import SchemaBase as Schema
-from ._functional import ref
+from ._functional import *
 from ._messages import DefaultMessages
-from ._shortcuts import *
 from ._types import Any as any
 from ._types import Boolean as bool
 from ._types import Datetime as datetime

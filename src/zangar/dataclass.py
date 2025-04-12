@@ -16,8 +16,8 @@ from zangar._types import Field
 from . import _types
 from ._common import empty
 from ._core import Schema, SchemaBase, Union
+from ._functional import ensure
 from ._messages import DefaultMessage, get_message
-from ._shortcuts import ensure
 from .exceptions import ValidationError
 
 T = TypeVar("T")
