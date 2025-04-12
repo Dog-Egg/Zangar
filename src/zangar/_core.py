@@ -35,7 +35,7 @@ class SchemaBase(t.Generic[T], abc.ABC):
     def relay(self, other: SchemaBase[P], /) -> SchemaBase[P]: ...
 
     @abc.abstractmethod
-    def _iterate_chain(self) -> t.Iterator[SchemaBase[t.Any]]: ...
+    def _iter(self) -> t.Generator[SchemaBase[t.Any], None, None]: ...
 
 
 class TransformationValidator:
@@ -144,14 +144,14 @@ class Schema(SchemaBase[T]):
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
-    def _iterate_chain(self):
+    def _iter(self):
         if self.__prev is not None:
-            yield from self.__prev._iterate_chain()
+            yield from self.__prev._iter()
         yield self
 
     def parse(self, value, /) -> T:
         error = ValidationError(empty)
-        for n in self._iterate_chain():
+        for n in self._iter():
             validator = n._validator
             if isinstance(validator, EnsuranceValidator):
                 try:
@@ -196,3 +196,14 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
             else:
                 items.append(item.__class__.__name__)
         return " | ".join(items)
+
+
+class JoinSchema(Schema):
+    def __init__(self, *schemas: SchemaBase):
+        self.__schemas = schemas
+        super().__init__()
+
+    def _iter(self):
+        for schema in self.__schemas:
+            yield from schema._iter()
+        yield from super()._iter()

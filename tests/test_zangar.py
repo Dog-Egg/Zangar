@@ -1,5 +1,6 @@
 import datetime
 import inspect
+from tkinter.filedialog import Open
 from types import SimpleNamespace
 
 import pytest
@@ -330,3 +331,20 @@ def test_meta_checking():
 )
 def test_is_class(cls):
     assert issubclass(cls, z.Schema)
+
+
+def test_join_schema():
+    schema = z.join(
+        z.transform(int),
+        z.transform(lambda x: x + 1),
+        z.int().gt(1),
+    ).transform(lambda x: x + 1)
+    assert schema.parse("1") == 3
+
+    from zangar.compilation import OpenAPI30Compiler
+
+    assert OpenAPI30Compiler().compile(schema) == {
+        "exclusiveMinimum": True,
+        "minimum": 1,
+        "type": "integer",
+    }

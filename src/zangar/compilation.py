@@ -91,7 +91,7 @@ class OpenAPI30Compiler:
 
     def _compile(self, schema: SchemaBase, parent: dict | None = None):
         rv: dict = {}
-        for n in schema._iterate_chain():
+        for n in schema._iter():
             for c in inspect.getmro(n.__class__):
                 if c in self._compilation_methods:
                     self._compilation_methods[c](self, n, rv, parent)
