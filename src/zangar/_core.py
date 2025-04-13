@@ -35,6 +35,9 @@ class SchemaBase(t.Generic[T], abc.ABC):
     def relay(self, other: SchemaBase[P], /) -> SchemaBase[P]: ...
 
     @abc.abstractmethod
+    def join(self, other: SchemaBase[P], /) -> SchemaBase[P]: ...
+
+    @abc.abstractmethod
     def _iter(self) -> t.Generator[SchemaBase[t.Any], None, None]: ...
 
 
@@ -144,6 +147,9 @@ class Schema(SchemaBase[T]):
     def relay(self, other: SchemaBase[P], /):
         return self.transform(other.parse)
 
+    def join(self, other: SchemaBase[P], /):
+        return JoinSchema(self, other)
+
     def _iter(self):
         if self.__prev is not None:
             yield from self.__prev._iter()
@@ -198,9 +204,9 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
         return " | ".join(items)
 
 
-class JoinSchema(Schema):
-    def __init__(self, *schemas: SchemaBase):
-        self.__schemas = schemas
+class JoinSchema(Schema[T]):
+    def __init__(self, a: SchemaBase, b: SchemaBase[T], /):
+        self.__schemas = (a, b)
         super().__init__()
 
     def _iter(self):

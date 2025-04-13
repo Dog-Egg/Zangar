@@ -333,12 +333,13 @@ def test_is_class(cls):
     assert issubclass(cls, z.Schema)
 
 
-def test_join_schema():
-    schema = z.join(
-        z.transform(int),
-        z.transform(lambda x: x + 1),
-        z.int().gt(1),
-    ).transform(lambda x: x + 1)
+def test_join():
+    schema = (
+        z.transform(int)
+        .join(z.transform(lambda x: x + 1))
+        .join(z.int().gt(1))
+        .transform(lambda x: x + 1)
+    )
     assert schema.parse("1") == 3
 
     from zangar.compilation import OpenAPI30Compiler

@@ -1,7 +1,7 @@
 from zangar.utils.version import get_version as __get_version
 
 from ._conversions import to
-from ._core import JoinSchema as join
+from ._core import JoinSchema as join  # TODO remove
 from ._core import SchemaBase as Schema
 from ._functional import *
 from ._messages import DefaultMessages
