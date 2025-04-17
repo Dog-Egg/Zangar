@@ -95,36 +95,36 @@ class TypeSchema(Schema[T], abc.ABC):
         return value
 
 
-class StringMixin(Schema):
+class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="str_min", ctx={"min": value}))
-        return StringMixin(
+        return StringMethods(
             prev=self.ensure(lambda x: len(x) >= value, **kwargs),
             meta={"$min": value},
         )
 
     def max(self, value: int, /, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="str_max", ctx={"max": value}))
-        return StringMixin(
+        return StringMethods(
             prev=self.ensure(lambda x: len(x) <= value, **kwargs),
             meta={"$max": value},
         )
 
     def strip(self, *args, **kwargs):
-        return StringMixin(prev=self.transform((lambda s: s.strip(*args, **kwargs))))
+        return StringMethods(prev=self.transform((lambda s: s.strip(*args, **kwargs))))
 
 
-class String(TypeSchema[str], StringMixin):
+class String(TypeSchema[str], StringMethods):
     def _expected_type(self) -> type:
         return str
 
 
-class NumberMixin(Schema):
+class NumberMethods(Schema):
     def gte(self, value: int | float, /, **kwargs):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_gte", ctx={"gte": value})
         )
-        return NumberMixin(
+        return NumberMethods(
             prev=self.ensure(lambda x: x >= value, **kwargs), meta={"$gte": value}
         )
 
@@ -132,7 +132,7 @@ class NumberMixin(Schema):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_gt", ctx={"gt": value})
         )
-        return NumberMixin(
+        return NumberMethods(
             prev=self.ensure(lambda x: x > value, **kwargs), meta={"$gt": value}
         )
 
@@ -140,7 +140,7 @@ class NumberMixin(Schema):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_lte", ctx={"lte": value})
         )
-        return NumberMixin(
+        return NumberMethods(
             prev=self.ensure(lambda x: x <= value, **kwargs), meta={"$lte": value}
         )
 
@@ -148,17 +148,17 @@ class NumberMixin(Schema):
         kwargs.setdefault(
             "message", DefaultMessage(name="number_lt", ctx={"lt": value})
         )
-        return NumberMixin(
+        return NumberMethods(
             prev=self.ensure(lambda x: x < value, **kwargs), meta={"$lt": value}
         )
 
 
-class Integer(TypeSchema[int], NumberMixin):
+class Integer(TypeSchema[int], NumberMethods):
     def _expected_type(self) -> type:
         return int
 
 
-class Float(TypeSchema[float], NumberMixin):
+class Float(TypeSchema[float], NumberMethods):
     def _expected_type(self) -> type:
         return float
 
@@ -181,27 +181,27 @@ class Any(TypeSchema):
         return object
 
 
-class DatetimeMixin(Schema[datetime.datetime]):
+class DatetimeMethods(Schema[datetime.datetime]):
     def __is_aware(self, d):
         return d.tzinfo is not None and d.tzinfo.utcoffset(d) is not None
 
     def is_aware(self, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="datetime_is_aware"))
-        return DatetimeMixin(prev=self.ensure(self.__is_aware, **kwargs))
+        return DatetimeMethods(prev=self.ensure(self.__is_aware, **kwargs))
 
     def is_naive(self, **kwargs):
         kwargs.setdefault("message", DefaultMessage(name="datetime_is_naive"))
-        return DatetimeMixin(
+        return DatetimeMethods(
             prev=self.ensure(lambda x: not self.__is_aware(x), **kwargs)
         )
 
 
-class Datetime(TypeSchema[datetime.datetime], DatetimeMixin):
+class Datetime(TypeSchema[datetime.datetime], DatetimeMethods):
     def _expected_type(self) -> type:
         return datetime.datetime
 
 
-class StructMixin(Schema[T]):
+class StructMethods(Schema[T]):
     def __init__(
         self,
         *args,
@@ -239,12 +239,12 @@ class StructMixin(Schema[T]):
                 )
             raise error
 
-        return StructMixin(
+        return StructMethods(
             prev=self.ensure(inner_func), name_to_alias=self.__name_to_alias
         )
 
 
-class Struct(TypeSchema[dict], StructMixin[dict]):
+class Struct(TypeSchema[dict], StructMethods[dict]):
     def _expected_type(self) -> type:
         return object
 
