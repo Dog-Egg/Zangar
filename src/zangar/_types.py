@@ -274,7 +274,7 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
         new_fields: dict[str, Field | SchemaBase] = {}
         new_fields.update(self._fields)
         new_fields.update(fields)
-        return Struct(fields)
+        return Struct(new_fields)
 
     def __check_fieldnames(self, fieldnames: Iterable[str], /):
         for name in fieldnames:
