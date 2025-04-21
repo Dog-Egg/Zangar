@@ -136,6 +136,21 @@ class TestStruct:
             }
         }
 
+    def test_extend(self):
+        obj = z.struct(
+            {
+                "a": z.field(z.str()),
+                "b": z.field(z.str()),
+            }
+        )
+        assert obj.extend({"c": z.field(z.str())}).parse(
+            {"a": "1", "b": "2", "c": "3"}
+        ) == {
+            "a": "1",
+            "b": "2",
+            "c": "3",
+        }
+
     @staticmethod
     def __get_required_fields(schema: z.struct):
         return [name for name, field in schema._fields.items() if field._required]
