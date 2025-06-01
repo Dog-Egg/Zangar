@@ -1,22 +1,20 @@
 from __future__ import annotations
 
-from ._common import empty
-
 
 class ValidationError(Exception):
-    def __init__(self, message):
-        if message is empty:
+    def __init__(self, message=None):
+        if message is None:
             peer_messages = []
         else:
             peer_messages = [message]
         self.__peer_messages: list = peer_messages
         self.__child_errors: dict[int | str, ValidationError] = {}
 
-    def _set_peer(self, error: ValidationError):
+    def _set_peer_err(self, error: ValidationError):
         self.__peer_messages.extend(error.__peer_messages)
         self.__child_errors.update(error.__child_errors)
 
-    def _set_child(self, key: str | int, error: ValidationError):
+    def _set_child_err(self, key: str | int, error: ValidationError):
         assert key not in self.__child_errors
         self.__child_errors[key] = error
 

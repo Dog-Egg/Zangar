@@ -14,7 +14,6 @@ from typing import TypeVar, get_args, get_origin
 from zangar._types import Field
 
 from . import _types
-from ._common import empty
 from ._core import Schema, SchemaBase, Union
 from ._functional import ensure
 from ._messages import DefaultMessage, get_message
@@ -54,9 +53,9 @@ def _process_ensure_fields(
             def _ensure_func(value):
                 if getattr(value, decorator.method_name)():
                     return True
-                error = ValidationError(empty)
+                error = ValidationError()
                 for fieldname in decorator.fieldnames:
-                    error._set_child(
+                    error._set_child_err(
                         name_to_alias[fieldname],
                         ValidationError(
                             get_message(
