@@ -12,7 +12,12 @@ class ValidationError(Exception):
 
     def _set_peer_err(self, error: ValidationError):
         self.__peer_messages.extend(error.__peer_messages)
-        self.__child_errors.update(error.__child_errors)
+
+        for k, v in error.__child_errors.items():
+            if k in self.__child_errors:
+                self.__child_errors[k]._set_peer_err(v)
+            else:
+                self.__child_errors[k] = v
 
     def _set_child_err(self, key: str | int, error: ValidationError):
         assert key not in self.__child_errors
