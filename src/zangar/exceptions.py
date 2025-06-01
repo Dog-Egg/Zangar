@@ -20,6 +20,9 @@ class ValidationError(Exception):
         assert key not in self.__child_errors
         self.__child_errors[key] = error
 
+    def _has_child_err(self) -> bool:
+        return bool(self.__child_errors)
+
     def __str__(self):
         return str(self.format_errors())  # pragma: no cover
 

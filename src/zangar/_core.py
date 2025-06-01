@@ -176,13 +176,23 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
         self._schemas = (a, b)
 
         def transform(value):
-            error = ValidationError(empty)
+            errors: list[ValidationError] = []
             for item in self._schemas:
                 try:
                     return item.parse(t.cast(t.Any, value))
                 except ValidationError as e:
-                    error._set_peer(e)
-            raise error
+                    errors.append(e)
+
+            for e in errors:
+                # 如果异常有子级错误，优先抛出有子级错误的异常
+                if e._has_child_err():
+                    raise e
+            else:
+                # 如果没有子级错误，则将所有异常合并为一个异常抛出
+                parent_error = ValidationError(empty)
+                for e in errors:
+                    parent_error._set_peer(e)
+                raise parent_error
 
         super().__init__(
             prev=Schema().transform(transform),
