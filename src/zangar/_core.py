@@ -4,7 +4,6 @@ import abc
 import typing as t
 from collections.abc import Callable
 
-from ._common import empty
 from ._messages import DefaultMessage, get_message
 from .exceptions import ValidationError
 
@@ -150,14 +149,14 @@ class Schema(SchemaBase[T]):
         yield self
 
     def parse(self, value, /) -> T:
-        error = ValidationError(empty)
+        error = ValidationError()
         for n in self._iterate_chain():
             validator = n._validator
             if isinstance(validator, EnsuranceValidator):
                 try:
                     validator(value)
                 except ValidationError as e:
-                    error._set_peer(e)
+                    error._set_peer_err(e)
                     if validator.break_on_failure:
                         break
             elif isinstance(validator, TransformationValidator):
@@ -176,13 +175,23 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
         self._schemas = (a, b)
 
         def transform(value):
-            error = ValidationError(empty)
+            errors: list[ValidationError] = []
             for item in self._schemas:
                 try:
                     return item.parse(t.cast(t.Any, value))
                 except ValidationError as e:
-                    error._set_peer(e)
-            raise error
+                    errors.append(e)
+
+            for err in errors:
+                # 如果异常有子级错误，优先抛出有子级错误的异常
+                if err._has_child_err():
+                    raise err
+
+            # 如果没有子级错误，则将所有异常合并为一个异常抛出
+            parent_error = ValidationError()
+            for err in errors:
+                parent_error._set_peer_err(err)
+            raise parent_error
 
         super().__init__(
             prev=Schema().transform(transform),

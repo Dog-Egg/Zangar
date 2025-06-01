@@ -249,6 +249,16 @@ class TestUnion:
     def test_order(self):
         assert repr(z.str() | z.int() | z.bool()) == "String | Integer | Boolean"
 
+    def test_parsing_err(self):
+        with pytest.raises(z.ValidationError) as e:
+            (z.list(z.str()) | z.bool()).parse([1])
+        assert e.value.format_errors() == [
+            {
+                "loc": [0],
+                "msgs": ["Expected str, received int"],
+            },
+        ]
+
 
 class TestNumber:
     def test_methods(self):

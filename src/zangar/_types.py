@@ -222,9 +222,9 @@ class StructMethods(Schema[T]):
         def inner_func(value):
             if func(value):
                 return True
-            error = ValidationError(empty)
+            error = ValidationError()
             for fieldname in fieldnames:
-                error._set_child(
+                error._set_child_err(
                     self.__name_to_alias[fieldname],
                     ValidationError(
                         get_message(
@@ -315,7 +315,7 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
 
     def _pretransform(self, value):
         rv = {}
-        error = ValidationError(empty)
+        error = ValidationError()
 
         for fieldname, field in self._fields.items():
             alias = self._name_to_alias[fieldname]
@@ -332,7 +332,7 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
 
             if field_value is empty:
                 if field._required:
-                    error._set_child(
+                    error._set_child_err(
                         alias,
                         ValidationError(
                             get_message(
@@ -354,7 +354,7 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
                 try:
                     field_value = field.parse(field_value)
                 except ValidationError as e:
-                    error._set_child(alias, e)
+                    error._set_child_err(alias, e)
                 else:
                     rv[fieldname] = field_value
 
@@ -384,12 +384,12 @@ class List(TypeSchema[t.List[T]]):
 
     def _pretransform(self, value):
         rv = []
-        error = ValidationError(empty)
+        error = ValidationError()
         for index, item in enumerate(value):
             try:
                 item = self._item.parse(item)
             except ValidationError as exc:
-                error._set_child(index, exc)
+                error._set_child_err(index, exc)
             rv.append(item)
         if not error._empty():
             raise error
