@@ -16,7 +16,7 @@ from .exceptions import ValidationError
 T = t.TypeVar("T")
 
 
-class Field(t.Generic[T]):
+class ZangarField(t.Generic[T]):
     _empty = empty
 
     def __init__(
@@ -97,6 +97,12 @@ class TypeSchema(Schema[T], abc.ABC):
 
 class StringMethods(Schema):
     def min(self, value: int, /, **kwargs):
+        """Validate the minimum length of a string.
+
+        Args:
+            value: The minimum length of the string.
+            message: The error message to display when the validation fails.
+        """
         kwargs.setdefault("message", DefaultMessage(name="str_min", ctx={"min": value}))
         return StringMethods(
             prev=self.ensure(lambda x: len(x) >= value, **kwargs),
@@ -104,6 +110,12 @@ class StringMethods(Schema):
         )
 
     def max(self, value: int, /, **kwargs):
+        """Validate the maximum length of a string.
+
+        Args:
+            value: The maximum length of the string.
+            message: The error message to display when the validation fails.
+        """
         kwargs.setdefault("message", DefaultMessage(name="str_max", ctx={"max": value}))
         return StringMethods(
             prev=self.ensure(lambda x: len(x) <= value, **kwargs),
@@ -111,16 +123,25 @@ class StringMethods(Schema):
         )
 
     def strip(self, *args, **kwargs):
+        """Trim whitespace from both ends."""
         return StringMethods(prev=self.transform((lambda s: s.strip(*args, **kwargs))))
 
 
-class String(TypeSchema[str], StringMethods):
+class ZangarStr(TypeSchema[str], StringMethods):
+    """Validate that the data is of type `str`."""
+
     def _expected_type(self) -> type:
         return str
 
 
 class NumberMethods(Schema):
     def gte(self, value: int | float, /, **kwargs):
+        """Validate the number is greater than or equal to a given value.
+
+        Args:
+            value: The minimum value of the number.
+            message: The error message to display when the validation fails.
+        """
         kwargs.setdefault(
             "message", DefaultMessage(name="number_gte", ctx={"gte": value})
         )
@@ -129,6 +150,12 @@ class NumberMethods(Schema):
         )
 
     def gt(self, value: int | float, /, **kwargs):
+        """Validate the number is greater than a given value.
+
+        Args:
+            value: The minimum value of the number.
+            message: The error message to display when the validation fails.
+        """
         kwargs.setdefault(
             "message", DefaultMessage(name="number_gt", ctx={"gt": value})
         )
@@ -137,6 +164,12 @@ class NumberMethods(Schema):
         )
 
     def lte(self, value: int | float, /, **kwargs):
+        """Validate the number is less than or equal to a given value.
+
+        Args:
+            value: The maximum value of the number.
+            message: The error message to display when the validation fails.
+        """
         kwargs.setdefault(
             "message", DefaultMessage(name="number_lte", ctx={"lte": value})
         )
@@ -145,6 +178,12 @@ class NumberMethods(Schema):
         )
 
     def lt(self, value: int | float, /, **kwargs):
+        """Validate the number is less than a given value.
+
+        Args:
+            value: The maximum value of the number.
+            message: The error message to display when the validation fails.
+        """
         kwargs.setdefault(
             "message", DefaultMessage(name="number_lt", ctx={"lt": value})
         )
@@ -153,17 +192,17 @@ class NumberMethods(Schema):
         )
 
 
-class Integer(TypeSchema[int], NumberMethods):
+class ZangarInt(TypeSchema[int], NumberMethods):
     def _expected_type(self) -> type:
         return int
 
 
-class Float(TypeSchema[float], NumberMethods):
+class ZangarFloat(TypeSchema[float], NumberMethods):
     def _expected_type(self) -> type:
         return float
 
 
-class Boolean(TypeSchema[bool]):
+class ZangarBool(TypeSchema[bool]):
     def _expected_type(self) -> type:
         return bool
 
@@ -171,12 +210,12 @@ class Boolean(TypeSchema[bool]):
 _NoneType = type(None)
 
 
-class NoneType(TypeSchema[_NoneType]):
+class ZangarNone(TypeSchema[_NoneType]):
     def _expected_type(self) -> type:
         return _NoneType
 
 
-class Any(TypeSchema):
+class ZangarAny(TypeSchema):
     def _expected_type(self) -> type:
         return object
 
@@ -196,7 +235,7 @@ class DatetimeMethods(Schema[datetime.datetime]):
         )
 
 
-class Datetime(TypeSchema[datetime.datetime], DatetimeMethods):
+class ZangarDatetime(TypeSchema[datetime.datetime], DatetimeMethods):
     def _expected_type(self) -> type:
         return datetime.datetime
 
@@ -219,6 +258,14 @@ class StructMethods(Schema[T]):
         *,
         message: t.Any | Callable[[T], t.Any] = None,
     ):
+        """Validate the fields.
+
+        Args:
+            fieldnames: The names of the fields to validate.
+            func: The function to validate the fields.
+            message: The error message to display when the validation fails.
+        """
+
         def inner_func(value):
             if func(value):
                 return True
@@ -244,21 +291,25 @@ class StructMethods(Schema[T]):
         )
 
 
-class Struct(TypeSchema[dict], StructMethods[dict]):
+class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
+    """This is a schema with fields. It can parse any object and return a dict."""
+
     def _expected_type(self) -> type:
         return object
 
     def __init__(
         self,
         fields: (
-            dict[str, Field] | dict[str, SchemaBase] | dict[str, Field | SchemaBase]
+            dict[str, ZangarField]
+            | dict[str, SchemaBase]
+            | dict[str, ZangarField | SchemaBase]
         ),
         /,
     ):
-        self._fields: dict[str, Field] = {}
+        self._fields: dict[str, ZangarField] = {}
         for name, field in fields.items():
-            if not isinstance(field, Field):
-                self._fields[name] = Field(field)
+            if not isinstance(field, ZangarField):
+                self._fields[name] = ZangarField(field)
             else:
                 self._fields[name] = field
 
@@ -270,22 +321,35 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
 
         super().__init__(name_to_alias=self._name_to_alias)
 
-    def extend(self, fields: dict[str, Field | SchemaBase], /):
-        new_fields: dict[str, Field | SchemaBase] = {}
+    def extend(self, fields: dict[str, ZangarField | SchemaBase], /):
+        """Extend the struct with additional fields.
+
+        Args:
+            fields: The fields to add.
+        """
+        new_fields: dict[str, ZangarField | SchemaBase] = {}
         new_fields.update(self._fields)
         new_fields.update(fields)
-        return Struct(new_fields)
+        return ZangarStruct(new_fields)
 
     def __check_fieldnames(self, fieldnames: Iterable[str], /):
         for name in fieldnames:
             if name not in self._fields:
                 raise ValueError(f"Field {name!r} not found in the struct schema")
 
-    def required_fields(self, fieldnames: Iterable[str] | None = None, /) -> Struct:
+    def required_fields(
+        self, fieldnames: Iterable[str] | None = None, /
+    ) -> ZangarStruct:
+        """Make the specified fields required.
+
+        Args:
+            fieldnames: The names of the fields to make required.
+                If not provided, all fields will be made required.
+        """
         if fieldnames is not None:
             self.__check_fieldnames(fieldnames)
 
-        copy_fields: dict[str, Field] = {}
+        copy_fields: dict[str, ZangarField] = {}
         for name, field in self._fields.items():
             copy_field = copy.copy(field)
             if fieldnames is None or name in fieldnames:
@@ -295,21 +359,39 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
             copy_fields[name] = copy_field
         return self.__class__(copy_fields)
 
-    def optional_fields(self, fieldnames: Iterable[str] | None = None, /) -> Struct:
+    def optional_fields(
+        self, fieldnames: Iterable[str] | None = None, /
+    ) -> ZangarStruct:
+        """Make the specified fields optional.
+
+        Args:
+            fieldnames: The names of the fields to make optional.
+                If not provided, all fields will be made optional.
+        """
         if fieldnames is not None:
             self.__check_fieldnames(fieldnames)
         if fieldnames is None:
             return self.required_fields([])
         return self.required_fields(set(self._fields) - set(fieldnames))
 
-    def pick_fields(self, fieldnames: Iterable[str], /) -> Struct:
+    def pick_fields(self, fieldnames: Iterable[str], /) -> ZangarStruct:
+        """Pick the specified fields.
+
+        Args:
+            fieldnames: The names of the fields to pick.
+        """
         self.__check_fieldnames(fieldnames)
         copy_fields = {}
         for name in fieldnames:
             copy_fields[name] = copy.copy(self._fields[name])
         return self.__class__(copy_fields)
 
-    def omit_fields(self, fieldnames: Iterable[str], /) -> Struct:
+    def omit_fields(self, fieldnames: Iterable[str], /) -> ZangarStruct:
+        """Pick all fields except the specified ones.
+
+        Args:
+            fieldnames: The names of the fields to omit.
+        """
         self.__check_fieldnames(fieldnames)
         return self.pick_fields(set(self._fields) - set(fieldnames))
 
@@ -364,7 +446,9 @@ class Struct(TypeSchema[dict], StructMethods[dict]):
         return rv
 
 
-class Object(Struct):
+class ZangarObject(ZangarStruct):
+    """Deprecated, use `ZangarStruct` instead."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         warnings.warn(
@@ -374,13 +458,19 @@ class Object(Struct):
         )
 
 
-class List(TypeSchema[t.List[T]]):
+class ZangarList(TypeSchema[t.List[T]]):
+    """Validate that the data is of type `list`.
+
+    Args:
+        item: The schema to validate the items in the list.
+    """
+
     def _expected_type(self) -> type:
         return list
 
     def __init__(self, item: SchemaBase[T] | None = None, /, **kwargs):
         super().__init__(**kwargs)
-        self._item = item or Any()
+        self._item = item or ZangarAny()
 
     def _pretransform(self, value):
         rv = []

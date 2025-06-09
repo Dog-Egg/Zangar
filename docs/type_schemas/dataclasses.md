@@ -1,4 +1,4 @@
-## `dataclass`
+# `dataclass`
 
 The `dataclass` method converts a [`dataclasses.dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass) into a Zangar schema for data validation, and the resulting output is an instance of that dataclass.
 

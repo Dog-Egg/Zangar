@@ -1,6 +1,6 @@
-## Basic
+# Messages
 
-### Ensurance Messages
+## Ensurance Messages
 
 Passby a string.
 
@@ -20,7 +20,7 @@ zangar.exceptions.ValidationError: [{'msgs': ['The $hello is too short']}]
 
 ```
 
-### Transformation Messages
+## Transformation Messages
 
 Passby a string.
 
@@ -64,17 +64,15 @@ zangar.exceptions.ValidationError: [{'loc': ['username'], 'msgs': ['Username is 
 
 ```
 
-!!! warning
-
-    If the required field message is a function, the function's argument will be a `None`.
+```{warning} If the required field message is a function, the function's argument will be a None
+```
 
 ## Different messages
 
 Message can be in any form you need, not just a string.
 
-!!! note
-
-    In practical scenarios, the frontend often needs the backend to provide an error code rather than an exact error message. This is because the frontend may have its own multilingual settings or custom text requirements.
+```{note} In practical scenarios, the frontend often needs the backend to provide an error code rather than an exact error message. This is because the frontend may have its own multilingual settings or custom text requirements.
+```
 
 ```python
 import enum
@@ -175,6 +173,6 @@ class MyDefaultMessages(z.DefaultMessages):
 
 This is the source code for Zangar `DefaultMessages.default`.
 
-```py
-{{ source_code('zangar._messages:DefaultMessages.default') }}
+```{literalinclude} ../src/zangar/_messages.py
+:pyobject: DefaultMessages.default
 ```

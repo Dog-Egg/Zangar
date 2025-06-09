@@ -1,4 +1,4 @@
-## Primitives
+# Primitives
 
 ```python
 z.str()        # Validate that the data is of type `str`.
@@ -17,7 +17,7 @@ These schemas are simple type validations and do not provide type conversion. He
 z.ensure(lambda x: isinstance(x, str))
 ```
 
-### `list`
+## `list`
 
 ```py
 >>> z.list(z.transform(int)).parse(['1', 2, '3'])

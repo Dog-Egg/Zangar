@@ -18,20 +18,45 @@ class SchemaBase(t.Generic[T], abc.ABC):
     def __or__(self, other: SchemaBase[P]) -> SchemaBase[T | P]: ...
 
     @abc.abstractmethod
-    def parse(self, value, /) -> T: ...
+    def parse(self, value, /) -> T:
+        """Parse the value and return the parsed value.
+
+        Args:
+            value: The value to parse.
+
+        Raises:
+            ValidationError: If the value is invalid.
+        """
 
     @abc.abstractmethod
     def ensure(
         self, func: Callable[[T], bool], /, *, message: t.Any = None
-    ) -> SchemaBase[T]: ...
+    ) -> SchemaBase[T]:
+        """Ensure that the value satisfies the condition.
+
+        Args:
+            func: The function to validate the value.
+            message: The error message to display when the validation fails.
+        """
 
     @abc.abstractmethod
     def transform(
         self, func: Callable[[T], P], /, *, message: t.Any = None
-    ) -> SchemaBase[P]: ...
+    ) -> SchemaBase[P]:
+        """Transform the value.
+
+        Args:
+            func: The function to transform the value.
+            message: The error message to display when the transformation fails.
+        """
 
     @abc.abstractmethod
-    def relay(self, other: SchemaBase[P], /) -> SchemaBase[P]: ...
+    def relay(self, other: SchemaBase[P], /) -> SchemaBase[P]:
+        """Relay the value to another schema.
+
+        Args:
+            other: The schema to relay the value to.
+        """
 
     @abc.abstractmethod
     def _iterate_chain(self) -> t.Iterator[SchemaBase[t.Any]]: ...
@@ -148,6 +173,7 @@ class Schema(SchemaBase[T]):
             yield from self.__prev._iterate_chain()
         yield self
 
+    @t.final
     def parse(self, value, /) -> T:
         error = ValidationError()
         for n in self._iterate_chain():
