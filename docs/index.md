@@ -1,3 +1,16 @@
+```{toctree}
+:hidden:
+
+type_schemas/index
+messages
+circular_reference
+exceptions
+openapi
+api
+```
+
+# Getting started
+
 Uses simple, composable logic to validate data.
 
 ## Installation

@@ -7,7 +7,6 @@ on:
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"
-      - "mkdocs.yml"
 
 jobs:
   deploy:
@@ -28,4 +27,4 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+          publish_dir: ./docs/_build

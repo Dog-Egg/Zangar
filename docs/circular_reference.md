@@ -1,3 +1,5 @@
+# Circular Reference
+
 When validating data that involves circular references, `ref` can be used to define the parts that are circularly referenced.
 
 For example:

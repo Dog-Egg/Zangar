@@ -5,6 +5,8 @@
 ```
 -->
 
+# Exceptions
+
 ## ValidationError
 
 ### `.format_errors`

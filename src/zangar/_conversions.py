@@ -1,6 +1,6 @@
 import datetime
 
-from ._types import Datetime, Float, Integer, List, String
+from ._types import ZangarDatetime, ZangarFloat, ZangarInt, ZangarList, ZangarStr
 from .exceptions import ValidationError
 
 try:
@@ -11,7 +11,7 @@ else:
     dt_parser = isoparser("T")
 
 
-class ListConversion(List):
+class ZangarToList(ZangarList):
     def _convert(self, value):
         return list(value)
 
@@ -25,22 +25,22 @@ def int_convert(value):
     return i
 
 
-class IntegerConversion(Integer):
+class ZangarToInt(ZangarInt):
     def _convert(self, value):
         return int_convert(value)
 
 
-class StringConversion(String):
+class ZangarToStr(ZangarStr):
     def _convert(self, value):
         return str(value)
 
 
-class FloatConversion(Float):
+class ZangarToFloat(ZangarFloat):
     def _convert(self, value):
         return float(value)
 
 
-class DatetimeConversion(Datetime):
+class ZangarToDatetime(ZangarDatetime):
     def _convert(self, value):
         if isinstance(value, datetime.datetime):
             return value
@@ -48,11 +48,11 @@ class DatetimeConversion(Datetime):
 
 
 class Namespace:
-    str = StringConversion
-    int = IntegerConversion
-    float = FloatConversion
-    list = ListConversion
-    datetime = DatetimeConversion
+    str = ZangarToStr
+    int = ZangarToInt
+    float = ZangarToFloat
+    list = ZangarToList
+    datetime = ZangarToDatetime
 
 
 to = Namespace()

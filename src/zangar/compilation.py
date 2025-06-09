@@ -7,15 +7,15 @@ from typing import Callable
 
 from zangar._core import SchemaBase, Union
 from zangar._types import (
-    Any,
-    Boolean,
-    Datetime,
-    Float,
-    Integer,
-    List,
-    NoneType,
-    String,
-    Struct,
+    ZangarAny,
+    ZangarBool,
+    ZangarDatetime,
+    ZangarFloat,
+    ZangarInt,
+    ZangarList,
+    ZangarNone,
+    ZangarStr,
+    ZangarStruct,
 )
 
 
@@ -77,16 +77,18 @@ class OpenAPI30Compiler:
         spec.update(data)
 
     _compilation_methods: dict[Hashable, Callable] = {
-        Struct: _compile_struct,
-        List: _compile_list,
+        ZangarStruct: _compile_struct,
+        ZangarList: _compile_list,
         Union: _compile_union,
-        NoneType: _compile_none,
-        Any: partial(_compile_type, data=dict(nullable=True)),
-        String: partial(_compile_type, data=dict(type="string")),
-        Integer: partial(_compile_type, data=dict(type="integer")),
-        Float: partial(_compile_type, data=dict(type="number")),
-        Boolean: partial(_compile_type, data=dict(type="boolean")),
-        Datetime: partial(_compile_type, data=dict(type="string", format="date-time")),
+        ZangarNone: _compile_none,
+        ZangarAny: partial(_compile_type, data=dict(nullable=True)),
+        ZangarStr: partial(_compile_type, data=dict(type="string")),
+        ZangarInt: partial(_compile_type, data=dict(type="integer")),
+        ZangarFloat: partial(_compile_type, data=dict(type="number")),
+        ZangarBool: partial(_compile_type, data=dict(type="boolean")),
+        ZangarDatetime: partial(
+            _compile_type, data=dict(type="string", format="date-time")
+        ),
     }
 
     def _compile(self, schema: SchemaBase, parent: dict | None = None):

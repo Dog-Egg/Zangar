@@ -1,3 +1,2 @@
-mkdocs
-mkdocs-material
-mkdocs-macros-plugin
+sphinx
+myst_parser

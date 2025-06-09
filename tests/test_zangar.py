@@ -247,7 +247,9 @@ class TestUnion:
         ]
 
     def test_order(self):
-        assert repr(z.str() | z.int() | z.bool()) == "String | Integer | Boolean"
+        assert (
+            repr(z.str() | z.int() | z.bool()) == "ZangarStr | ZangarInt | ZangarBool"
+        )
 
     def test_parsing_err(self):
         with pytest.raises(z.ValidationError) as e:

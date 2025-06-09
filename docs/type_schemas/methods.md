@@ -5,6 +5,8 @@
 ```
 -->
 
+# Type Methods
+
 Zangar provides convenient validation methods for some types.
 
 For example:

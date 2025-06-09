@@ -1,4 +1,4 @@
-## `struct`
+# `struct`
 
 `struct` is a schema with fields, it can parse any object and return a dict.
 
@@ -42,7 +42,7 @@ The `struct` field, when parsing an object, will use its field name to get the v
 
 ```
 
-### `.extend`
+## `.extend`
 
 You can add additional fields to a struct schema with the `.extend` method.
 
@@ -53,7 +53,7 @@ You can add additional fields to a struct schema with the `.extend` method.
 
 ```
 
-### `.ensure_fields`
+## `.ensure_fields`
 
 ```python
 my_schema = z.struct({
@@ -84,7 +84,7 @@ zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time
 
 ```
 
-### `.optional_fields`
+## `.optional_fields`
 
 Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#required_fields).
 
@@ -114,7 +114,7 @@ z.struct({
 })
 ```
 
-### `.required_fields`
+## `.required_fields`
 
 Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#optional_fields).
 
@@ -144,7 +144,7 @@ z.struct({
 })
 ```
 
-### `.pick_fields`
+## `.pick_fields`
 
 Construct a new structure schema by selecting the specified fields. The opposite of [`.omit_fields`](#omit_fields).
 
@@ -160,7 +160,7 @@ z.struct({
 })
 ```
 
-### `.omit_fields`
+## `.omit_fields`
 
 Construct a new structure schema by excluding the specified fields. The opposite of [`.pick_fields`](#pick_fields).
 

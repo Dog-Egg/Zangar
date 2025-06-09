@@ -11,7 +11,7 @@ from collections.abc import Callable
 from functools import partial
 from typing import TypeVar, get_args, get_origin
 
-from zangar._types import Field
+from zangar._types import ZangarField
 
 from . import _types
 from ._core import Schema, SchemaBase, Union
@@ -30,7 +30,7 @@ class dataclass(Schema):
         super().__init__(prev=self.__wrapper)
 
     @property
-    def struct(self) -> _types.Struct:
+    def struct(self) -> _types.ZangarStruct:
         return self.__wrapper.struct
 
 
@@ -77,11 +77,11 @@ def _process_ensure_fields(
 
 
 TYPE_MAPPING = {
-    int: _types.Integer,
-    str: _types.String,
-    float: _types.Float,
-    bool: _types.Boolean,
-    datetime.datetime: _types.Datetime,
+    int: _types.ZangarInt,
+    str: _types.ZangarStr,
+    float: _types.ZangarFloat,
+    bool: _types.ZangarBool,
+    datetime.datetime: _types.ZangarDatetime,
 }
 
 
@@ -93,7 +93,7 @@ def _dataclass(
     cache[cls] = None  # None is a placeholder
 
     dc_fields = dataclasses.fields(cls)  # type: ignore
-    struct_fields: dict[str, Field] = {}
+    struct_fields: dict[str, ZangarField] = {}
     try:
         hints = typing.get_type_hints(cls)
     except KeyError:
@@ -110,7 +110,7 @@ def _dataclass(
             metadata: dict = dc_field.metadata["zangar"].copy()
             if "schema" not in metadata:
                 metadata["schema"] = get_schema()
-            struct_field = _types.Field(**metadata)
+            struct_field = _types.ZangarField(**metadata)
         else:
             if dc_field.name in decorators.field_decorators:
                 decorator = decorators.field_decorators[dc_field.name]
@@ -118,19 +118,19 @@ def _dataclass(
                     schema = getattr(cls, decorator.method_name)(get_schema())
                 else:
                     schema = getattr(cls, decorator.method_name)()
-                struct_field = _types.Field(schema, alias=decorator.alias)
+                struct_field = _types.ZangarField(schema, alias=decorator.alias)
             else:
-                struct_field = _types.Field(get_schema())
+                struct_field = _types.ZangarField(get_schema())
 
-        default: typing.Any = _types.Field._empty
+        default: typing.Any = _types.ZangarField._empty
         if dc_field.default is not dataclasses.MISSING:
             default = dc_field.default
         elif dc_field.default_factory is not dataclasses.MISSING:
             default = dc_field.default_factory
-        if default is not _types.Field._empty:
+        if default is not _types.ZangarField._empty:
             struct_field = struct_field.optional(default=default)
         struct_fields[dc_field.name] = struct_field
-    struct = _types.Struct(struct_fields)
+    struct = _types.ZangarStruct(struct_fields)
     schema = struct.transform(lambda d: cls(**d))
     schema = _process_ensure_fields(
         schema,
@@ -142,7 +142,7 @@ def _dataclass(
 
 
 class _DataclassWrapper(Schema["dataclasses._DataclassT"]):
-    def __init__(self, struct: _types.Struct, prev):
+    def __init__(self, struct: _types.ZangarStruct, prev):
         super().__init__(prev=prev)
         self.__struct = struct
 
@@ -176,7 +176,7 @@ def resolve_complex_type(tp):
     if origin is None:
         return None
     if origin is list:
-        return (_types.List, get_args(tp))
+        return (_types.ZangarList, get_args(tp))
     if sys.version_info >= (3, 10) and origin is types.UnionType:
         return (Union, get_args(tp))
     if origin is typing.Union:
