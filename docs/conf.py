@@ -6,7 +6,10 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 project = "Zangar"
 
 default_role = "py:obj"
-# nitpicky = True
+nitpicky = True
+nitpick_ignore_regex = {
+    (r"py:.*", r"zangar\._.*"),
+}
 
 extensions = [
     "sphinx.ext.autodoc",
