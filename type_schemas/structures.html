@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>struct &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=08520df9" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dataclass" href="dataclasses.html" />
+    <link rel="prev" title="Primitives" href="primitives.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="primitives.html" title="Primitives"
+             accesskey="P">previous</a> |
+          <a href="dataclasses.html" title="dataclass"
+             accesskey="N">next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="struct">
+<h1><code class="docutils literal notranslate"><span class="pre">struct</span></code><a class="headerlink" href="#struct" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">struct</span></code> is a schema with fields, it can parse any object and return a dict.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()),</span>
+    <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>If you do not need to make any changes to the field, you can omit <code class="docutils literal notranslate"><span class="pre">field</span></code>. The above definition can be simplified to the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">struct</span></code> field, when parsing an object, will use its field name to get the value of the key for <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping"><code class="docutils literal notranslate"><span class="pre">Mapping</span></code></a> objects, and the value of the attribute for other objects.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parsing a Mapping object</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span>
+<span class="o">...</span>     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="s1">&#39;bulldog&#39;</span>
+<span class="o">...</span> <span class="p">})</span>
+<span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">,</span> <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="s1">&#39;bulldog&#39;</span><span class="p">}</span>
+
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parsing other objects</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleNamespace</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fido&#39;</span><span class="p">,</span> <span class="n">breed</span><span class="o">=</span><span class="s1">&#39;bulldog&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dog</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">,</span> <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="s1">&#39;bulldog&#39;</span><span class="p">}</span>
+
+</pre></div>
+</div>
+<section id="extend">
+<h2><code class="docutils literal notranslate"><span class="pre">.extend</span></code><a class="headerlink" href="#extend" title="Link to this heading">¶</a></h2>
+<p>You can add additional fields to a struct schema with the <code class="docutils literal notranslate"><span class="pre">.extend</span></code> method.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dog_with_age</span> <span class="o">=</span> <span class="n">dog</span><span class="o">.</span><span class="n">extend</span><span class="p">({</span>
+<span class="gp">... </span>  <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">(),</span>
+<span class="gp">... </span><span class="p">})</span>
+
+</pre></div>
+</div>
+</section>
+<section id="ensure-fields">
+<h2><code class="docutils literal notranslate"><span class="pre">.ensure_fields</span></code><a class="headerlink" href="#ensure-fields" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_schema</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">datetime</span><span class="p">()),</span>
+    <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">datetime</span><span class="p">()),</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_schema</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">],</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;The end time cannot be later than the start time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">zangar.exceptions.ValidationError</span>: <span class="n">[{&#39;msgs&#39;: [&#39;The end time cannot be later than the start time&#39;]}]</span>
+
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_schema</span><span class="o">.</span><span class="n">ensure_fields</span><span class="p">([</span><span class="s1">&#39;end_time&#39;</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;end_time&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">],</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;The end time cannot be later than the start time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">zangar.exceptions.ValidationError</span>: <span class="n">[{&#39;loc&#39;: [&#39;end_time&#39;], &#39;msgs&#39;: [&#39;The end time cannot be later than the start time&#39;]}]</span>
+
+</pre></div>
+</div>
+</section>
+<section id="optional-fields">
+<h2><code class="docutils literal notranslate"><span class="pre">.optional_fields</span></code><a class="headerlink" href="#optional-fields" title="Link to this heading">¶</a></h2>
+<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.required_fields" title="zangar._types.ZangarStruct.required_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.required_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">()</span>
+
+<span class="c1"># equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+
+<span class="c1"># equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="required-fields">
+<h2><code class="docutils literal notranslate"><span class="pre">.required_fields</span></code><a class="headerlink" href="#required-fields" title="Link to this heading">¶</a></h2>
+<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.optional_fields" title="zangar._types.ZangarStruct.optional_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.optional_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">required_fields</span><span class="p">()</span>
+
+<span class="c1"># equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">required_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+
+<span class="c1"># equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="pick-fields">
+<h2><code class="docutils literal notranslate"><span class="pre">.pick_fields</span></code><a class="headerlink" href="#pick-fields" title="Link to this heading">¶</a></h2>
+<p>Construct a new structure schema by selecting the specified fields. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.omit_fields" title="zangar._types.ZangarStruct.omit_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.omit_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">pick_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+
+<span class="c1"># equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="omit-fields">
+<h2><code class="docutils literal notranslate"><span class="pre">.omit_fields</span></code><a class="headerlink" href="#omit-fields" title="Link to this heading">¶</a></h2>
+<p>Construct a new structure schema by excluding the specified fields. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.pick_fields" title="zangar._types.ZangarStruct.pick_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.pick_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span><span class="o">.</span><span class="n">omit_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+
+<span class="c1"># equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="field">
+<h2><code class="docutils literal notranslate"><span class="pre">field</span></code><a class="headerlink" href="#field" title="Link to this heading">¶</a></h2>
+<section id="alias">
+<h3>alias<a class="headerlink" href="#alias" title="Link to this heading">¶</a></h3>
+<p>You can assign alias to external data corresponding to field, which will be mapped to field name during parsing.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<span class="gp">... </span>  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span> <span class="n">alias</span><span class="o">=</span><span class="s1">&#39;nickname&#39;</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">})</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dog</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;nickname&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">})</span>
+<span class="go">{&#39;name&#39;: &#39;Fido&#39;}</span>
+
+</pre></div>
+</div>
+</section>
+<section id="optional">
+<h3><code class="docutils literal notranslate"><span class="pre">.optional</span></code><a class="headerlink" href="#optional" title="Link to this heading">¶</a></h3>
+<p>Fields are required by default, but this method allows them to be made optional.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
+<span class="gp">... </span><span class="p">})</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dog</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">})</span>
+<span class="go">{&#39;name&#39;: &#39;Fido&#39;}</span>
+
+</pre></div>
+</div>
+<p>It is also possible to provide a default value for the optional field.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dog</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="s1">&#39;breed&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;unknown&#39;</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">})</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dog</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Fido&#39;</span><span class="p">})</span>
+<span class="go">{&#39;name&#39;: &#39;Fido&#39;, &#39;breed&#39;: &#39;unknown&#39;}</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Type Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="primitives.html">Primitives</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">struct</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#extend"><code class="docutils literal notranslate"><span class="pre">.extend</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ensure-fields"><code class="docutils literal notranslate"><span class="pre">.ensure_fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-fields"><code class="docutils literal notranslate"><span class="pre">.optional_fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#required-fields"><code class="docutils literal notranslate"><span class="pre">.required_fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pick-fields"><code class="docutils literal notranslate"><span class="pre">.pick_fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omit-fields"><code class="docutils literal notranslate"><span class="pre">.omit_fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field"><code class="docutils literal notranslate"><span class="pre">field</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#alias">alias</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional"><code class="docutils literal notranslate"><span class="pre">.optional</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dataclasses.html"><code class="docutils literal notranslate"><span class="pre">dataclass</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html">Type Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../messages.html">Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../circular_reference.html">Circular Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="primitives.html" title="Primitives"
+              >previous</a> |
+            <a href="dataclasses.html" title="dataclass"
+              >next</a> |
+            <a href="../py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/type_schemas/structures.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dataclass &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=08520df9" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Type Methods" href="methods.html" />
+    <link rel="prev" title="struct" href="structures.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="structures.html" title="struct"
+             accesskey="P">previous</a> |
+          <a href="methods.html" title="Type Methods"
+             accesskey="N">next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="dataclass">
+<h1><code class="docutils literal notranslate"><span class="pre">dataclass</span></code><a class="headerlink" href="#dataclass" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> method converts a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass"><code class="docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code></a> into a Zangar schema for data validation, and the resulting output is an instance of that dataclass.</p>
+<section id="create-a-dataclass">
+<h2>Create a dataclass<a class="headerlink" href="#create-a-dataclass" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">zangar</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">z</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InventoryItem</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of an item in inventory.&quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">quantity_on_hand</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># It&#39;s good!</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;necklace&quot;</span><span class="p">,</span> <span class="s1">&#39;unit_price&#39;</span><span class="p">:</span> <span class="mf">12.50</span><span class="p">})</span>
+<span class="n">InventoryItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;necklace&#39;</span><span class="p">,</span> <span class="n">unit_price</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">quantity_on_hand</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># It&#39;s bad! because unit_price is not a float.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;necklace&quot;</span><span class="p">,</span> <span class="s1">&#39;unit_price&#39;</span><span class="p">:</span> <span class="s1">&#39;12.50&#39;</span><span class="p">})</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unit_price&#39;</span><span class="p">],</span> <span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Expected float, received str&#39;</span><span class="p">]}]</span>
+
+</pre></div>
+</div>
+</section>
+<section id="nested-dataclasses">
+<h2>Nested dataclasses<a class="headerlink" href="#nested-dataclasses" title="Link to this heading">¶</a></h2>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@dataclass</span>
+<span class="gp">... </span><span class="k">class</span><span class="w"> </span><span class="nc">Point</span><span class="p">:</span>
+<span class="gp">... </span>     <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+<span class="gp">... </span>     <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@dataclass</span>
+<span class="gp">... </span><span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
+<span class="gp">... </span>     <span class="n">mylist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;mylist&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}]})</span>
+<span class="go">C(mylist=[Point(x=1, y=2), Point(x=3, y=4)])</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;mylist&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;4&#39;</span><span class="p">}]})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">zangar.exceptions.ValidationError</span>: <span class="n">[{&#39;loc&#39;: [&#39;mylist&#39;, 1, &#39;y&#39;], &#39;msgs&#39;: [&#39;Expected int, received str&#39;]}]</span>
+
+</pre></div>
+</div>
+</section>
+<section id="customize-the-field-schema">
+<h2>Customize the field schema<a class="headerlink" href="#customize-the-field-schema" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
+    <span class="n">my_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zangar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">int</span><span class="p">())}})</span>
+
+<span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;my_list&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span>
+    <span class="p">)</span> <span class="o">==</span> <span class="n">C</span><span class="p">(</span><span class="n">my_list</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="as-a-struct">
+<h2>As a struct<a class="headerlink" href="#as-a-struct" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">zangar.dataclass</span></code> is implemented using <code class="docutils literal notranslate"><span class="pre">struct</span></code>, so you only need to call <code class="docutils literal notranslate"><span class="pre">.struct</span></code> to get the internal struct schema.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">C</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">b</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">c</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">.</span><span class="n">struct</span><span class="o">.</span><span class="n">pick_fields</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+        <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    <span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Type Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="primitives.html">Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structures.html"><code class="docutils literal notranslate"><span class="pre">struct</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">dataclass</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-dataclass">Create a dataclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nested-dataclasses">Nested dataclasses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customize-the-field-schema">Customize the field schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#as-a-struct">As a struct</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html">Type Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../messages.html">Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../circular_reference.html">Circular Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="structures.html" title="struct"
+              >previous</a> |
+            <a href="methods.html" title="Type Methods"
+              >next</a> |
+            <a href="../py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/type_schemas/dataclasses.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

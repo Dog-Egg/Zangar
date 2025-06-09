@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Primitives &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=08520df9" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="struct" href="structures.html" />
+    <link rel="prev" title="Type Schemas" href="index.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="index.html" title="Type Schemas"
+             accesskey="P">previous</a> |
+          <a href="structures.html" title="struct"
+             accesskey="N">next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="primitives">
+<h1>Primitives<a class="headerlink" href="#primitives" title="Link to this heading">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>        <span class="c1"># Validate that the data is of type `str`.</span>
+<span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span>        <span class="c1"># Validate that the data is of type `int`.</span>
+<span class="n">z</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>      <span class="c1"># Validate that the data is of type `float`.</span>
+<span class="n">z</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>       <span class="c1"># Validate that the data is of type `bool`.</span>
+<span class="n">z</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>       <span class="c1"># Validate that the data is of type `None`.</span>
+<span class="n">z</span><span class="o">.</span><span class="n">datetime</span><span class="p">()</span>   <span class="c1"># Validate that the data is of type `datetime.datetime`.</span>
+<span class="n">z</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>        <span class="c1"># Validate that the data is of any type.</span>
+</pre></div>
+</div>
+<p>These schemas are simple type validations and do not provide type conversion. Here’s an equivalent example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># z.str() is equivalent to:</span>
+<span class="n">z</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">))</span>
+</pre></div>
+</div>
+<section id="list">
+<h2><code class="docutils literal notranslate"><span class="pre">list</span></code><a class="headerlink" href="#list" title="Link to this heading">¶</a></h2>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">])</span>
+<span class="go">[1, 2, 3]</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[</span><span class="n">z</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span><span class="o">.</span><span class="n">parse</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">])</span>
+<span class="go">[1, 2, 3]</span>
+
+</pre></div>
+</div>
+</section>
+<section id="conversions">
+<h2>Conversions<a class="headerlink" href="#conversions" title="Link to this heading">¶</a></h2>
+<p>The available type conversions are located in the namespace named <code class="docutils literal notranslate"><span class="pre">to</span></code>.</p>
+<section id="str">
+<h3><code class="docutils literal notranslate"><span class="pre">str</span></code><a class="headerlink" href="#str" title="Link to this heading">¶</a></h3>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span>
+
+</pre></div>
+</div>
+</section>
+<section id="int">
+<h3><code class="docutils literal notranslate"><span class="pre">int</span></code><a class="headerlink" href="#int" title="Link to this heading">¶</a></h3>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;1.0&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">zangar.exceptions.ValidationError</span>: <span class="n">[{&#39;msgs&#39;: [&#39;1.2 is not a valid integer&#39;]}]</span>
+
+</pre></div>
+</div>
+<p>This is the conversion function for <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">{{</span> <span class="n">source_code</span><span class="p">(</span><span class="s1">&#39;zangar._conversions.int_convert&#39;</span><span class="p">)</span> <span class="p">}}</span>
+
+</pre></div>
+</div>
+</section>
+<section id="float">
+<h3><code class="docutils literal notranslate"><span class="pre">float</span></code><a class="headerlink" href="#float" title="Link to this heading">¶</a></h3>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;1.0&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;1.0&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0</span>
+
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h3><code class="docutils literal notranslate"><span class="pre">list</span></code><a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">list</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">z</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+</pre></div>
+</div>
+</section>
+<section id="datetime">
+<h3><code class="docutils literal notranslate"><span class="pre">datetime</span></code><a class="headerlink" href="#datetime" title="Link to this heading">¶</a></h3>
+<p>It can parse a <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> datetime string.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">datetime</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;20040503T173008+08&#39;</span><span class="p">)</span>
+<span class="go">datetime.datetime(2004, 5, 3, 17, 30, 8, tzinfo=tzoffset(None, 28800))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">datetime</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;2004-W19&#39;</span><span class="p">)</span>
+<span class="go">datetime.datetime(2004, 5, 3, 0, 0)</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Type Schemas</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Primitives</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#list"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conversions">Conversions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#int"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#float"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datetime"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="structures.html"><code class="docutils literal notranslate"><span class="pre">struct</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataclasses.html"><code class="docutils literal notranslate"><span class="pre">dataclass</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html">Type Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../messages.html">Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../circular_reference.html">Circular Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="index.html" title="Type Schemas"
+              >previous</a> |
+            <a href="structures.html" title="struct"
+              >next</a> |
+            <a href="../py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/type_schemas/primitives.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

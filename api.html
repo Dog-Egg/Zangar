@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Reference &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=08520df9" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="OpenAPI-Spec Support" href="openapi.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="openapi.html" title="OpenAPI-Spec Support"
+             accesskey="P">previous</a> |
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.Schema">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">Schema</span></span><a class="headerlink" href="#zangar.Schema" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaBase</span></code></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zangar.ensure">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">ensure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar.ensure" title="Link to this definition">¶</a></dt>
+<dd><p>Ensure that the value satisfies the condition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – The function to validate the value.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zangar.transform">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar.transform" title="Link to this definition">¶</a></dt>
+<dd><p>Transform the value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – The function to transform the value.</p></li>
+<li><p><strong>message</strong> – The error message to display when the transformation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zangar.ref">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar.ref" title="Link to this definition">¶</a></dt>
+<dd><p>Create a reference to a schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the schema.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A schema that can parse the value using the referenced schema.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="module-zangar">
+<span id="base-types"></span><h2>Base Types<a class="headerlink" href="#module-zangar" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.any">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">any</span></span><a class="headerlink" href="#zangar.any" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarAny" title="zangar._types.ZangarAny"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarAny</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.bool">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">bool</span></span><a class="headerlink" href="#zangar.bool" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarBool" title="zangar._types.ZangarBool"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarBool</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.datetime">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">datetime</span></span><a class="headerlink" href="#zangar.datetime" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarDatetime" title="zangar._types.ZangarDatetime"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarDatetime</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.float">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">float</span></span><a class="headerlink" href="#zangar.float" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarFloat" title="zangar._types.ZangarFloat"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarFloat</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.int">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">int</span></span><a class="headerlink" href="#zangar.int" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarInt" title="zangar._types.ZangarInt"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarInt</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.list">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">list</span></span><a class="headerlink" href="#zangar.list" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarList" title="zangar._types.ZangarList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarList</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.none">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">none</span></span><a class="headerlink" href="#zangar.none" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarNone" title="zangar._types.ZangarNone"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarNone</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.str">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">str</span></span><a class="headerlink" href="#zangar.str" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarStr" title="zangar._types.ZangarStr"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarStr</span></code></a></p>
+</dd></dl>
+
+</section>
+<section id="module-zangar.to">
+<span id="conversions"></span><h2>Conversions<a class="headerlink" href="#module-zangar.to" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.to.datetime">
+<span class="sig-prename descclassname"><span class="pre">zangar.to.</span></span><span class="sig-name descname"><span class="pre">datetime</span></span><a class="headerlink" href="#zangar.to.datetime" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._conversions.ZangarToDatetime" title="zangar._conversions.ZangarToDatetime"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarToDatetime</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.to.float">
+<span class="sig-prename descclassname"><span class="pre">zangar.to.</span></span><span class="sig-name descname"><span class="pre">float</span></span><a class="headerlink" href="#zangar.to.float" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._conversions.ZangarToFloat" title="zangar._conversions.ZangarToFloat"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarToFloat</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.to.int">
+<span class="sig-prename descclassname"><span class="pre">zangar.to.</span></span><span class="sig-name descname"><span class="pre">int</span></span><a class="headerlink" href="#zangar.to.int" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._conversions.ZangarToInt" title="zangar._conversions.ZangarToInt"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarToInt</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.to.str">
+<span class="sig-prename descclassname"><span class="pre">zangar.to.</span></span><span class="sig-name descname"><span class="pre">str</span></span><a class="headerlink" href="#zangar.to.str" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._conversions.ZangarToStr" title="zangar._conversions.ZangarToStr"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarToStr</span></code></a></p>
+</dd></dl>
+
+</section>
+<section id="structures">
+<h2>Structures<a class="headerlink" href="#structures" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.struct">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">struct</span></span><a class="headerlink" href="#zangar.struct" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarStruct</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.field">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">field</span></span><a class="headerlink" href="#zangar.field" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarField" title="zangar._types.ZangarField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarField</span></code></a></p>
+</dd></dl>
+
+</section>
+<section id="private">
+<h2>Private<a class="headerlink" href="#private" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._core.SchemaBase">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._core.</span></span><span class="sig-name descname"><span class="pre">SchemaBase</span></span><a class="headerlink" href="#zangar._core.SchemaBase" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class" id="module-zangar._types">
+<dt class="sig sig-object py" id="zangar._types.DatetimeMethods">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">DatetimeMethods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Schema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformationValidator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnsuranceValidator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.DatetimeMethods" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.NumberMethods">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">NumberMethods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Schema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformationValidator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnsuranceValidator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.NumberMethods" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.NumberMethods.gt">
+<span class="sig-name descname"><span class="pre">gt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.NumberMethods.gt" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the number is greater than a given value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The minimum value of the number.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.NumberMethods.gte">
+<span class="sig-name descname"><span class="pre">gte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.NumberMethods.gte" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the number is greater than or equal to a given value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The minimum value of the number.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.NumberMethods.lt">
+<span class="sig-name descname"><span class="pre">lt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.NumberMethods.lt" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the number is less than a given value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The maximum value of the number.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.NumberMethods.lte">
+<span class="sig-name descname"><span class="pre">lte</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.NumberMethods.lte" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the number is less than or equal to a given value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The maximum value of the number.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.StringMethods">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">StringMethods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Schema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformationValidator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnsuranceValidator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.StringMethods" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.StringMethods.max">
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.StringMethods.max" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the maximum length of a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The maximum length of the string.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.StringMethods.min">
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.StringMethods.min" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the minimum length of a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The minimum length of the string.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.StringMethods.strip">
+<span class="sig-name descname"><span class="pre">strip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.StringMethods.strip" title="Link to this definition">¶</a></dt>
+<dd><p>Trim whitespace from both ends.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.StructMethods">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">StructMethods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_to_alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.StructMethods" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.StructMethods.ensure_fields">
+<span class="sig-name descname"><span class="pre">ensure_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.StructMethods.ensure_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Validate the fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fieldnames</strong> – The names of the fields to validate.</p></li>
+<li><p><strong>func</strong> – The function to validate the fields.</p></li>
+<li><p><strong>message</strong> – The error message to display when the validation fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarAny">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarAny</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarAny" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarBool">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarBool" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarDatetime">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarDatetime" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>], <a class="reference internal" href="#zangar._types.DatetimeMethods" title="zangar._types.DatetimeMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatetimeMethods</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarField">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><span class="pre">SchemaBase</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarField" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarFloat">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarFloat" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>], <a class="reference internal" href="#zangar._types.NumberMethods" title="zangar._types.NumberMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumberMethods</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarInt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarInt" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>], <a class="reference internal" href="#zangar._types.NumberMethods" title="zangar._types.NumberMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumberMethods</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarList">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><span class="pre">SchemaBase</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarList" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]]</p>
+<p>Validate that the data is of type <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> – The schema to validate the items in the list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarNone">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarNone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarNone" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarObject">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarObject" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarStruct</span></code></a></p>
+<p>Deprecated, use <a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZangarStruct</span></code></a> instead.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarStr">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarStr" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <a class="reference internal" href="#zangar._types.StringMethods" title="zangar._types.StringMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringMethods</span></code></a></p>
+<p>Validate that the data is of type <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarStruct">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarStruct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#zangar._types.ZangarField" title="zangar._types.ZangarField"><span class="pre">ZangarField</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><span class="pre">SchemaBase</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#zangar._types.ZangarField" title="zangar._types.ZangarField"><span class="pre">ZangarField</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><span class="pre">SchemaBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarStruct" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>], <a class="reference internal" href="#zangar._types.StructMethods" title="zangar._types.StructMethods"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructMethods</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>]</p>
+<p>This is a schema with fields. It can parse any object and return a dict.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.ZangarStruct.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#zangar._types.ZangarField" title="zangar._types.ZangarField"><span class="pre">ZangarField</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><span class="pre">SchemaBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarStruct.extend" title="Link to this definition">¶</a></dt>
+<dd><p>Extend the struct with additional fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fields</strong> – The fields to add.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.ZangarStruct.omit_fields">
+<span class="sig-name descname"><span class="pre">omit_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><span class="pre">ZangarStruct</span></a></span></span><a class="headerlink" href="#zangar._types.ZangarStruct.omit_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Pick all fields except the specified ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fieldnames</strong> – The names of the fields to omit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.ZangarStruct.optional_fields">
+<span class="sig-name descname"><span class="pre">optional_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><span class="pre">ZangarStruct</span></a></span></span><a class="headerlink" href="#zangar._types.ZangarStruct.optional_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Make the specified fields optional.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fieldnames</strong> – The names of the fields to make optional.
+If not provided, all fields will be made optional.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.ZangarStruct.pick_fields">
+<span class="sig-name descname"><span class="pre">pick_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><span class="pre">ZangarStruct</span></a></span></span><a class="headerlink" href="#zangar._types.ZangarStruct.pick_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Pick the specified fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fieldnames</strong> – The names of the fields to pick.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zangar._types.ZangarStruct.required_fields">
+<span class="sig-name descname"><span class="pre">required_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fieldnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#zangar._types.ZangarStruct" title="zangar._types.ZangarStruct"><span class="pre">ZangarStruct</span></a></span></span><a class="headerlink" href="#zangar._types.ZangarStruct.required_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Make the specified fields required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fieldnames</strong> – The names of the fields to make required.
+If not provided, all fields will be made required.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class" id="module-zangar._conversions">
+<dt class="sig sig-object py" id="zangar._conversions.ZangarToDatetime">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._conversions.</span></span><span class="sig-name descname"><span class="pre">ZangarToDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._conversions.ZangarToDatetime" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zangar._types.ZangarDatetime" title="zangar._types.ZangarDatetime"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarDatetime</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._conversions.ZangarToFloat">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._conversions.</span></span><span class="sig-name descname"><span class="pre">ZangarToFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._conversions.ZangarToFloat" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zangar._types.ZangarFloat" title="zangar._types.ZangarFloat"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarFloat</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._conversions.ZangarToInt">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._conversions.</span></span><span class="sig-name descname"><span class="pre">ZangarToInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._conversions.ZangarToInt" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zangar._types.ZangarInt" title="zangar._types.ZangarInt"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarInt</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._conversions.ZangarToList">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._conversions.</span></span><span class="sig-name descname"><span class="pre">ZangarToList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#zangar._core.SchemaBase" title="zangar._core.SchemaBase"><span class="pre">SchemaBase</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._conversions.ZangarToList" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zangar._types.ZangarList" title="zangar._types.ZangarList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarList</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._conversions.ZangarToStr">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._conversions.</span></span><span class="sig-name descname"><span class="pre">ZangarToStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._conversions.ZangarToStr" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zangar._types.ZangarStr" title="zangar._types.ZangarStr"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarStr</span></code></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="type_schemas/index.html">Type Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="messages.html">Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="circular_reference.html">Circular Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#zangar.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zangar.ensure"><code class="docutils literal notranslate"><span class="pre">ensure()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zangar.transform"><code class="docutils literal notranslate"><span class="pre">transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zangar.ref"><code class="docutils literal notranslate"><span class="pre">ref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zangar">Base Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.any"><code class="docutils literal notranslate"><span class="pre">any</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.bool"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.datetime"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.float"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.int"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.list"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.none"><code class="docutils literal notranslate"><span class="pre">none</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zangar.to">Conversions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.to.datetime"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.to.float"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.to.int"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.to.str"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#structures">Structures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.struct"><code class="docutils literal notranslate"><span class="pre">struct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.field"><code class="docutils literal notranslate"><span class="pre">field</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#private">Private</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._core.SchemaBase"><code class="docutils literal notranslate"><span class="pre">SchemaBase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.DatetimeMethods"><code class="docutils literal notranslate"><span class="pre">DatetimeMethods</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.NumberMethods"><code class="docutils literal notranslate"><span class="pre">NumberMethods</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.NumberMethods.gt"><code class="docutils literal notranslate"><span class="pre">NumberMethods.gt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.NumberMethods.gte"><code class="docutils literal notranslate"><span class="pre">NumberMethods.gte()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.NumberMethods.lt"><code class="docutils literal notranslate"><span class="pre">NumberMethods.lt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.NumberMethods.lte"><code class="docutils literal notranslate"><span class="pre">NumberMethods.lte()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.StringMethods"><code class="docutils literal notranslate"><span class="pre">StringMethods</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.StringMethods.max"><code class="docutils literal notranslate"><span class="pre">StringMethods.max()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.StringMethods.min"><code class="docutils literal notranslate"><span class="pre">StringMethods.min()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.StringMethods.strip"><code class="docutils literal notranslate"><span class="pre">StringMethods.strip()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.StructMethods"><code class="docutils literal notranslate"><span class="pre">StructMethods</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.StructMethods.ensure_fields"><code class="docutils literal notranslate"><span class="pre">StructMethods.ensure_fields()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarAny"><code class="docutils literal notranslate"><span class="pre">ZangarAny</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarBool"><code class="docutils literal notranslate"><span class="pre">ZangarBool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarDatetime"><code class="docutils literal notranslate"><span class="pre">ZangarDatetime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarField"><code class="docutils literal notranslate"><span class="pre">ZangarField</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarFloat"><code class="docutils literal notranslate"><span class="pre">ZangarFloat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarInt"><code class="docutils literal notranslate"><span class="pre">ZangarInt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarList"><code class="docutils literal notranslate"><span class="pre">ZangarList</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarNone"><code class="docutils literal notranslate"><span class="pre">ZangarNone</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarObject"><code class="docutils literal notranslate"><span class="pre">ZangarObject</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarStr"><code class="docutils literal notranslate"><span class="pre">ZangarStr</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarStruct"><code class="docutils literal notranslate"><span class="pre">ZangarStruct</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.ZangarStruct.extend"><code class="docutils literal notranslate"><span class="pre">ZangarStruct.extend()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.ZangarStruct.omit_fields"><code class="docutils literal notranslate"><span class="pre">ZangarStruct.omit_fields()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.ZangarStruct.optional_fields"><code class="docutils literal notranslate"><span class="pre">ZangarStruct.optional_fields()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.ZangarStruct.pick_fields"><code class="docutils literal notranslate"><span class="pre">ZangarStruct.pick_fields()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zangar._types.ZangarStruct.required_fields"><code class="docutils literal notranslate"><span class="pre">ZangarStruct.required_fields()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._conversions.ZangarToDatetime"><code class="docutils literal notranslate"><span class="pre">ZangarToDatetime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._conversions.ZangarToFloat"><code class="docutils literal notranslate"><span class="pre">ZangarToFloat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._conversions.ZangarToInt"><code class="docutils literal notranslate"><span class="pre">ZangarToInt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._conversions.ZangarToList"><code class="docutils literal notranslate"><span class="pre">ZangarToList</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._conversions.ZangarToStr"><code class="docutils literal notranslate"><span class="pre">ZangarToStr</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="openapi.html" title="OpenAPI-Spec Support"
+              >previous</a> |
+            <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/api.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

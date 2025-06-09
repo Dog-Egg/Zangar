@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Type Methods &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/agogo.css?v=08520df9" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Messages" href="../messages.html" />
+    <link rel="prev" title="dataclass" href="dataclasses.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="dataclasses.html" title="dataclass"
+             accesskey="P">previous</a> |
+          <a href="../messages.html" title="Messages"
+             accesskey="N">next</a> |
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <!--
+```py
+>>> import zangar as z
+
+```
+-->
+<section id="type-methods">
+<h1>Type Methods<a class="headerlink" href="#type-methods" title="Link to this heading">¶</a></h1>
+<p>Zangar provides convenient validation methods for some types.</p>
+<p>For example:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39; hello &#39;</span><span class="p">)</span>
+<span class="go">&#39;hello&#39;</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">)</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39; hello &#39;</span><span class="p">)</span>
+<span class="go">&#39;hello&#39;</span>
+
+</pre></div>
+</div>
+<section id="string">
+<h2>String<a class="headerlink" href="#string" title="Link to this heading">¶</a></h2>
+<section id="max">
+<h3><code class="docutils literal notranslate"><span class="pre">.max</span></code><a class="headerlink" href="#max" title="Link to this heading">¶</a></h3>
+<p>Validate the maximum length of a string.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="min">
+<h3><code class="docutils literal notranslate"><span class="pre">.min</span></code><a class="headerlink" href="#min" title="Link to this heading">¶</a></h3>
+<p>Validate the minimum length of a string.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="strip">
+<h3><code class="docutils literal notranslate"><span class="pre">.strip</span></code><a class="headerlink" href="#strip" title="Link to this heading">¶</a></h3>
+<p>Trim whitespace from both ends.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39; string &#39;</span><span class="p">)</span>
+<span class="go">&#39;string&#39;</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39; string &#39;</span><span class="p">)</span>
+<span class="go">&#39;string&#39;</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="number">
+<h2>Number<a class="headerlink" href="#number" title="Link to this heading">¶</a></h2>
+<section id="gt">
+<h3><code class="docutils literal notranslate"><span class="pre">.gt</span></code><a class="headerlink" href="#gt" title="Link to this heading">¶</a></h3>
+<p>Validate the number is greater than a given value.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="gte">
+<h3><code class="docutils literal notranslate"><span class="pre">.gte</span></code><a class="headerlink" href="#gte" title="Link to this heading">¶</a></h3>
+<p>Validate the number is greater than or equal to a given value.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">gte</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="lt">
+<h3><code class="docutils literal notranslate"><span class="pre">.lt</span></code><a class="headerlink" href="#lt" title="Link to this heading">¶</a></h3>
+<p>Validate the number is less than a given value.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+<section id="lte">
+<h3><code class="docutils literal notranslate"><span class="pre">.lte</span></code><a class="headerlink" href="#lte" title="Link to this heading">¶</a></h3>
+<p>Validate the number is less than or equal to a given value.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">lte</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="go"># equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">number</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</section>
+</section>
+<section id="datetime">
+<h2>Datetime<a class="headerlink" href="#datetime" title="Link to this heading">¶</a></h2>
+<section id="is-aware">
+<h3><code class="docutils literal notranslate"><span class="pre">is_aware</span></code><a class="headerlink" href="#is-aware" title="Link to this heading">¶</a></h3>
+<p>Validate the datetime is aware.</p>
+</section>
+<section id="is-naive">
+<h3><code class="docutils literal notranslate"><span class="pre">is_naive</span></code><a class="headerlink" href="#is-naive" title="Link to this heading">¶</a></h3>
+<p>Validate the datetime is naive.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Type Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="primitives.html">Primitives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structures.html"><code class="docutils literal notranslate"><span class="pre">struct</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataclasses.html"><code class="docutils literal notranslate"><span class="pre">dataclass</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Type Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#string">String</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#max"><code class="docutils literal notranslate"><span class="pre">.max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#min"><code class="docutils literal notranslate"><span class="pre">.min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#strip"><code class="docutils literal notranslate"><span class="pre">.strip</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#number">Number</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gt"><code class="docutils literal notranslate"><span class="pre">.gt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gte"><code class="docutils literal notranslate"><span class="pre">.gte</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lt"><code class="docutils literal notranslate"><span class="pre">.lt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lte"><code class="docutils literal notranslate"><span class="pre">.lte</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#datetime">Datetime</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#is-aware"><code class="docutils literal notranslate"><span class="pre">is_aware</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#is-naive"><code class="docutils literal notranslate"><span class="pre">is_naive</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../messages.html">Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../circular_reference.html">Circular Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="dataclasses.html" title="dataclass"
+              >previous</a> |
+            <a href="../messages.html" title="Messages"
+              >next</a> |
+            <a href="../py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/type_schemas/methods.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

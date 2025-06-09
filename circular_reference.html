@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Circular Reference &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=08520df9" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Exceptions" href="exceptions.html" />
+    <link rel="prev" title="Messages" href="messages.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="messages.html" title="Messages"
+             accesskey="P">previous</a> |
+          <a href="exceptions.html" title="Exceptions"
+             accesskey="N">next</a> |
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="circular-reference">
+<h1>Circular Reference<a class="headerlink" href="#circular-reference" title="Link to this heading">¶</a></h1>
+<p>When validating data that involves circular references, <code class="docutils literal notranslate"><span class="pre">ref</span></code> can be used to define the parts that are circularly referenced.</p>
+<p>For example:</p>
+<p>There is a simple tree structure here.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleNamespace</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zangar</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">z</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Node</span><span class="p">(</span><span class="n">SimpleNamespace</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="n">tree</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;n1&#39;</span><span class="p">,</span>
+    <span class="n">children</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;n2&#39;</span><span class="p">),</span>
+        <span class="n">Node</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;n3&#39;</span><span class="p">,</span>
+            <span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;n4&#39;</span><span class="p">)]</span>
+        <span class="p">),</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>You might naturally think of defining the schema of this tree with the following code.</p>
+<p>However, in Python, this definition is incorrect.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node_schema</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">z</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">node_schema</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">)</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="gr">NameError</span>: <span class="n">name &#39;node_schema&#39; is not defined</span>
+
+</pre></div>
+</div>
+<p>The correct approach is to use <code class="docutils literal notranslate"><span class="pre">ref</span></code> to replace the parts that are circularly referenced.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node_schema</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
+<span class="gp">... </span>    <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">z</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="s1">&#39;node_schema&#39;</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="p">)</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
+<span class="gp">... </span><span class="p">})</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_schema</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="go">{&#39;name&#39;: &#39;n1&#39;, &#39;children&#39;: [{&#39;name&#39;: &#39;n2&#39;}, {&#39;name&#39;: &#39;n3&#39;, &#39;children&#39;: [{&#39;name&#39;: &#39;n4&#39;}]}]}</span>
+
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="type_schemas/index.html">Type Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="messages.html">Messages</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Circular Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="messages.html" title="Messages"
+              >previous</a> |
+            <a href="exceptions.html" title="Exceptions"
+              >next</a> |
+            <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/circular_reference.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

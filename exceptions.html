@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Exceptions &#8212; Zangar  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css?v=08520df9" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OpenAPI-Spec Support" href="openapi.html" />
+    <link rel="prev" title="Circular Reference" href="circular_reference.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="index.html">Zangar  documentation</a></div>
+        <div class="rel" role="navigation" aria-label="Related">
+          <a href="circular_reference.html" title="Circular Reference"
+             accesskey="P">previous</a> |
+          <a href="openapi.html" title="OpenAPI-Spec Support"
+             accesskey="N">next</a> |
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <!--
+```py
+>>> import zangar as z
+
+```
+-->
+<section id="exceptions">
+<h1>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">¶</a></h1>
+<section id="validationerror">
+<h2>ValidationError<a class="headerlink" href="#validationerror" title="Link to this heading">¶</a></h2>
+<section id="format-errors">
+<h3><code class="docutils literal notranslate"><span class="pre">.format_errors</span></code><a class="headerlink" href="#format-errors" title="Link to this heading">¶</a></h3>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">name_schema</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">ensure</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;The name is at lease 5 characters long&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span>    <span class="o">.</span><span class="n">ensure</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="s2">&quot;!&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;The name cannot contain !&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">name_schema</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Isabella&quot;</span><span class="p">,</span> <span class="s2">&quot;Olivia&quot;</span><span class="p">,</span> <span class="s2">&quot;Ava!&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">z</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">e</span><span class="o">.</span><span class="n">format_errors</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">[{&#39;loc&#39;: [&#39;names&#39;, 2], &#39;msgs&#39;: [&#39;The name is at lease 5 characters long&#39;, &#39;The name cannot contain !&#39;]}]</span>
+
+</pre></div>
+</div>
+<p>Return result type</p>
+<div class="highlight-ts notranslate"><div class="highlight"><pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Errors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Array</span><span class="o">&lt;</span><span class="p">{</span>
+<span class="w">  </span><span class="nx">loc?</span><span class="o">:</span><span class="w"> </span><span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">msgs</span><span class="o">:</span><span class="w"> </span><span class="kt">Array</span><span class="o">&lt;</span><span class="nx">any</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="type_schemas/index.html">Type Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="messages.html">Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="circular_reference.html">Circular Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Exceptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#validationerror">ValidationError</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#format-errors"><code class="docutils literal notranslate"><span class="pre">.format_errors</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="openapi.html">OpenAPI-Spec Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+          <search role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </search>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="Related">
+            <a href="circular_reference.html" title="Circular Reference"
+              >previous</a> |
+            <a href="openapi.html" title="OpenAPI-Spec Support"
+              >next</a> |
+            <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/exceptions.md.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
