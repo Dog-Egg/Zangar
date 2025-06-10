@@ -90,10 +90,11 @@ You can assign alias to external data corresponding to field, which will be mapp
 
 ## Extending Fields
 
-You can add additional fields to a struct schema with [](#extend) method.
+You can expand the field in the following way.
 
 ```py
->>> dog_with_age = dog.extend({
+>>> dog_with_age = z.struct({
+...   **dog.fields,
 ...   'age': z.int(),
 ... })
 
@@ -134,17 +135,17 @@ zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time
 
 ## Change Optional Fields
 
-Two opposite methods, [](#optional_fields) and [](#required_fields), are provided to change optional fields.
+Two opposite methods, [optional_fields](#zangar.optional_fields) and [required_fields](#zangar.required_fields), are provided to change optional fields.
 
 `.optional_fields`
 
-Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#required_fields).
+Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#zangar.required_fields).
 
 ```python
-z.struct({
-    'username': z.str(),
-    'email': z.str()
-}).optional_fields()
+z.struct(z.optional_fields({
+    'username': z.field(z.str()),
+    'email': z.field(z.str())
+}))
 
 # equivalent to:
 z.struct({
@@ -154,10 +155,10 @@ z.struct({
 ```
 
 ```python
-z.struct({
-    'username': z.str(),
-    'email': z.str()
-}).optional_fields(['username'])
+z.struct(z.optional_fields({
+    'username': z.field(z.str()),
+    'email': z.field(z.str())
+}, ['username']))
 
 # equivalent to:
 z.struct({
@@ -168,13 +169,13 @@ z.struct({
 
 `.required_fields`
 
-Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#optional_fields).
+Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#zangar.optional_fields).
 
 ```python
-z.struct({
+z.struct(z.required_fields({
     'username': z.field(z.str()).optional(),
     'email': z.field(z.str()).optional()
-}).required_fields()
+}))
 
 # equivalent to:
 z.struct({
@@ -184,10 +185,10 @@ z.struct({
 ```
 
 ```python
-z.struct({
+z.struct(z.required_fields({
     'username': z.field(z.str()).optional(),
     'email': z.field(z.str()).optional()
-}).required_fields(['username'])
+}, ['username']))
 
 # equivalent to:
 z.struct({
@@ -200,13 +201,13 @@ z.struct({
 
 `.pick_fields`
 
-Construct a new structure schema by selecting the specified fields. The opposite of [`.omit_fields`](#omit_fields).
+Construct a new structure schema by selecting the specified fields. The opposite of [`.omit_fields`](#zangar.omit_fields).
 
 ```python
-z.struct({
+z.struct(z.pick_fields({
     'username': z.str(),
     'email': z.str()
-}).pick_fields(['username'])
+}, ['username']))
 
 # equivalent to:
 z.struct({
@@ -216,13 +217,13 @@ z.struct({
 
 `.omit_fields`
 
-Construct a new structure schema by excluding the specified fields. The opposite of [`.pick_fields`](#pick_fields).
+Construct a new structure schema by excluding the specified fields. The opposite of [`.pick_fields`](#zangar.pick_fields).
 
 ```python
-z.struct({
+z.struct(z.omit_fields({
     'username': z.str(),
     'email': z.str()
-}).omit_fields(['username'])
+}, ['username']))
 
 # equivalent to:
 z.struct({

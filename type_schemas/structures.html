@@ -122,8 +122,9 @@
 </section>
 <section id="extending-fields">
 <h2>Extending Fields<a class="headerlink" href="#extending-fields" title="Link to this heading">¶</a></h2>
-<p>You can add additional fields to a struct schema with <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.extend" title="zangar._types.ZangarStruct.extend"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">extend</span></code></a> method.</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dog_with_age</span> <span class="o">=</span> <span class="n">dog</span><span class="o">.</span><span class="n">extend</span><span class="p">({</span>
+<p>You can expand the field in the following way.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dog_with_age</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<span class="gp">... </span>  <span class="o">**</span><span class="n">dog</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span>
 <span class="gp">... </span>  <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">(),</span>
 <span class="gp">... </span><span class="p">})</span>
 
@@ -162,13 +163,13 @@
 </section>
 <section id="change-optional-fields">
 <h2>Change Optional Fields<a class="headerlink" href="#change-optional-fields" title="Link to this heading">¶</a></h2>
-<p>Two opposite methods, <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.optional_fields" title="zangar._types.ZangarStruct.optional_fields"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">optional_fields</span></code></a> and <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.required_fields" title="zangar._types.ZangarStruct.required_fields"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">required_fields</span></code></a>, are provided to change optional fields.</p>
+<p>Two opposite methods, <a class="reference internal" href="../api.html#zangar.optional_fields" title="zangar.optional_fields"><span class="xref myst py py-func">optional_fields</span></a> and <a class="reference internal" href="../api.html#zangar.required_fields" title="zangar.required_fields"><span class="xref myst py py-func">required_fields</span></a>, are provided to change optional fields.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.optional_fields</span></code></p>
-<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.required_fields" title="zangar._types.ZangarStruct.required_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.required_fields</span></code></span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
-    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
-    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
-<span class="p">})</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">()</span>
+<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of <a class="reference internal" href="../api.html#zangar.required_fields" title="zangar.required_fields"><span class="xref myst py py-func"><code class="docutils literal notranslate"><span class="pre">.required_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span>
+<span class="p">}))</span>
 
 <span class="c1"># equivalent to:</span>
 <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
@@ -177,10 +178,10 @@
 <span class="p">})</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
-    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
-    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
-<span class="p">})</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">optional_fields</span><span class="p">({</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()),</span>
+    <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span>
+<span class="p">},</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]))</span>
 
 <span class="c1"># equivalent to:</span>
 <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
@@ -190,11 +191,11 @@
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">.required_fields</span></code></p>
-<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.optional_fields" title="zangar._types.ZangarStruct.optional_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.optional_fields</span></code></span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<p>Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of <a class="reference internal" href="../api.html#zangar.optional_fields" title="zangar.optional_fields"><span class="xref myst py py-func"><code class="docutils literal notranslate"><span class="pre">.optional_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">required_fields</span><span class="p">({</span>
     <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
     <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
-<span class="p">})</span><span class="o">.</span><span class="n">required_fields</span><span class="p">()</span>
+<span class="p">}))</span>
 
 <span class="c1"># equivalent to:</span>
 <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
@@ -203,10 +204,10 @@
 <span class="p">})</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">required_fields</span><span class="p">({</span>
     <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">(),</span>
     <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">())</span><span class="o">.</span><span class="n">optional</span><span class="p">()</span>
-<span class="p">})</span><span class="o">.</span><span class="n">required_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+<span class="p">},</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]))</span>
 
 <span class="c1"># equivalent to:</span>
 <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
@@ -219,11 +220,11 @@
 <section id="pick-or-omit-fields">
 <h2>Pick or Omit Fields<a class="headerlink" href="#pick-or-omit-fields" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">.pick_fields</span></code></p>
-<p>Construct a new structure schema by selecting the specified fields. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.omit_fields" title="zangar._types.ZangarStruct.omit_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.omit_fields</span></code></span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<p>Construct a new structure schema by selecting the specified fields. The opposite of <a class="reference internal" href="../api.html#zangar.omit_fields" title="zangar.omit_fields"><span class="xref myst py py-func"><code class="docutils literal notranslate"><span class="pre">.omit_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">pick_fields</span><span class="p">({</span>
     <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
     <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
-<span class="p">})</span><span class="o">.</span><span class="n">pick_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+<span class="p">},</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]))</span>
 
 <span class="c1"># equivalent to:</span>
 <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
@@ -232,11 +233,11 @@
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">.omit_fields</span></code></p>
-<p>Construct a new structure schema by excluding the specified fields. The opposite of <a class="reference internal" href="../api.html#zangar._types.ZangarStruct.pick_fields" title="zangar._types.ZangarStruct.pick_fields"><span class="xref myst py py-meth"><code class="docutils literal notranslate"><span class="pre">.pick_fields</span></code></span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>
+<p>Construct a new structure schema by excluding the specified fields. The opposite of <a class="reference internal" href="../api.html#zangar.pick_fields" title="zangar.pick_fields"><span class="xref myst py py-func"><code class="docutils literal notranslate"><span class="pre">.pick_fields</span></code></span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">omit_fields</span><span class="p">({</span>
     <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">(),</span>
     <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()</span>
-<span class="p">})</span><span class="o">.</span><span class="n">omit_fields</span><span class="p">([</span><span class="s1">&#39;username&#39;</span><span class="p">])</span>
+<span class="p">},</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]))</span>
 
 <span class="c1"># equivalent to:</span>
 <span class="n">z</span><span class="o">.</span><span class="n">struct</span><span class="p">({</span>

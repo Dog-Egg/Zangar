@@ -81,7 +81,7 @@ class C:
     b: int
     c: int
 
-assert z.dataclass(C).struct.pick_fields(['a', 'b']).parse(
+assert z.dataclass(C).struct.parse(
         {'a': 1, 'b': 2, 'c': 3}
-    ) == {'a': 1, 'b': 2}
+    ) == {'a': 1, 'b': 2, 'c': 3}
 ```
