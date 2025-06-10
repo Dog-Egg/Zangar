@@ -31,11 +31,11 @@ class OpenAPI30Compiler:
     def compile(self, schema: SchemaBase):
         return self._compile(schema)
 
-    def _compile_struct(self, schema, spec, _):
+    def _compile_struct(self, schema: ZangarStruct, spec, _):
         spec.update(type="object")
         properties = {}
         required = []
-        for name, field in schema._fields.items():
+        for name, field in schema.fields.items():
             key = name if field._alias is None else field._alias
             properties[key] = self._compile(field._schema, spec)
             if field._default is not field._empty and not callable(field._default):

@@ -16,6 +16,12 @@ from ._types import ZangarNone as none
 from ._types import ZangarObject as object
 from ._types import ZangarStr as str
 from ._types import ZangarStruct as struct
+from ._types.structures import (
+    omit_fields,
+    optional_fields,
+    pick_fields,
+    required_fields,
+)
 from .dataclass import dataclass, dc
 from .exceptions import ValidationError
 
