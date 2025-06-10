@@ -206,6 +206,9 @@
 </div>
 <p>This is the source code for Zangar <code class="docutils literal notranslate"><span class="pre">DefaultMessages.default</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;unknown_field&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Unknown field&quot;</span>
+
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;field_required&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;This field is required&quot;</span>
 
