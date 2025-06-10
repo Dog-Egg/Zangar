@@ -14,8 +14,11 @@ class DefaultMessages:
     def __exit__(self, *args, **kwargs):
         _default_messages_var.reset(self.__token)
 
-    # pylint: disable-next=too-many-return-statements
+    # pylint: disable-next=too-many-return-statements,too-many-branches
     def default(self, name: str, value: Any, ctx: dict):
+        if name == "unknown_field":
+            return "Unknown field"
+
         if name == "field_required":
             return "This field is required"
 

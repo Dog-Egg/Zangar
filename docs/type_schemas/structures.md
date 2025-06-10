@@ -1,6 +1,10 @@
-# `struct`
+# Structures
 
-`struct` is a schema with fields, it can parse any object and return a dict.
+structures are used to parse complex objects and return a dictionary.
+
+## Definitions
+
+Its definition is as follows:
 
 ```python
 dog = z.struct({
@@ -9,7 +13,7 @@ dog = z.struct({
 })
 ```
 
-If you do not need to make any changes to the field, you can omit `field`. The above definition can be simplified to the following code:
+If you do not need to make any changes to the field, you can omit [](#field). The above definition can be simplified to the following code:
 
 ```python
 dog = z.struct({
@@ -18,7 +22,7 @@ dog = z.struct({
 })
 ```
 
-The `struct` field, when parsing an object, will use its field name to get the value of the key for [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) objects, and the value of the attribute for other objects.
+The structure field, when parsing an object, will use its field name to get the value of the key for [Mapping](#collections.abc.Mapping) objects, and the value of the attribute for other objects.
 
 ```py
 # Parsing a Mapping object
@@ -42,9 +46,51 @@ The `struct` field, when parsing an object, will use its field name to get the v
 
 ```
 
-## `.extend`
+## Optional Fields
 
-You can add additional fields to a struct schema with the `.extend` method.
+Fields are required by default, but this method allows them to be made optional.
+
+```py
+>>> dog = z.struct({
+...     'name': z.str(),
+...     'breed': z.field(z.str()).optional(),
+... })
+
+>>> dog.parse({'name': 'Fido'})
+{'name': 'Fido'}
+
+```
+
+It is also possible to provide a default value for the optional field.
+
+```py
+>>> dog = z.struct({
+...     'name': z.str(),
+...     'breed': z.field(z.str()).optional(default='unknown'),
+... })
+
+>>> dog.parse({'name': 'Fido'})
+{'name': 'Fido', 'breed': 'unknown'}
+
+```
+
+## Field Alias
+
+You can assign alias to external data corresponding to field, which will be mapped to field name during parsing.
+
+```py
+>>> dog = z.struct({
+...   'name': z.field(z.str(), alias='nickname'),
+... })
+
+>>> dog.parse({'nickname': 'Fido'})
+{'name': 'Fido'}
+
+```
+
+## Extending Fields
+
+You can add additional fields to a struct schema with [](#extend) method.
 
 ```py
 >>> dog_with_age = dog.extend({
@@ -53,7 +99,9 @@ You can add additional fields to a struct schema with the `.extend` method.
 
 ```
 
-## `.ensure_fields`
+## [.ensure_fields](#ensure_fields)
+
+🚧 TODO: Missing description...
 
 ```python
 my_schema = z.struct({
@@ -84,7 +132,11 @@ zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time
 
 ```
 
-## `.optional_fields`
+## Change Optional Fields
+
+Two opposite methods, [](#optional_fields) and [](#required_fields), are provided to change optional fields.
+
+`.optional_fields`
 
 Based on the current structure schema fields, construct a new structure schema, setting all fields as optional; or set specified fields as optional and the other fields as required. The opposite of [`.required_fields`](#required_fields).
 
@@ -114,7 +166,7 @@ z.struct({
 })
 ```
 
-## `.required_fields`
+`.required_fields`
 
 Based on the current structure schema fields, construct a new structure schema, setting all fields as required; or set specified fields as required and the other fields as optional. The opposite of [`.optional_fields`](#optional_fields).
 
@@ -144,7 +196,9 @@ z.struct({
 })
 ```
 
-## `.pick_fields`
+## Pick or Omit Fields
+
+`.pick_fields`
 
 Construct a new structure schema by selecting the specified fields. The opposite of [`.omit_fields`](#omit_fields).
 
@@ -160,7 +214,7 @@ z.struct({
 })
 ```
 
-## `.omit_fields`
+`.omit_fields`
 
 Construct a new structure schema by excluding the specified fields. The opposite of [`.pick_fields`](#pick_fields).
 
@@ -176,46 +230,37 @@ z.struct({
 })
 ```
 
-## `field`
+## Unknown Fields
 
-### alias
+Only [](#mstruct) can access unknown fields.
 
-You can assign alias to external data corresponding to field, which will be mapped to field name during parsing.
+Include unknown fields in the parsed result.
 
 ```py
->>> dog = z.struct({
-...   'name': z.field(z.str(), alias='nickname'),
+>>> z.mstruct({
+...     'username': z.str(),
+...     'email': z.str()
+... }, unknown='include').parse({
+...     'username': 'john',
+...     'email': 'john@example.com',
+...     'age': 18
 ... })
-
->>> dog.parse({'nickname': 'Fido'})
-{'name': 'Fido'}
+{'username': 'john', 'email': 'john@example.com', 'age': 18}
 
 ```
 
-### `.optional`
-
-Fields are required by default, but this method allows them to be made optional.
+Raise an error when encountering unknown fields.
 
 ```py
->>> dog = z.struct({
-...     'name': z.str(),
-...     'breed': z.field(z.str()).optional(),
+>>> z.mstruct({
+...     'username': z.str(),
+...     'email': z.str()
+... }, unknown='raise').parse({
+...     'username': 'john',
+...     'email': 'john@example.com',
+...     'age': 18
 ... })
-
->>> dog.parse({'name': 'Fido'})
-{'name': 'Fido'}
-
-```
-
-It is also possible to provide a default value for the optional field.
-
-```py
->>> dog = z.struct({
-...     'name': z.str(),
-...     'breed': z.field(z.str()).optional(default='unknown'),
-... })
-
->>> dog.parse({'name': 'Fido'})
-{'name': 'Fido', 'breed': 'unknown'}
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'loc': ['age'], 'msgs': ['Unknown field']}]
 
 ```

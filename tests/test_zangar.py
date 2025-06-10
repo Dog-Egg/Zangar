@@ -372,3 +372,17 @@ def test_ValidationError():
     assert error.format_errors() == [
         {"loc": [0], "msgs": ["err1", "err2"]},
     ]
+
+
+class TestMappingStruct:
+    def test_field_alias(self):
+        schema = z.mstruct(
+            {
+                "username": z.field(z.str(), alias="name"),
+            },
+            unknown="include",
+        )
+        assert schema.parse({"name": "john", "email": "john@example.com"}) == {
+            "username": "john",
+            "email": "john@example.com",
+        }
