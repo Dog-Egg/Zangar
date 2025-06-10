@@ -1,6 +1,7 @@
 import datetime
 import inspect
 from types import SimpleNamespace
+from typing import Mapping
 
 import pytest
 
@@ -143,17 +144,18 @@ class TestStruct:
                 "b": z.field(z.str()),
             }
         )
-        assert obj.extend({"c": z.field(z.str())}).parse(
-            {"a": "1", "b": "2", "c": "3"}
-        ) == {
-            "a": "1",
-            "b": "2",
-            "c": "3",
-        }
+        with pytest.warns(DeprecationWarning):
+            assert obj.extend({"c": z.field(z.str())}).parse(
+                {"a": "1", "b": "2", "c": "3"}
+            ) == {
+                "a": "1",
+                "b": "2",
+                "c": "3",
+            }
 
     @staticmethod
     def __get_required_fields(schema: z.struct):
-        return [name for name, field in schema._fields.items() if field._required]
+        return [name for name, field in schema.fields.items() if field._required]
 
     def test_required_fields(self):
         obj = z.struct(
@@ -163,13 +165,17 @@ class TestStruct:
             }
         )
         assert self.__get_required_fields(obj) == []
-        assert self.__get_required_fields(obj.required_fields()) == ["a", "b"]
-        assert self.__get_required_fields(obj.required_fields([])) == []
-        assert self.__get_required_fields(obj.required_fields(["a"])) == ["a"]
-        assert self.__get_required_fields(obj.required_fields(["a", "b"])) == ["a", "b"]
+        with pytest.warns(DeprecationWarning):
+            assert self.__get_required_fields(obj.required_fields()) == ["a", "b"]
+            assert self.__get_required_fields(obj.required_fields([])) == []
+            assert self.__get_required_fields(obj.required_fields(["a"])) == ["a"]
+            assert self.__get_required_fields(obj.required_fields(["a", "b"])) == [
+                "a",
+                "b",
+            ]
 
         with pytest.raises(ValueError) as e:
-            obj.required_fields(["c"])
+            z.required_fields(obj.fields, ["c"])
         assert e.value.args == ("Field 'c' not found in the struct schema",)
 
     def test_optional_fields(self):
@@ -180,14 +186,15 @@ class TestStruct:
             }
         )
         assert self.__get_required_fields(obj) == ["a", "b"]
-        assert self.__get_required_fields(obj.optional_fields()) == []
-        assert self.__get_required_fields(obj.optional_fields([])) == ["a", "b"]
-        assert self.__get_required_fields(obj.optional_fields(["a"])) == ["b"]
-        assert self.__get_required_fields(obj.optional_fields(["a", "b"])) == []
+        with pytest.warns(DeprecationWarning):
+            assert self.__get_required_fields(obj.optional_fields()) == []
+            assert self.__get_required_fields(obj.optional_fields([])) == ["a", "b"]
+            assert self.__get_required_fields(obj.optional_fields(["a"])) == ["b"]
+            assert self.__get_required_fields(obj.optional_fields(["a", "b"])) == []
 
     @staticmethod
     def __get_fields(schema: z.struct):
-        return list(schema._fields.keys())
+        return list(schema.fields.keys())
 
     def test_pick_fields(self):
         obj = z.struct(
@@ -196,7 +203,8 @@ class TestStruct:
                 "b": z.str(),
             }
         )
-        assert self.__get_fields(obj.pick_fields(["a"])) == ["a"]
+        with pytest.warns(DeprecationWarning):
+            assert self.__get_fields(obj.pick_fields(["a"])) == ["a"]
 
     def test_omit_fields(self):
         obj = z.struct(
@@ -205,7 +213,8 @@ class TestStruct:
                 "b": z.str(),
             }
         )
-        assert self.__get_fields(obj.omit_fields(["a"])) == ["b"]
+        with pytest.warns(DeprecationWarning):
+            assert self.__get_fields(obj.omit_fields(["a"])) == ["b"]
 
 
 class TestList:

@@ -5,6 +5,7 @@ import typing as t
 import warnings
 from collections.abc import Callable, Iterable, Mapping
 from operator import getitem
+from types import MappingProxyType
 
 from zangar._core import Schema, SchemaBase
 from zangar._messages import DefaultMessage, get_message
@@ -108,7 +109,11 @@ class StructMethods(Schema[T]):
 
 
 class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
-    """This is a schema with fields. It can parse any object and return a dict."""
+    """This is a schema with fields. It can parse any object and return a dict.
+
+    Args:
+        fields: The fields of the struct.
+    """
 
     def _expected_type(self) -> type:
         return object
@@ -116,106 +121,123 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
     def __init__(
         self,
         fields: (
-            dict[str, ZangarField]
-            | dict[str, SchemaBase]
-            | dict[str, ZangarField | SchemaBase]
+            Mapping[str, ZangarField]
+            | Mapping[str, SchemaBase]
+            | Mapping[str, ZangarField | SchemaBase]
         ),
         /,
     ):
-        self._fields: dict[str, ZangarField] = {}
+        _fields: dict[str, ZangarField] = {}
         for name, field in fields.items():
             if not isinstance(field, ZangarField):
-                self._fields[name] = ZangarField(field)
+                _fields[name] = ZangarField(field)
             else:
-                self._fields[name] = field
+                _fields[name] = field
+        self.__fields = MappingProxyType(_fields)
 
         self._name_to_alias, self._alias_to_name = {}, {}
-        for name, field in self._fields.items():
+        for name, field in self.fields.items():
             alias = field._alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
 
         super().__init__(name_to_alias=self._name_to_alias)
 
+    @property
+    def fields(self) -> Mapping[str, ZangarField]:
+        """The fields of the struct."""
+        return self.__fields
+
     def extend(self, fields: dict[str, ZangarField | SchemaBase], /):
         """Extend the struct with additional fields.
+
+        DEPRECATED: this method will be removed in the future.
 
         Args:
             fields: The fields to add.
         """
+        warnings.warn(
+            "Deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         new_fields: dict[str, ZangarField | SchemaBase] = {}
-        new_fields.update(self._fields)
+        new_fields.update(self.fields)
         new_fields.update(fields)
         return self.__class__(new_fields)
-
-    def __check_fieldnames(self, fieldnames: Iterable[str], /):
-        for name in fieldnames:
-            if name not in self._fields:
-                raise ValueError(f"Field {name!r} not found in the struct schema")
 
     def required_fields(
         self, fieldnames: Iterable[str] | None = None, /
     ) -> ZangarStruct:
         """Make the specified fields required.
 
+        DEPRECATED: this method will be removed in the future.
+
         Args:
             fieldnames: The names of the fields to make required.
                 If not provided, all fields will be made required.
         """
-        if fieldnames is not None:
-            self.__check_fieldnames(fieldnames)
-
-        copy_fields: dict[str, ZangarField] = {}
-        for name, field in self._fields.items():
-            copy_field = copy.copy(field)
-            if fieldnames is None or name in fieldnames:
-                copy_field.required()
-            else:
-                copy_field.optional()
-            copy_fields[name] = copy_field
-        return self.__class__(copy_fields)
+        warnings.warn(
+            "Deprecated, use function `required_fields` instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.__class__(required_fields(self.fields, fieldnames))
 
     def optional_fields(
         self, fieldnames: Iterable[str] | None = None, /
     ) -> ZangarStruct:
         """Make the specified fields optional.
 
+        DEPRECATED: this method will be removed in the future.
+
         Args:
             fieldnames: The names of the fields to make optional.
                 If not provided, all fields will be made optional.
         """
-        if fieldnames is not None:
-            self.__check_fieldnames(fieldnames)
-        if fieldnames is None:
-            return self.required_fields([])
-        return self.required_fields(set(self._fields) - set(fieldnames))
+        warnings.warn(
+            "Deprecated, use function `optional_fields` instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.__class__(optional_fields(self.fields, fieldnames))
 
     def pick_fields(self, fieldnames: Iterable[str], /) -> ZangarStruct:
         """Pick the specified fields.
 
+        DEPRECATED: this method will be removed in the future.
+
         Args:
             fieldnames: The names of the fields to pick.
         """
-        self.__check_fieldnames(fieldnames)
-        copy_fields = {}
-        for name in fieldnames:
-            copy_fields[name] = copy.copy(self._fields[name])
-        return self.__class__(copy_fields)
+        warnings.warn(
+            "Deprecated, use function `pick_fields` instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.__class__(pick_fields(self.fields, fieldnames))
 
     def omit_fields(self, fieldnames: Iterable[str], /) -> ZangarStruct:
         """Pick all fields except the specified ones.
 
+        DEPRECATED: this method will be removed in the future.
+
         Args:
             fieldnames: The names of the fields to omit.
         """
-        self.__check_fieldnames(fieldnames)
-        return self.pick_fields(set(self._fields) - set(fieldnames))
+        warnings.warn(
+            "Deprecated, use function `omit_fields` instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.__class__(omit_fields(self.fields, fieldnames))
 
     def _pretransform(self, value):
         rv = {}
         error = ValidationError()
 
-        for fieldname, field in self._fields.items():
+        for fieldname, field in self.fields.items():
             alias = self._name_to_alias[fieldname]
             if isinstance(value, Mapping):
                 try:
@@ -303,7 +325,7 @@ class ZangarMappingStruct(ZangarStruct):
         assert isinstance(value, Mapping)
         rv = super()._pretransform(value)
 
-        keys = _get_keys(self._fields)
+        keys = _get_keys(self.fields)
         if self.__unknown == "raise":
             error = ValidationError()
             for key in value:
@@ -332,7 +354,7 @@ class ZangarMappingStruct(ZangarStruct):
         return rv
 
 
-def _get_keys(fields: dict[str, ZangarField]) -> set[str]:
+def _get_keys(fields: Mapping[str, ZangarField]) -> set[str]:
     rv = set()
     for name, field in fields.items():
         if field._alias is None:
@@ -340,3 +362,74 @@ def _get_keys(fields: dict[str, ZangarField]) -> set[str]:
         else:
             rv.add(field._alias)
     return rv
+
+
+Fields: t.TypeAlias = t.Mapping[str, ZangarField]
+
+
+def _check_fieldnames(fields: Fields, names: Iterable[str] | None, /):
+    if not names:
+        return
+    for name in names:
+        if name not in fields:
+            raise ValueError(f"Field {name!r} not found in the struct schema")
+
+
+def required_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fields:
+    """Make the specified fields required.
+
+    Args:
+        fields: The fields to make required.
+        names: The names of the fields to make required.
+            If not provided, all fields will be made required.
+    """
+
+    _check_fieldnames(fields, names)
+    copy_fields: dict[str, ZangarField] = {}
+    for name, field in fields.items():
+        copy_field = copy.copy(field)
+        if names is None or name in names:
+            copy_field.required()
+        else:
+            copy_field.optional()
+        copy_fields[name] = copy_field
+    return copy_fields
+
+
+def optional_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fields:
+    """Make the specified fields optional.
+
+    Args:
+        fields: The fields to make optional.
+        names: The names of the fields to make optional.
+            If not provided, all fields will be made optional.
+    """
+    _check_fieldnames(fields, names)
+    if names is None:
+        return required_fields(fields, [])
+    return required_fields(fields, set(fields) - set(names))
+
+
+def pick_fields(fields: Fields, names: Iterable[str], /) -> Fields:
+    """Pick the specified fields.
+
+    Args:
+        fields: The fields to pick from.
+        names: The names of the fields to pick.
+    """
+    _check_fieldnames(fields, names)
+    copy_fields = {}
+    for name in names:
+        copy_fields[name] = copy.copy(fields[name])
+    return copy_fields
+
+
+def omit_fields(fields: Fields, names: Iterable[str], /) -> Fields:
+    """Pick all fields except the specified ones.
+
+    Args:
+        fields: The fields to omit from.
+        names: The names of the fields to omit.
+    """
+    _check_fieldnames(fields, names)
+    return pick_fields(fields, set(fields) - set(names))

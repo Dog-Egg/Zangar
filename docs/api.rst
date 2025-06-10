@@ -24,6 +24,10 @@ Structures
 .. autoclass:: zangar.struct
 .. autoclass:: zangar.mstruct
 .. autoclass:: zangar.field
+.. autofunction:: zangar.required_fields
+.. autofunction:: zangar.optional_fields
+.. autofunction:: zangar.pick_fields
+.. autofunction:: zangar.omit_fields
 
 Private
 -------
