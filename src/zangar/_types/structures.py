@@ -146,7 +146,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         new_fields: dict[str, ZangarField | SchemaBase] = {}
         new_fields.update(self._fields)
         new_fields.update(fields)
-        return ZangarStruct(new_fields)
+        return self.__class__(new_fields)
 
     def __check_fieldnames(self, fieldnames: Iterable[str], /):
         for name in fieldnames:
@@ -272,3 +272,71 @@ class ZangarObject(ZangarStruct):
             DeprecationWarning,
             stacklevel=2,
         )
+
+
+class ZangarMappingStruct(ZangarStruct):
+    """Only supports parsing `Mapping` objects.
+
+    Args:
+        unknown (str): The behavior when encountering unknown fields.
+
+            - "include": Include unknown fields in the parsed result.
+            - "exclude": Exclude unknown fields from the parsed result.
+            - "raise": Raise an error when encountering unknown fields.
+    """
+
+    def __init__(
+        self,
+        *args,
+        unknown: t.Literal["include", "exclude", "raise"] = "exclude",
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+
+        assert unknown in {"include", "exclude", "raise"}
+        self.__unknown = unknown
+
+    def _expected_type(self) -> type:
+        return Mapping
+
+    def _pretransform(self, value):
+        assert isinstance(value, Mapping)
+        rv = super()._pretransform(value)
+
+        keys = _get_keys(self._fields)
+        if self.__unknown == "raise":
+            error = ValidationError()
+            for key in value:
+                if key not in keys:
+                    error._set_child_err(
+                        key,
+                        ValidationError(
+                            get_message(
+                                message=DefaultMessage(name="unknown_field"),
+                                value=key,
+                            )
+                        ),
+                    )
+            if not error._empty():
+                raise error
+
+        elif self.__unknown == "include":
+            for key in value:
+                if key not in keys:
+                    rv[key] = value[key]
+        elif self.__unknown == "exclude":  # pragma: no cover
+            pass
+        else:
+            raise NotImplementedError
+
+        return rv
+
+
+def _get_keys(fields: dict[str, ZangarField]) -> set[str]:
+    rv = set()
+    for name, field in fields.items():
+        if field._alias is None:
+            rv.add(name)
+        else:
+            rv.add(field._alias)
+    return rv

@@ -11,6 +11,7 @@ from ._types import ZangarField as field
 from ._types import ZangarFloat as float
 from ._types import ZangarInt as int
 from ._types import ZangarList as list
+from ._types import ZangarMappingStruct as mstruct
 from ._types import ZangarNone as none
 from ._types import ZangarObject as object
 from ._types import ZangarStr as str

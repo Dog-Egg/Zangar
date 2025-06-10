@@ -11,4 +11,10 @@ from .primitives import (
     ZangarNone,
     ZangarStr,
 )
-from .structures import StructMethods, ZangarField, ZangarObject, ZangarStruct
+from .structures import (
+    StructMethods,
+    ZangarField,
+    ZangarMappingStruct,
+    ZangarObject,
+    ZangarStruct,
+)
