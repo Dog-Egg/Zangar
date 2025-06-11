@@ -395,3 +395,16 @@ class TestMappingStruct:
             "username": "john",
             "email": "john@example.com",
         }
+
+
+class TestDataclass:
+    def test_missing_metadata(self):
+        from dataclasses import dataclass, field
+
+        @dataclass
+        class C:
+            a: str = field(default="test")
+
+        with pytest.raises(RuntimeError) as e:
+            z.dataclass(C)
+        assert e.value.args == ("Need to add 'zangar' metadata to the 'a' field",)

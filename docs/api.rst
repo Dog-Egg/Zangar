@@ -23,6 +23,7 @@ Structures
 
 .. autoclass:: zangar.struct
 .. autoclass:: zangar.mstruct
+.. autoclass:: zangar.dataclass
 .. autoclass:: zangar.field
 .. autofunction:: zangar.required_fields
 .. autofunction:: zangar.optional_fields
@@ -35,7 +36,7 @@ Private
 .. autoclass:: zangar._core.SchemaBase
 
 .. automodule:: zangar._types
-    :members: ZangarStr, ZangarInt, ZangarFloat, ZangarDatetime, ZangarList, ZangarBool, ZangarAny, ZangarObject, ZangarStruct, ZangarMappingStruct, ZangarField, ZangarNone, NumberMethods, StringMethods, StructMethods, DatetimeMethods
+    :members: ZangarStr, ZangarInt, ZangarFloat, ZangarDatetime, ZangarList, ZangarBool, ZangarAny, ZangarObject, ZangarStruct, ZangarMappingStruct, ZangarField, ZangarDataclass, ZangarNone, NumberMethods, StringMethods, StructMethods, DatetimeMethods
     :show-inheritance:
 
 .. automodule:: zangar._conversions
