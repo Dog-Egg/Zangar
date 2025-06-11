@@ -10,6 +10,9 @@ nitpicky = True
 nitpick_ignore_regex = {
     (r"py:.*", r"zangar\._.*"),
 }
+nitpick_ignore = {
+    ("py:class", "dataclasses._DataclassT"),
+}
 
 extensions = [
     "sphinx.ext.autodoc",

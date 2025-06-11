@@ -180,8 +180,10 @@ class TestOpenAPI30:
 
         @dataclass
         class C:
-            a: str = field(default="test")
-            b: str = field(default_factory=lambda: "test")
+            a: str = field(default="test", metadata={"zangar": {"schema": z.str()}})
+            b: str = field(
+                default_factory=lambda: "test", metadata={"zangar": {"schema": z.str()}}
+            )
 
         assert self.compile(z.dataclass(C)) == {
             "type": "object",

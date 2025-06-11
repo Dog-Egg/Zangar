@@ -6,6 +6,7 @@ from ._functional import *
 from ._messages import DefaultMessages
 from ._types import ZangarAny as any
 from ._types import ZangarBool as bool
+from ._types import ZangarDataclass as dataclass
 from ._types import ZangarDatetime as datetime
 from ._types import ZangarField as field
 from ._types import ZangarFloat as float
@@ -22,7 +23,6 @@ from ._types.structures import (
     pick_fields,
     required_fields,
 )
-from .dataclass import dataclass, dc
 from .exceptions import ValidationError
 
 __version__ = __get_version((0, 1, 0, "alpha", 0))

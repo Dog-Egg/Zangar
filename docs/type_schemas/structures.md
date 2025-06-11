@@ -265,3 +265,37 @@ Traceback (most recent call last):
 zangar.exceptions.ValidationError: [{'loc': ['age'], 'msgs': ['Unknown field']}]
 
 ```
+
+## Working with Dataclass
+
+Python’s [dataclass](#dataclasses.dataclass) does not support data validation by default. However, with Zangar, you can now add validation to it.
+
+You need to add metadata named "zangar" to each dataclass field. The value of this metadata will be used as the argument for [](#zangar.field).
+
+```python
+from dataclasses import dataclass, field
+
+import zangar as z
+
+@dataclass
+class InventoryItem:
+    """Class for keeping track of an item in inventory."""
+    name: str = field(metadata={'zangar': {'schema': z.str()}})
+    unit_price: float = field(metadata={'zangar': {'schema': z.float()}})
+    quantity_on_hand: int = field(default=0, metadata={'zangar': {'schema': z.int()}})
+```
+
+```py
+# It's good!
+>>> z.dataclass(InventoryItem).parse({'name': "necklace", 'unit_price': 12.50})
+InventoryItem(name='necklace', unit_price=12.5, quantity_on_hand=0)
+
+```
+
+```py
+# It's bad! because unit_price is not a float.
+>>> z.dataclass(InventoryItem).parse({'name': "necklace", 'unit_price': '12.50'})
+Traceback (most recent call last):
+zangar.exceptions.ValidationError: [{'loc': ['unit_price'], 'msgs': ['Expected float, received str']}]
+
+```

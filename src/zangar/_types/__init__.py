@@ -1,3 +1,4 @@
+from .dataclass import ZangarDataclass
 from .primitives import (
     DatetimeMethods,
     NumberMethods,
