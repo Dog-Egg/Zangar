@@ -5,7 +5,7 @@ from .exceptions import ValidationError
 
 try:
     from dateutil.parser import isoparser
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
 else:
     dt_parser = isoparser("T")
