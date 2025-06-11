@@ -13,7 +13,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dataclass" href="dataclasses.html" />
+    <link rel="next" title="Type Methods" href="methods.html" />
     <link rel="prev" title="Primitives" href="primitives.html" /> 
   </head><body>
     <div class="header-wrapper" role="banner">
@@ -23,7 +23,7 @@
         <div class="rel" role="navigation" aria-label="Related">
           <a href="primitives.html" title="Primitives"
              accesskey="P">previous</a> |
-          <a href="dataclasses.html" title="dataclass"
+          <a href="methods.html" title="Type Methods"
              accesskey="N">next</a> |
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |
@@ -277,6 +277,36 @@
 </pre></div>
 </div>
 </section>
+<section id="working-with-dataclass">
+<h2>Working with Dataclass<a class="headerlink" href="#working-with-dataclass" title="Link to this heading">¶</a></h2>
+<p>Python’s <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="Python 3.13"><span class="xref myst">dataclass</span></a> does not support data validation by default. However, with Zangar, you can now add validation to it.</p>
+<p>You need to add metadata named “zangar” to each dataclass field. The value of this metadata will be used as the argument for <a class="reference internal" href="../api.html#zangar.field" title="zangar.field"><code class="xref myst py py-attr docutils literal notranslate"><span class="pre">zangar.field</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">zangar</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">z</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InventoryItem</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of an item in inventory.&quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zangar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">str</span><span class="p">()}})</span>
+    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zangar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">float</span><span class="p">()}})</span>
+    <span class="n">quantity_on_hand</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;zangar&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="n">z</span><span class="o">.</span><span class="n">int</span><span class="p">()}})</span>
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># It&#39;s good!</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;necklace&quot;</span><span class="p">,</span> <span class="s1">&#39;unit_price&#39;</span><span class="p">:</span> <span class="mf">12.50</span><span class="p">})</span>
+<span class="n">InventoryItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;necklace&#39;</span><span class="p">,</span> <span class="n">unit_price</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">quantity_on_hand</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># It&#39;s bad! because unit_price is not a float.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;necklace&quot;</span><span class="p">,</span> <span class="s1">&#39;unit_price&#39;</span><span class="p">:</span> <span class="s1">&#39;12.50&#39;</span><span class="p">})</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="n">zangar</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;loc&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;unit_price&#39;</span><span class="p">],</span> <span class="s1">&#39;msgs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Expected float, received str&#39;</span><span class="p">]}]</span>
+
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -300,9 +330,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#change-optional-fields">Change Optional Fields</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pick-or-omit-fields">Pick or Omit Fields</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#unknown-fields">Unknown Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-dataclass">Working with Dataclass</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dataclasses.html"><code class="docutils literal notranslate"><span class="pre">dataclass</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="methods.html">Type Methods</a></li>
 </ul>
 </li>
@@ -332,7 +362,7 @@
           <div role="navigation" aria-label="Related">
             <a href="primitives.html" title="Primitives"
               >previous</a> |
-            <a href="dataclasses.html" title="dataclass"
+            <a href="methods.html" title="Type Methods"
               >next</a> |
             <a href="../py-modindex.html" title="Python Module Index"
               >modules</a> |

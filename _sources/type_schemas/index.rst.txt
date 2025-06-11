@@ -5,6 +5,5 @@ Type Schemas
 
     primitives
     structures
-    dataclasses
     methods
 

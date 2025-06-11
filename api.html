@@ -181,6 +181,12 @@
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="zangar.dataclass">
+<span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">dataclass</span></span><a class="headerlink" href="#zangar.dataclass" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarDataclass" title="zangar._types.dataclass.ZangarDataclass"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarDataclass</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="zangar.field">
 <span class="sig-prename descclassname"><span class="pre">zangar.</span></span><span class="sig-name descname"><span class="pre">field</span></span><a class="headerlink" href="#zangar.field" title="Link to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#zangar._types.ZangarField" title="zangar._types.structures.ZangarField"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZangarField</span></code></a></p>
@@ -391,6 +397,19 @@ If not provided, all fields will be made optional.</p></li>
 <dt class="sig sig-object py" id="zangar._types.ZangarBool">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarBool" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeSchema</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zangar._types.ZangarDataclass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zangar._types.</span></span><span class="sig-name descname"><span class="pre">ZangarDataclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">dataclasses._DataclassT</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zangar._types.ZangarDataclass" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></p>
+<p>Convert a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code></a> into a Zangar schema for data validation,
+and the resulting output is an instance of that dataclass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> – The dataclass to convert.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
@@ -621,6 +640,7 @@ If not provided, all fields will be made required.</p>
 <li class="toctree-l2"><a class="reference internal" href="#structures">Structures</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#zangar.struct"><code class="docutils literal notranslate"><span class="pre">struct</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar.mstruct"><code class="docutils literal notranslate"><span class="pre">mstruct</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar.dataclass"><code class="docutils literal notranslate"><span class="pre">dataclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar.field"><code class="docutils literal notranslate"><span class="pre">field</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar.required_fields"><code class="docutils literal notranslate"><span class="pre">required_fields()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar.optional_fields"><code class="docutils literal notranslate"><span class="pre">optional_fields()</span></code></a></li>
@@ -650,6 +670,7 @@ If not provided, all fields will be made required.</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarAny"><code class="docutils literal notranslate"><span class="pre">ZangarAny</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarBool"><code class="docutils literal notranslate"><span class="pre">ZangarBool</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarDataclass"><code class="docutils literal notranslate"><span class="pre">ZangarDataclass</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarDatetime"><code class="docutils literal notranslate"><span class="pre">ZangarDatetime</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarField"><code class="docutils literal notranslate"><span class="pre">ZangarField</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#zangar._types.ZangarFloat"><code class="docutils literal notranslate"><span class="pre">ZangarFloat</span></code></a></li>
