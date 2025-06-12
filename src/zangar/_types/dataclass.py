@@ -20,9 +20,13 @@ class ZangarDataclass(Schema):
     """
 
     def __init__(self, cls: type[dataclasses._DataclassT], /):
-        self.fields = _parse_dataclass(cls)
-        self.struct = ZangarStruct(self.fields)
-        super().__init__(prev=self.struct.transform(lambda d: cls(**d)))
+        self.__struct = ZangarStruct(_parse_dataclass(cls))
+        super().__init__(prev=self.__struct.transform(lambda d: cls(**d)))
+
+    @property
+    def fields(self):
+        """The fields of the dataclass."""
+        return self.__struct.fields
 
 
 def _parse_dataclass(
