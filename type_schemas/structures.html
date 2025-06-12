@@ -359,9 +359,10 @@
 </span></code></pre></div>
 </div>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># It's good!</span>
-</span><span id="line-2"><span class="o">&gt;&gt;&gt;</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span> <span class="s2">"necklace"</span><span class="p">,</span> <span class="s1">'unit_price'</span><span class="p">:</span> <span class="mf">12.50</span><span class="p">})</span>
-</span><span id="line-3"><span class="n">InventoryItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'necklace'</span><span class="p">,</span> <span class="n">unit_price</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">quantity_on_hand</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="line-4">
+</span><span id="line-2"><span class="o">&gt;&gt;&gt;</span> <span class="n">invertory_schema</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">InventoryItem</span><span class="p">)</span>
+</span><span id="line-3"><span class="o">&gt;&gt;&gt;</span> <span class="n">invertory_schema</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span> <span class="s2">"necklace"</span><span class="p">,</span> <span class="s1">'unit_price'</span><span class="p">:</span> <span class="mf">12.50</span><span class="p">})</span>
+</span><span id="line-4"><span class="n">InventoryItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'necklace'</span><span class="p">,</span> <span class="n">unit_price</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">quantity_on_hand</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="line-5">
 </span></code></pre></div>
 </div>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="c1"># It's bad! because unit_price is not a float.</span>
@@ -371,6 +372,15 @@
 </span><span id="line-5">
 </span></code></pre></div>
 </div>
+<section id="dataclass-to-struct">
+<h3>Dataclass to Struct<a class="headerlink" href="#dataclass-to-struct" title="Link to this heading" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#dataclass-to-struct'">¶</a></h3>
+<p>You can create a struct with <a class="reference internal" href="../api.html#zangar.dataclass" title="zangar.dataclass"><code class="xref myst py py-attr docutils literal notranslate"><span class="pre">dataclass</span></code></a> fields</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">mstruct</span><span class="p">(</span><span class="n">invertory_schema</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="n">unknown</span><span class="o">=</span><span class="s1">'include'</span><span class="p">)</span><span class="o">.</span><span class="n">parse</span><span class="p">({</span><span class="s1">'name'</span><span class="p">:</span> <span class="s2">"necklace"</span><span class="p">,</span> <span class="s1">'unit_price'</span><span class="p">:</span> <span class="mf">12.50</span><span class="p">,</span> <span class="s1">'from'</span><span class="p">:</span> <span class="s2">"China"</span><span class="p">})</span>
+</span><span id="line-2"><span class="go">{'name': 'necklace', 'unit_price': 12.5, 'quantity_on_hand': 0, 'from': 'China'}</span>
+</span><span id="line-3">
+</span></code></pre></div>
+</div>
+</section>
 </section>
 </section>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
@@ -384,7 +394,10 @@
 <li><a :data-current="activeSection === '#change-optional-fields'" class="reference internal" href="#change-optional-fields">Change Optional Fields</a></li>
 <li><a :data-current="activeSection === '#pick-or-omit-fields'" class="reference internal" href="#pick-or-omit-fields">Pick or Omit Fields</a></li>
 <li><a :data-current="activeSection === '#unknown-fields'" class="reference internal" href="#unknown-fields">Unknown Fields</a></li>
-<li><a :data-current="activeSection === '#working-with-dataclass'" class="reference internal" href="#working-with-dataclass">Working with Dataclass</a></li>
+<li><a :data-current="activeSection === '#working-with-dataclass'" class="reference internal" href="#working-with-dataclass">Working with Dataclass</a><ul>
+<li><a :data-current="activeSection === '#dataclass-to-struct'" class="reference internal" href="#dataclass-to-struct">Dataclass to Struct</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </aside>

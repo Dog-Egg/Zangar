@@ -287,7 +287,8 @@ class InventoryItem:
 
 ```py
 # It's good!
->>> z.dataclass(InventoryItem).parse({'name': "necklace", 'unit_price': 12.50})
+>>> invertory_schema = z.dataclass(InventoryItem)
+>>> invertory_schema.parse({'name': "necklace", 'unit_price': 12.50})
 InventoryItem(name='necklace', unit_price=12.5, quantity_on_hand=0)
 
 ```
@@ -297,5 +298,15 @@ InventoryItem(name='necklace', unit_price=12.5, quantity_on_hand=0)
 >>> z.dataclass(InventoryItem).parse({'name': "necklace", 'unit_price': '12.50'})
 Traceback (most recent call last):
 zangar.exceptions.ValidationError: [{'loc': ['unit_price'], 'msgs': ['Expected float, received str']}]
+
+```
+
+### Dataclass to Struct
+
+You can create a struct with [](#dataclass) fields
+
+```py
+>>> z.mstruct(invertory_schema.fields, unknown='include').parse({'name': "necklace", 'unit_price': 12.50, 'from': "China"})
+{'name': 'necklace', 'unit_price': 12.5, 'quantity_on_hand': 0, 'from': 'China'}
 
 ```
