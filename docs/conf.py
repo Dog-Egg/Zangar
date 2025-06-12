@@ -25,4 +25,6 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
 
-html_theme = "agogo"
+html_theme = "sphinxawesome_theme"
+html_favicon = "_assets/favicon.png"
+html_logo = "_assets/logo.png"
