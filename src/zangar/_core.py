@@ -5,7 +5,7 @@ import typing as t
 from collections.abc import Callable
 
 from ._messages import DefaultMessage, get_message
-from .exceptions import ValidationError
+from .exceptions import UnionValidationError, ValidationError
 
 T = t.TypeVar("T")
 P = t.TypeVar("P")
@@ -201,23 +201,15 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
         self._schemas = (a, b)
 
         def transform(value):
-            errors: list[ValidationError] = []
+            errors = []
             for item in self._schemas:
                 try:
                     return item.parse(t.cast(t.Any, value))
                 except ValidationError as e:
                     errors.append(e)
-
-            for err in errors:
-                # 如果异常有子级错误，优先抛出有子级错误的异常
-                if err._has_child_err():
-                    raise err
-
-            # 如果没有子级错误，则将所有异常合并为一个异常抛出
-            parent_error = ValidationError()
-            for err in errors:
-                parent_error._set_peer_err(err)
-            raise parent_error
+            if errors:
+                raise UnionValidationError(errors)
+            raise NotImplementedError
 
         super().__init__(
             prev=Schema().transform(transform),

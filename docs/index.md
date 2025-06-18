@@ -152,7 +152,7 @@ Zangar provides a way to create a union schema using the `|` operator, where the
 
 >>> int_or_none.parse('a')
 Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'msgs': ['Expected int, received str', 'Expected NoneType, received str']}]
+zangar.exceptions.UnionValidationError: [{'msgs': ['Expected int, received str']}, {'msgs': ['Expected NoneType, received str']}]
 
 ```
 

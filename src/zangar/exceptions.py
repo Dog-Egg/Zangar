@@ -58,3 +58,15 @@ class ValidationError(Exception):
             rv.extend(fields)
 
         return rv
+
+
+class UnionValidationError(ValidationError):
+    def __init__(self, errors: list[ValidationError]):
+        self.__errors = errors
+        super().__init__()
+
+    def format_errors(self):
+        rv = []
+        for e in self.__errors:
+            rv.extend(e.format_errors())
+        return rv
