@@ -242,7 +242,16 @@ class TestUnion:
         with pytest.raises(z.ValidationError) as e:
             union.parse("string")
         assert e.value.format_errors() == [
-            {"msgs": ["Expected int, received str", "Expected NoneType, received str"]},
+            {
+                "msgs": [
+                    "Expected int, received str",
+                ],
+            },
+            {
+                "msgs": [
+                    "Expected NoneType, received str",
+                ],
+            },
         ]
 
         # next transform
@@ -252,7 +261,16 @@ class TestUnion:
         with pytest.raises(z.ValidationError) as e:
             schema.parse("string")
         assert e.value.format_errors() == [
-            {"msgs": ["Expected int, received str", "Expected NoneType, received str"]},
+            {
+                "msgs": [
+                    "Expected int, received str",
+                ],
+            },
+            {
+                "msgs": [
+                    "Expected NoneType, received str",
+                ],
+            },
         ]
 
     def test_order(self):
@@ -267,6 +285,11 @@ class TestUnion:
             {
                 "loc": [0],
                 "msgs": ["Expected str, received int"],
+            },
+            {
+                "msgs": [
+                    "Expected bool, received list",
+                ]
             },
         ]
 
