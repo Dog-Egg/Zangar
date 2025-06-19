@@ -216,6 +216,15 @@ class TestStruct:
         with pytest.warns(DeprecationWarning):
             assert self.__get_fields(obj.omit_fields(["a"])) == ["b"]
 
+    def test_field_getter(self):
+        assert z.struct(
+            {
+                "fullname": z.field(
+                    z.str(), getter=lambda o: f"{o['firstname']} {o['lastname']}"
+                ),
+            }
+        ).parse({"firstname": "John", "lastname": "Doe"}) == {"fullname": "John Doe"}
+
 
 class TestList:
     def test_parse_wrong_type(self):

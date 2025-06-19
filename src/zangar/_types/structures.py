@@ -4,6 +4,7 @@ import copy
 import typing as t
 import warnings
 from collections.abc import Callable, Iterable, Mapping
+from functools import partial
 from operator import getitem
 from types import MappingProxyType
 
@@ -19,6 +20,14 @@ _empty: t.Any = object()
 
 
 class ZangarField(t.Generic[T]):
+    """A field in a struct.
+
+    Args:
+        schema: The schema of the field.
+        alias: The alias of the field.
+        getter: A custom function used to obtain the field value.
+    """
+
     _empty = _empty
 
     def __init__(
@@ -26,9 +35,11 @@ class ZangarField(t.Generic[T]):
         schema: SchemaBase[T],
         *,
         alias: str | None = None,
+        getter: Callable[[t.Any], t.Any] | None = None,
     ) -> None:
         self._schema = schema
         self.__alias = alias
+        self._getter = getter
         self._required = True
         self._required_message = None
         self._default: Callable[[], T] | T = _empty
@@ -237,19 +248,18 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         rv = {}
         error = ValidationError()
 
+        getter: t.Callable[[t.Any], t.Any]
+
         for fieldname, field in self.fields.items():
             alias = self._name_to_alias[fieldname]
-            if isinstance(value, Mapping):
-                try:
-                    field_value = getitem(value, alias)
-                except KeyError:
-                    field_value = _empty
-            else:
-                try:
-                    field_value = getattr(value, alias)
-                except AttributeError:
-                    field_value = _empty
 
+            # getter
+            if field._getter is None:
+                getter = partial(_getter, key=alias)
+            else:
+                getter = field._getter
+
+            field_value = getter(value)
             if field_value is _empty:
                 if field._required:
                     error._set_child_err(
@@ -282,6 +292,19 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
             raise error
 
         return rv
+
+
+def _getter(value, key):
+    if isinstance(value, Mapping):
+        try:
+            return getitem(value, key)
+        except KeyError:
+            return _empty
+    else:
+        try:
+            return getattr(value, key)
+        except AttributeError:
+            return _empty
 
 
 class ZangarObject(ZangarStruct):
