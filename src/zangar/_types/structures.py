@@ -4,7 +4,6 @@ import copy
 import typing as t
 import warnings
 from collections.abc import Callable, Iterable, Mapping
-from functools import partial
 from operator import getitem
 from types import MappingProxyType
 
@@ -38,22 +37,32 @@ class ZangarField(t.Generic[T]):
         getter: Callable[[t.Any], t.Any] | None = None,
     ) -> None:
         self._schema = schema
-        self.__alias = alias
-        self._getter = getter
+        self._alias = alias
+        self.__getter = getter
         self._required = True
-        self._required_message = None
+        self.__required_message = None
         self._default: Callable[[], T] | T = _empty
 
-    def _get_default(self):
-        if callable(self._default):
-            return self._default()
-        return self._default
-
-    @property
-    def _alias(self):
-        return self.__alias
-
-    def parse(self, value, /):
+    def __call__(self, obj, key: str):
+        if self.__getter is None:
+            value = _getter(obj, key)
+        else:
+            value = self.__getter(obj)
+        if value is self._empty:
+            if self._required:
+                raise ValidationError(
+                    get_message(
+                        message=(
+                            self.__required_message
+                            if self.__required_message is not None
+                            else DefaultMessage(name="field_required")
+                        ),
+                        value=None,
+                    )
+                )
+            if callable(self._default):
+                return self._default()
+            return self._default
         return self._schema.parse(value)
 
     def optional(self, *, default: T | Callable[[], T] = _empty):
@@ -64,7 +73,7 @@ class ZangarField(t.Generic[T]):
     def required(self, /, *, message=None):
         self._required = True
         if message is not None:
-            self._required_message = message
+            self.__required_message = message
         return self
 
 
@@ -248,45 +257,15 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         rv = {}
         error = ValidationError()
 
-        getter: t.Callable[[t.Any], t.Any]
-
         for fieldname, field in self.fields.items():
-            alias = self._name_to_alias[fieldname]
-
-            # getter
-            if field._getter is None:
-                getter = partial(_getter, key=alias)
+            key = fieldname if field._alias is None else field._alias
+            try:
+                fieldvalue = field(value, key)
+            except ValidationError as e:
+                error._set_child_err(key, e)
             else:
-                getter = field._getter
-
-            field_value = getter(value)
-            if field_value is _empty:
-                if field._required:
-                    error._set_child_err(
-                        alias,
-                        ValidationError(
-                            get_message(
-                                message=(
-                                    field._required_message
-                                    if field._required_message is not None
-                                    else DefaultMessage(name="field_required")
-                                ),
-                                value=None,
-                            )
-                        ),
-                    )
-                    continue
-
-                default = field._get_default()
-                if default is not ZangarField._empty:
-                    rv[fieldname] = default
-            else:
-                try:
-                    field_value = field.parse(field_value)
-                except ValidationError as e:
-                    error._set_child_err(alias, e)
-                else:
-                    rv[fieldname] = field_value
+                if fieldvalue is not _empty:
+                    rv[fieldname] = fieldvalue
 
         if not error._empty():
             raise error
