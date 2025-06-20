@@ -7,11 +7,8 @@ from collections.abc import Mapping
 from .._core import Schema
 from .structures import ZangarField, ZangarStruct
 
-T = t.TypeVar("T")
 
-
-# pylint: disable=invalid-name
-class ZangarDataclass(Schema):
+class ZangarDataclass(Schema["dataclasses._DataclassT"]):
     """Convert a `dataclasses.dataclass` into a Zangar schema for data validation,
     and the resulting output is an instance of that dataclass.
 
