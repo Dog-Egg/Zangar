@@ -45,7 +45,7 @@ def ensure(func: Callable[[T], builtins.bool], /, **kwargs):
     return Schema().ensure(func, **kwargs)
 
 
-def transform(func: Callable[[t.Any], T], /, **kwargs):
+def transform(func: Callable[[t.Any], T], /, **kwargs) -> Schema[T]:
     """Transform the value.
 
     Args:
