@@ -1,33 +1,16 @@
 from __future__ import annotations
 
 import dataclasses
+from typing import assert_type
 
 import zangar as z
 
-
-def check_transform() -> int:
-    return z.transform(int).parse("1")
-
-
-def check_transform_ensure() -> int:
-    return z.str().transform(lambda x: len(x)).ensure(lambda x: x > 1).parse("1")
-
-
-def check_none() -> None:
-    return z.none().parse(1)
-
-
-def check_struct() -> dict:
-    return z.struct({}).ensure(lambda x: "a" in x).parse(object())
-
-
-def check_union() -> int | str:
-    int_or_str = z.int() | z.str()
-    return int_or_str.parse(1)
-
-
-def check_list() -> list[int]:
-    return z.list(z.int()).parse([1, 2])
+assert_type(z.transform(int).parse("1"), int)
+assert_type(z.str().transform(lambda x: len(x)).ensure(lambda x: x > 1).parse("1"), int)
+assert_type(z.none().parse(1), None)
+assert_type(z.struct({}).ensure(lambda x: "a" in x).parse(object()), dict)
+assert_type((z.int() | z.str()).parse(1), int | str)
+assert_type(z.list(z.int()).parse([]), list[int])
 
 
 @dataclasses.dataclass
@@ -36,12 +19,4 @@ class Point:
     y: int
 
 
-def check_dataclass():
-    return z.dataclass(Point).parse({"x": 1, "y": 2})
-
-
-def check_dataclass_ensure():
-    def ensure_fn(o: Point):
-        return o.x > 0
-
-    return z.dataclass(Point).ensure(ensure_fn).parse({"x": 1, "y": 2})
+assert_type(z.dataclass(Point).ensure(lambda _: True).parse({}), Point)

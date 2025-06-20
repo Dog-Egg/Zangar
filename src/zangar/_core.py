@@ -63,19 +63,19 @@ class SchemaBase(t.Generic[T], abc.ABC):
 
 
 class TransformationValidator:
-    def __init__(self, func) -> None:
+    def __init__(self, func: Callable[[t.Any], t.Any]) -> None:
         self.__func = func
 
-    def __call__(self, value):
+    def __call__(self, value: t.Any) -> t.Any:
         return self.__func(value)
 
 
 class EnsuranceValidator:
-    def __init__(self, func, break_on_failure) -> None:
+    def __init__(self, func: Callable[[t.Any], None], break_on_failure: bool) -> None:
         self.__func = func
         self.break_on_failure = break_on_failure
 
-    def __call__(self, value):
+    def __call__(self, value: t.Any) -> None:
         return self.__func(value)
 
 
@@ -89,10 +89,10 @@ class Schema(SchemaBase[T]):
     def __init__(
         self,
         *,
-        prev: Schema | None = None,
+        prev: Schema[t.Any] | None = None,
         validator: TransformationValidator | EnsuranceValidator | None = None,
         meta: dict | None = None,
-    ):
+    ) -> None:
         self.__prev = prev
         self._validator = validator
 
@@ -130,7 +130,7 @@ class Schema(SchemaBase[T]):
                     )
                 )
 
-        return Schema(
+        return Schema[T](
             prev=self,
             validator=EnsuranceValidator(validate, break_on_failure),
             meta=meta,
@@ -143,7 +143,7 @@ class Schema(SchemaBase[T]):
         *,
         message: t.Any | Callable[[T], t.Any] = None,
         meta: dict | None = None,
-    ):
+    ) -> Schema[P]:
         def validate(value):
             try:
                 return func(value)
@@ -165,10 +165,10 @@ class Schema(SchemaBase[T]):
             prev=self, validator=TransformationValidator(validate), meta=meta
         )
 
-    def relay(self, other: SchemaBase[P], /):
+    def relay(self, other: SchemaBase[P], /) -> Schema[P]:
         return self.transform(other.parse)
 
-    def _iterate_chain(self):
+    def _iterate_chain(self) -> t.Iterator[Schema[t.Any]]:
         if self.__prev is not None:
             yield from self.__prev._iterate_chain()
         yield self
