@@ -5,6 +5,7 @@ API Reference
 .. autofunction:: zangar.ensure
 .. autofunction:: zangar.transform
 .. autofunction:: zangar.ref
+.. autofunction:: zangar.isinstance
 
 Base Types
 ----------

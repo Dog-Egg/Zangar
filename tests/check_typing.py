@@ -11,6 +11,7 @@ assert_type(z.none().parse(1), None)
 assert_type(z.struct({}).ensure(lambda x: "a" in x).parse(object()), dict)
 assert_type((z.int() | z.str()).parse(1), int | str)
 assert_type(z.list(z.int()).parse([]), list[int])
+assert_type(z.isinstance(int).parse(""), int)
 
 
 @dataclasses.dataclass

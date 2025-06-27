@@ -440,3 +440,18 @@ class TestDataclass:
         with pytest.raises(RuntimeError) as e:
             z.dataclass(C)
         assert e.value.args == ("Need to add 'zangar' metadata to the 'a' field",)
+
+
+def test_isinstance():
+    schema = z.isinstance(int)
+    assert schema.parse(1) == 1
+
+    with pytest.raises(z.ValidationError) as e:
+        schema.parse("string")
+    assert e.value.format_errors() == [
+        {
+            "msgs": [
+                "Expected int, received str",
+            ]
+        }
+    ]
