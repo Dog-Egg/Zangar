@@ -6,11 +6,13 @@ import typing as t
 from collections.abc import Callable
 
 from ._core import Schema
+from ._messages import DefaultMessage
 
 __all__ = [
     "ensure",
     "transform",
     "ref",
+    "isinstance",
 ]
 
 
@@ -53,3 +55,20 @@ def transform(func: Callable[[t.Any], T], /, **kwargs) -> Schema[T]:
         message: The error message to display when the transformation fails.
     """
     return Schema().transform(func, **kwargs)
+
+
+def isinstance(cls: type[T], /, **kwargs) -> Schema[T]:
+    """Validate that the value is an instance of the given class.
+
+    This is equivalent to ``z.ensure(lambda obj: isinstance(obj, cls))``,
+        but this function provides more effective type hints.
+
+    Args:
+        cls: The class to check.
+        message: The error message to display when the validation fails.
+    """
+    if "message" not in kwargs:
+        kwargs.update(
+            message=DefaultMessage(name="type_check", ctx={"expected_type": cls})
+        )
+    return ensure(lambda obj: builtins.isinstance(obj, cls), **kwargs)
