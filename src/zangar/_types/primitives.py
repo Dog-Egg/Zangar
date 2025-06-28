@@ -19,7 +19,9 @@ class StringMethods(Schema):
             value: The minimum length of the string.
             message: The error message to display when the validation fails.
         """
-        kwargs.setdefault("message", DefaultMessage(name="str_min", ctx={"min": value}))
+        kwargs.setdefault(
+            "message", DefaultMessage(key="str_min", value=value, ctx={"min": value})
+        )
         return StringMethods(
             prev=self.ensure(lambda x: len(x) >= value, **kwargs),
             meta={"$min": value},
@@ -32,7 +34,9 @@ class StringMethods(Schema):
             value: The maximum length of the string.
             message: The error message to display when the validation fails.
         """
-        kwargs.setdefault("message", DefaultMessage(name="str_max", ctx={"max": value}))
+        kwargs.setdefault(
+            "message", DefaultMessage(key="str_max", value=value, ctx={"max": value})
+        )
         return StringMethods(
             prev=self.ensure(lambda x: len(x) <= value, **kwargs),
             meta={"$max": value},
@@ -59,7 +63,7 @@ class NumberMethods(Schema):
             message: The error message to display when the validation fails.
         """
         kwargs.setdefault(
-            "message", DefaultMessage(name="number_gte", ctx={"gte": value})
+            "message", DefaultMessage(key="number_gte", value=value, ctx={"gte": value})
         )
         return NumberMethods(
             prev=self.ensure(lambda x: x >= value, **kwargs), meta={"$gte": value}
@@ -73,7 +77,7 @@ class NumberMethods(Schema):
             message: The error message to display when the validation fails.
         """
         kwargs.setdefault(
-            "message", DefaultMessage(name="number_gt", ctx={"gt": value})
+            "message", DefaultMessage(key="number_gt", value=value, ctx={"gt": value})
         )
         return NumberMethods(
             prev=self.ensure(lambda x: x > value, **kwargs), meta={"$gt": value}
@@ -87,7 +91,7 @@ class NumberMethods(Schema):
             message: The error message to display when the validation fails.
         """
         kwargs.setdefault(
-            "message", DefaultMessage(name="number_lte", ctx={"lte": value})
+            "message", DefaultMessage(key="number_lte", value=value, ctx={"lte": value})
         )
         return NumberMethods(
             prev=self.ensure(lambda x: x <= value, **kwargs), meta={"$lte": value}
@@ -101,7 +105,7 @@ class NumberMethods(Schema):
             message: The error message to display when the validation fails.
         """
         kwargs.setdefault(
-            "message", DefaultMessage(name="number_lt", ctx={"lt": value})
+            "message", DefaultMessage(key="number_lt", value=value, ctx={"lt": value})
         )
         return NumberMethods(
             prev=self.ensure(lambda x: x < value, **kwargs), meta={"$lt": value}
@@ -141,11 +145,17 @@ class DatetimeMethods(Schema[datetime.datetime]):
         return d.tzinfo is not None and d.tzinfo.utcoffset(d) is not None
 
     def is_aware(self, **kwargs):
-        kwargs.setdefault("message", DefaultMessage(name="datetime_is_aware"))
+        kwargs.setdefault(
+            "message",
+            lambda value: DefaultMessage(key="datetime_is_aware", value=value),
+        )
         return DatetimeMethods(prev=self.ensure(self.__is_aware, **kwargs))
 
     def is_naive(self, **kwargs):
-        kwargs.setdefault("message", DefaultMessage(name="datetime_is_naive"))
+        kwargs.setdefault(
+            "message",
+            lambda value: DefaultMessage(key="datetime_is_naive", value=value),
+        )
         return DatetimeMethods(
             prev=self.ensure(lambda x: not self.__is_aware(x), **kwargs)
         )

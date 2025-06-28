@@ -67,8 +67,10 @@ def isinstance(cls: type[T], /, **kwargs) -> Schema[T]:
         cls: The class to check.
         message: The error message to display when the validation fails.
     """
-    if "message" not in kwargs:
-        kwargs.update(
-            message=DefaultMessage(name="type_check", ctx={"expected_type": cls})
-        )
+    kwargs.setdefault(
+        "message",
+        lambda value: DefaultMessage(
+            key="type_check", value=value, ctx={"expected_type": cls}
+        ),
+    )
     return ensure(lambda obj: builtins.isinstance(obj, cls), **kwargs)

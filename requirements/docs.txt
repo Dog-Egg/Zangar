@@ -1,3 +1,4 @@
 sphinx
 sphinxawesome-theme
 myst_parser
+tabulate

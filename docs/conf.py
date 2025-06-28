@@ -4,6 +4,7 @@ from dataclasses import asdict
 
 from sphinxawesome_theme import ThemeOptions
 
+sys.path.insert(0, str(pathlib.Path(__file__).parent / "_ext"))
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "src"))
 
 project = "Zangar"
@@ -21,7 +22,9 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinx.ext.doctest",
     "myst_parser",
+    "custom_tables",
 ]
 
 intersphinx_mapping = {

@@ -25,8 +25,10 @@ class TypeSchema(Schema[T], abc.ABC):
                 message=(
                     message
                     if message is not None
-                    else DefaultMessage(
-                        name="type_convertion", ctx={"expected_type": expected_type}
+                    else lambda value: DefaultMessage(
+                        key="type_convertion",
+                        value=value,
+                        ctx={"expected_type": expected_type},
                     )
                 ),
             )
@@ -35,8 +37,10 @@ class TypeSchema(Schema[T], abc.ABC):
                 message=(
                     message
                     if message is not None
-                    else DefaultMessage(
-                        name="type_check", ctx={"expected_type": expected_type}
+                    else lambda value: DefaultMessage(
+                        key="type_check",
+                        ctx={"expected_type": expected_type},
+                        value=value,
                     )
                 ),
             )
