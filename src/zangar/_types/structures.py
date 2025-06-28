@@ -8,7 +8,7 @@ from operator import getitem
 from types import MappingProxyType
 
 from zangar._core import Schema, SchemaBase
-from zangar._messages import DefaultMessage, get_message
+from zangar._messages import DefaultMessage, process_message
 from zangar.exceptions import ValidationError
 
 from .base import TypeSchema
@@ -51,11 +51,11 @@ class ZangarField(t.Generic[T]):
         if value is self._empty:
             if self._required:
                 raise ValidationError(
-                    get_message(
-                        message=(
+                    process_message(
+                        (
                             self.__required_message
                             if self.__required_message is not None
-                            else DefaultMessage(name="field_required")
+                            else DefaultMessage(key="field_required", value=None)
                         ),
                         value=None,
                     )
@@ -103,21 +103,21 @@ class StructMethods(Schema[T]):
             message: The error message to display when the validation fails.
         """
 
-        def inner_func(value):
-            if func(value):
+        def inner_func(fieldval):
+            if func(fieldval):
                 return True
             error = ValidationError()
             for fieldname in fieldnames:
                 error._set_child_err(
                     self.__name_to_alias[fieldname],
                     ValidationError(
-                        get_message(
+                        process_message(
                             (
                                 message
                                 if message is not None
-                                else DefaultMessage(name="ensure_failed")
+                                else DefaultMessage(key="ensure_failed", value=fieldval)
                             ),
-                            value=value,
+                            value=fieldval,
                         )
                     ),
                 )
@@ -330,14 +330,14 @@ class ZangarMappingStruct(ZangarStruct):
         keys = _get_keys(self.fields)
         if self.__unknown == "raise":
             error = ValidationError()
-            for key in value:
-                if key not in keys:
+            for k, v in value.items():
+                if k not in keys:
                     error._set_child_err(
-                        key,
+                        k,
                         ValidationError(
-                            get_message(
-                                message=DefaultMessage(name="unknown_field"),
-                                value=key,
+                            process_message(
+                                message=DefaultMessage(key="unknown_field", value=v),
+                                value=v,
                             )
                         ),
                     )
@@ -345,9 +345,9 @@ class ZangarMappingStruct(ZangarStruct):
                 raise error
 
         elif self.__unknown == "include":
-            for key in value:
-                if key not in keys:
-                    rv[key] = value[key]
+            for k in value:
+                if k not in keys:
+                    rv[k] = value[k]
         elif self.__unknown == "exclude":  # pragma: no cover
             pass
         else:

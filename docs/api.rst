@@ -43,3 +43,10 @@ Private
 .. automodule:: zangar._conversions
     :members: ZangarToStr, ZangarToInt, ZangarToFloat, ZangarToDatetime, ZangarToList
     :show-inheritance:
+
+Messages
+--------
+
+.. autoclass:: zangar.MessageContext
+    :members:
+.. autoclass:: zangar.DefaultMessage

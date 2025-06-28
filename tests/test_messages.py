@@ -24,6 +24,11 @@ def test_DefaultMessages():
             z.str().min(1).parse("")
         assert e.value.format_errors() == [{"msgs": ["Min length is 1"]}]
 
+        # 参数 message 优先级更高
+        with pytest.raises(z.ValidationError) as e:
+            z.str().min(1, message="最小值为1").parse("")
+        assert e.value.format_errors() == [{"msgs": ["最小值为1"]}]
+
         with pytest.raises(z.ValidationError) as e:
             z.str().max(1).parse("123")
         assert e.value.format_errors() == [

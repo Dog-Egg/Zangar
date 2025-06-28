@@ -4,7 +4,7 @@ import abc
 import typing as t
 from collections.abc import Callable
 
-from ._messages import DefaultMessage, get_message
+from ._messages import DefaultMessage, process_message
 from .exceptions import UnionValidationError, ValidationError
 
 T = t.TypeVar("T")
@@ -120,11 +120,11 @@ class Schema(SchemaBase[T]):
         def validate(value):
             if not func(value):
                 raise ValidationError(
-                    get_message(
-                        message=(
+                    process_message(
+                        (
                             message
                             if message is not None
-                            else DefaultMessage(name="ensure_failed")
+                            else DefaultMessage(key="ensure_failed", value=value)
                         ),
                         value=value,
                     )
@@ -151,13 +151,15 @@ class Schema(SchemaBase[T]):
                 if isinstance(e, ValidationError):
                     raise e
                 raise ValidationError(
-                    get_message(
-                        message=(
+                    process_message(
+                        (
                             message
                             if message is not None
-                            else DefaultMessage(name="transform_failed", ctx={"exc": e})
+                            else DefaultMessage(
+                                key="transform_failed", ctx={"exc": e}, value=value
+                            )
                         ),
-                        value=value,
+                        value,
                     )
                 ) from e
 
