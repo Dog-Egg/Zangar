@@ -1,7 +1,7 @@
 ```{toctree}
 :hidden:
 
-type_schemas/index
+structures
 messages
 circular_reference
 exceptions

@@ -1,3 +1,10 @@
+from .conversions import (
+    ZangarToDatetime,
+    ZangarToFloat,
+    ZangarToInt,
+    ZangarToList,
+    ZangarToStr,
+)
 from .dataclass import ZangarDataclass
 from .primitives import (
     DatetimeMethods,
