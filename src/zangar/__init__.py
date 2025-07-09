@@ -1,6 +1,5 @@
 from zangar.utils.version import get_version as __get_version
 
-from ._conversions import to
 from ._core import SchemaBase as Schema
 from ._functional import *
 from ._messages import DefaultMessage, DefaultMessages, MessageContext
@@ -17,6 +16,7 @@ from ._types import ZangarNone as none
 from ._types import ZangarObject as object
 from ._types import ZangarStr as str
 from ._types import ZangarStruct as struct
+from ._types.conversions import to
 from ._types.structures import (
     omit_fields,
     optional_fields,

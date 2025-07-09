@@ -37,12 +37,9 @@ Private
 .. autoclass:: zangar._core.SchemaBase
 
 .. automodule:: zangar._types
-    :members: ZangarStr, ZangarInt, ZangarFloat, ZangarDatetime, ZangarList, ZangarBool, ZangarAny, ZangarObject, ZangarStruct, ZangarMappingStruct, ZangarField, ZangarDataclass, ZangarNone, NumberMethods, StringMethods, StructMethods, DatetimeMethods
+    :members: 
     :show-inheritance:
-
-.. automodule:: zangar._conversions
-    :members: ZangarToStr, ZangarToInt, ZangarToFloat, ZangarToDatetime, ZangarToList
-    :show-inheritance:
+    :imported-members:
 
 Messages
 --------
