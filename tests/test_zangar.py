@@ -455,3 +455,36 @@ def test_isinstance():
             ]
         }
     ]
+
+
+def test_relay():
+    assert z.str().relay(z.to.int()).parse("1") == 1
+
+
+def test_break_on_failure():
+    schema = (
+        z.int()
+        .ensure(
+            lambda x: x > 0,
+            break_on_failure=True,
+            message="The value should be greater than 0",
+        )
+        .ensure(lambda x: x < 10)
+    )
+    with pytest.raises(z.ValidationError) as e:
+        schema.parse(-1)
+    assert e.value.format_errors() == [{"msgs": ["The value should be greater than 0"]}]
+
+    schema = (
+        z.int()
+        .ensure(
+            lambda x: x > 0,
+            message="The value should be greater than 0",
+        )
+        .ensure(lambda x: x > 10)
+    )
+    with pytest.raises(z.ValidationError) as e:
+        schema.parse(-1)
+    assert e.value.format_errors() == [
+        {"msgs": ["The value should be greater than 0", "Invalid value"]}
+    ]
