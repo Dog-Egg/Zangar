@@ -36,8 +36,8 @@ class OpenAPI30Compiler:
         properties = {}
         required = []
         for name, field in schema.fields.items():
-            key = name if field._alias is None else field._alias
-            properties[key] = self._compile(field._schema, spec)
+            key = name if field.alias is None else field.alias
+            properties[key] = self._compile(field.schema, spec)
             if field._default is not field._empty and not callable(field._default):
                 properties[key].update(default=field._default)
             if field._required:
@@ -47,10 +47,10 @@ class OpenAPI30Compiler:
         if required:
             spec.update(required=required)
 
-    def _compile_list(self, schema, spec, _):
+    def _compile_list(self, schema: ZangarList, spec, _):
         spec.update(
             type="array",
-            items=self._compile(schema._item),
+            items=self._compile(schema.item),
         )
 
     def _compile_union(self, schema, spec, _):
