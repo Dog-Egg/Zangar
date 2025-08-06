@@ -332,14 +332,18 @@ class ZangarList(TypeSchema[t.List[T]]):
 
     def __init__(self, item: SchemaBase[T] | None = None, /, **kwargs):
         super().__init__(**kwargs)
-        self._item = item or ZangarAny()
+        self.__item = item or ZangarAny()
+
+    @property
+    def item(self):
+        return self.__item
 
     def _pretransform(self, value):
         rv = []
         error = ValidationError()
         for index, item in enumerate(value):
             try:
-                item = self._item.parse(item)
+                item = self.__item.parse(item)
             except ValidationError as exc:
                 error._set_child_err(index, exc)
             rv.append(item)

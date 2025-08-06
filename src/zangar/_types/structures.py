@@ -23,7 +23,7 @@ class ZangarField(t.Generic[T]):
 
     Args:
         schema: The schema of the field.
-        alias: The alias of the field.
+        alias: The field alias name, if not `None`, will be used to construct the parsed field name.
         getter: A custom function used to obtain the field value.
     """
 
@@ -36,12 +36,20 @@ class ZangarField(t.Generic[T]):
         alias: str | None = None,
         getter: Callable[[t.Any], t.Any] | None = None,
     ) -> None:
-        self._schema = schema
-        self._alias = alias
+        self.__schema = schema
+        self.__alias = alias
         self.__getter = getter
         self._required = True
         self.__required_message = None
         self._default: Callable[[], T] | T = _empty
+
+    @property
+    def alias(self) -> str | None:
+        return self.__alias
+
+    @property
+    def schema(self):
+        return self.__schema
 
     def __call__(self, obj, key: str):
         if self.__getter is None:
@@ -63,7 +71,7 @@ class ZangarField(t.Generic[T]):
             if callable(self._default):
                 return self._default()
             return self._default
-        return self._schema.parse(value)
+        return self.__schema.parse(value)
 
     def optional(self, *, default: T | Callable[[], T] = _empty):
         self._required = False
@@ -157,7 +165,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
 
         self._name_to_alias, self._alias_to_name = {}, {}
         for name, field in self.fields.items():
-            alias = field._alias or name
+            alias = field.alias or name
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
 
@@ -258,7 +266,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         error = ValidationError()
 
         for fieldname, field in self.fields.items():
-            key = fieldname if field._alias is None else field._alias
+            key = fieldname if field.alias is None else field.alias
             try:
                 fieldvalue = field(value, key)
             except ValidationError as e:
@@ -359,10 +367,10 @@ class ZangarMappingStruct(ZangarStruct):
 def _get_keys(fields: Mapping[str, ZangarField]) -> set[str]:
     rv = set()
     for name, field in fields.items():
-        if field._alias is None:
+        if field.alias is None:
             rv.add(name)
         else:
-            rv.add(field._alias)
+            rv.add(field.alias)
     return rv
 
 
