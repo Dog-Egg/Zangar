@@ -148,11 +148,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
 
     def __init__(
         self,
-        fields: (
-            Mapping[str, ZangarField]
-            | Mapping[str, SchemaBase]
-            | Mapping[str, ZangarField | SchemaBase]
-        ),
+        fields: UnnormalizedFields,
         /,
     ):
         _fields: dict[str, ZangarField] = {}
@@ -375,9 +371,20 @@ def _get_keys(fields: Mapping[str, ZangarField]) -> set[str]:
 
 
 Fields: t.TypeAlias = t.Mapping[str, ZangarField]
+UnnormalizedFields: t.TypeAlias = t.Mapping[str, t.Union[ZangarField, SchemaBase]]
 
 
-def _check_fieldnames(fields: Fields, names: Iterable[str] | None, /):
+def _normalize_fields(fields: UnnormalizedFields) -> Fields:
+    _fields = {}
+    for name, field in fields.items():
+        if not isinstance(field, ZangarField):
+            _fields[name] = ZangarField(field)
+        else:
+            _fields[name] = field
+    return _fields
+
+
+def _check_fieldnames(fields: UnnormalizedFields, names: Iterable[str] | None, /):
     if not names:
         return
     for name in names:
@@ -385,7 +392,9 @@ def _check_fieldnames(fields: Fields, names: Iterable[str] | None, /):
             raise ValueError(f"Field {name!r} not found in the struct schema")
 
 
-def required_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fields:
+def required_fields(
+    fields: UnnormalizedFields, names: Iterable[str] | None = None, /
+) -> Fields:
     """Make the specified fields required.
 
     Args:
@@ -395,7 +404,8 @@ def required_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fi
     """
 
     _check_fieldnames(fields, names)
-    copy_fields: dict[str, ZangarField] = {}
+    fields = _normalize_fields(fields)
+    copy_fields = {}
     for name, field in fields.items():
         copy_field = copy.copy(field)
         if names is None or name in names:
@@ -406,7 +416,9 @@ def required_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fi
     return copy_fields
 
 
-def optional_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fields:
+def optional_fields(
+    fields: UnnormalizedFields, names: Iterable[str] | None = None, /
+) -> Fields:
     """Make the specified fields optional.
 
     Args:
@@ -420,7 +432,7 @@ def optional_fields(fields: Fields, names: Iterable[str] | None = None, /) -> Fi
     return required_fields(fields, set(fields) - set(names))
 
 
-def pick_fields(fields: Fields, names: Iterable[str], /) -> Fields:
+def pick_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
     """Pick the specified fields.
 
     Args:
@@ -428,13 +440,14 @@ def pick_fields(fields: Fields, names: Iterable[str], /) -> Fields:
         names: The names of the fields to pick.
     """
     _check_fieldnames(fields, names)
+    fields = _normalize_fields(fields)
     copy_fields = {}
     for name in names:
         copy_fields[name] = copy.copy(fields[name])
     return copy_fields
 
 
-def omit_fields(fields: Fields, names: Iterable[str], /) -> Fields:
+def omit_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
     """Pick all fields except the specified ones.
 
     Args:
