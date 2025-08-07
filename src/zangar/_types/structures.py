@@ -25,6 +25,8 @@ class ZangarField(t.Generic[T]):
         schema: The schema of the field.
         alias: The field alias name, if not `None`, will be used to construct the parsed field name.
         getter: A custom function used to obtain the field value.
+            If the function you provided raises an `Exception`,
+            the field will be treated as having no value retrieved.
     """
 
     _empty = _empty
