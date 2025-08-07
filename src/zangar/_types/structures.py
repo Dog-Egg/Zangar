@@ -55,7 +55,12 @@ class ZangarField(t.Generic[T]):
         if self.__getter is None:
             value = _getter(obj, key)
         else:
-            value = self.__getter(obj)
+            try:
+                value = self.__getter(obj)
+            # pylint: disable-next=broad-exception-caught
+            except Exception:
+                value = self._empty
+
         if value is self._empty:
             if self._required:
                 raise ValidationError(

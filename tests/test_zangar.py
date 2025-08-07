@@ -216,14 +216,40 @@ class TestStruct:
         with pytest.warns(DeprecationWarning):
             assert self.__get_fields(obj.omit_fields(["a"])) == ["b"]
 
-    def test_field_getter(self):
-        assert z.struct(
-            {
-                "fullname": z.field(
-                    z.str(), getter=lambda o: f"{o['firstname']} {o['lastname']}"
-                ),
+    class TestFieldGetter:
+        def test_basic(self):
+            assert z.struct(
+                {
+                    "fullname": z.field(
+                        z.str(), getter=lambda o: f"{o['firstname']} {o['lastname']}"
+                    ),
+                }
+            ).parse({"firstname": "John", "lastname": "Doe"}) == {
+                "fullname": "John Doe"
             }
-        ).parse({"firstname": "John", "lastname": "Doe"}) == {"fullname": "John Doe"}
+
+        def test_getter_raising_exceptions(self):
+            input = {"firstname": "John", "lastname": "Doe"}
+            schema = z.struct(
+                {
+                    "firstname": z.str(),
+                    "lastname": z.str(),
+                    "fullname": z.field(
+                        z.str(), getter=lambda o: f"{o['firstname1']} {o['lastname']}"
+                    ),
+                }
+            )
+            with pytest.raises(z.ValidationError) as e:
+                schema.parse(input)
+            assert e.value.format_errors() == [
+                {"loc": ["fullname"], "msgs": ["This field is required"]},
+            ]
+
+            # with optional fields
+            assert z.struct(z.optional_fields(schema.fields)).parse(input) == {
+                "firstname": "John",
+                "lastname": "Doe",
+            }
 
 
 class TestList:
