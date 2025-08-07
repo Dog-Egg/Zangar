@@ -3,6 +3,7 @@
 
     getting_started
     structures
+    unions
     messages
     circular_reference
     exceptions
@@ -30,8 +31,8 @@ All other validation methods are implemented by combining these two primitives. 
 .. code-block:: python
 
     # All string methods are built on these primitives
-    z.str().min(5)        # equivalent to: z.str().ensure(lambda x: len(x) >= 5)
-    z.str().strip()       # equivalent to: z.str().transform(lambda x: x.strip())
+    z.str().min(5)        # equivalent to: z.ensure(lambda x: isinstance(x, str)).ensure(lambda x: len(x) >= 5)
+    z.str().strip()       # equivalent to: z.ensure(lambda x: isinstance(x, str)).transform(lambda x: x.strip())
 
 Explicit Ordering Matters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,11 +71,11 @@ Zangar uses method chaining to build complex validation pipelines from simple co
 .. code-block:: python
 
     user_name = (
-        z.str()
-        .transform(lambda s: s.strip())           # Remove whitespace
-        .ensure(lambda s: len(s) >= 2)            # Minimum length
-        .transform(lambda s: s.title())           # Capitalize
-        .ensure(lambda s: s.isalpha())            # Only letters
+        z.ensure(lambda x: isinstance(x, str))      # Validate type
+        .transform(lambda s: s.strip())             # Remove whitespace
+        .ensure(lambda s: len(s) >= 2)              # Minimum length
+        .transform(lambda s: s.title())             # Capitalize
+        .ensure(lambda s: s.isalpha())              # Only letters
     )
 
 Type Safety Through Composition
@@ -103,7 +104,7 @@ A common pattern is to clean/normalize data before validation:
 .. code-block:: python
 
     email = (
-        z.str()
+        z.ensure(lambda x: isinstance(x, str))
         .transform(lambda s: s.strip().lower())   # Normalize
         .ensure(lambda s: "@" in s)               # Validate
         .ensure(lambda s: "." in s.split("@")[1]) # Domain has dot
@@ -117,7 +118,7 @@ Sometimes you need to ensure data meets criteria before transformation:
 .. code-block:: python
 
     safe_division = (
-        z.float()
+        z.ensure(lambda x: isinstance(x, float))
         .ensure(lambda x: x != 0, message="Cannot divide by zero")  # Safety check
         .transform(lambda x: 1 / x)                                 # Transform
     )
