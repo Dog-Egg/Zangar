@@ -514,3 +514,10 @@ def test_break_on_failure():
     assert e.value.format_errors() == [
         {"msgs": ["The value should be greater than 0", "Invalid value"]}
     ]
+
+
+class TestZangarToInt:
+    def test_bigint(self):
+        n = 2**63 - 1
+        assert z.to.int().lte(n).parse(n) == n
+        assert z.to.int().lte(n).parse(str(n)) == n
