@@ -31,6 +31,12 @@ class ZangarToList(ZangarList):
 
 # Note: This function will be referenced by documentations
 def int_convert(value):
+    if isinstance(value, int):
+        return value
+
+    if isinstance(value, str) and value.isdigit():
+        return int(value)
+
     f = float(value)
     i = int(f)
     if f != i:
