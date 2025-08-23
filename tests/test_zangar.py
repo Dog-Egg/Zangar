@@ -304,6 +304,12 @@ class TestStruct:
                 self.fields.optional(["d"])
             assert e.value.args == ("Field 'd' not found in the struct schema",)
 
+        def test_create_struct(self):
+            """FieldMapping can be used to create a struct."""
+            z.struct(
+                z.FieldMapping({"a": z.str(), "b": z.str()}).optional().omit(["a"])
+            )
+
 
 class TestList:
     def test_parse_wrong_type(self):
