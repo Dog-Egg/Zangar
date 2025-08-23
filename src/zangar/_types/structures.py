@@ -143,8 +143,8 @@ class StructMethods(Schema[T]):
 
 
 class FieldMapping(Mapping):
-    def __init__(self, fields: Mapping[str, ZangarField]):
-        self.__fields = fields
+    def __init__(self, fields: UnnormalizedFields):
+        self.__fields = _normalize_fields(fields)
 
     def __getitem__(self, key):
         return self.__fields[key]
@@ -212,7 +212,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         fields: UnnormalizedFields,
         /,
     ):
-        self.__fields = _normalize_fields(fields)
+        self.__fields = FieldMapping(fields)
 
         self._name_to_alias, self._alias_to_name = {}, {}
         for name, field in self.fields.items():
@@ -225,7 +225,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
     @property
     def fields(self) -> FieldMapping:
         """The fields of the struct."""
-        return FieldMapping(self.__fields)
+        return self.__fields
 
     def extend(self, fields: dict[str, ZangarField | SchemaBase], /):
         """Extend the struct with additional fields.
@@ -450,7 +450,6 @@ def required_fields(
             If not provided, all fields will be made required.
     """
 
-    fields = _normalize_fields(fields)
     return FieldMapping(fields).required(names)
 
 
@@ -464,7 +463,6 @@ def optional_fields(
         names: The names of the fields to make optional.
             If not provided, all fields will be made optional.
     """
-    fields = _normalize_fields(fields)
     return FieldMapping(fields).optional(names)
 
 
@@ -475,7 +473,6 @@ def pick_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
         fields: The fields to pick from.
         names: The names of the fields to pick.
     """
-    fields = _normalize_fields(fields)
     return FieldMapping(fields).pick(names)
 
 
@@ -486,5 +483,4 @@ def omit_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
         fields: The fields to omit from.
         names: The names of the fields to omit.
     """
-    fields = _normalize_fields(fields)
     return FieldMapping(fields).omit(names)
