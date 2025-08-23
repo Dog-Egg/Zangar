@@ -5,7 +5,6 @@ import typing as t
 import warnings
 from collections.abc import Callable, Iterable, Mapping
 from operator import getitem
-from types import MappingProxyType
 
 from zangar._core import Schema, SchemaBase
 from zangar._messages import DefaultMessage, process_message
@@ -143,6 +142,61 @@ class StructMethods(Schema[T]):
         )
 
 
+class FieldMapping(Mapping):
+    def __init__(self, fields: Mapping[str, ZangarField]):
+        self.__fields = fields
+
+    def __getitem__(self, key):
+        return self.__fields[key]
+
+    def __iter__(self):
+        return iter(self.__fields)
+
+    def __len__(self):
+        return len(self.__fields)
+
+    def __check_names(self, names: Iterable[str]):
+        for name in names:
+            if name not in self.__fields:
+                raise ValueError(f"Field {name!r} not found in the struct schema")
+
+    def pick(self, names: Iterable[str], /) -> FieldMapping:
+        """Pick the specified fields."""
+        self.__check_names(names)
+        copy_fields = {}
+        for name in names:
+            copy_fields[name] = copy.copy(self.__fields[name])
+        return self.__class__(copy_fields)
+
+    def omit(self, names: Iterable[str], /) -> FieldMapping:
+        """Omit the specified fields."""
+        self.__check_names(names)
+        nameset = set(names)
+        return self.pick([name for name in self.__fields if name not in nameset])
+
+    def required(self, names: Iterable[str] | None = None, /) -> FieldMapping:
+        """Make all or specified fields required."""
+        if names is not None:
+            self.__check_names(names)
+
+        copy_fields = {}
+        for name, field in self.__fields.items():
+            copy_field = copy.copy(field)
+            if names is None or name in names:
+                copy_field.required()
+            else:
+                copy_field.optional()
+            copy_fields[name] = copy_field
+        return self.__class__(copy_fields)
+
+    def optional(self, names: Iterable[str] | None = None, /) -> FieldMapping:
+        """Make all or specified fields optional."""
+        if names is None:
+            return self.required([])
+        self.__check_names(names)
+        return self.required(set(self.__fields) - set(names))
+
+
 class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
     """This is a schema with fields. It can parse any object and return a dict.
 
@@ -158,13 +212,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         fields: UnnormalizedFields,
         /,
     ):
-        _fields: dict[str, ZangarField] = {}
-        for name, field in fields.items():
-            if not isinstance(field, ZangarField):
-                _fields[name] = ZangarField(field)
-            else:
-                _fields[name] = field
-        self.__fields = MappingProxyType(_fields)
+        self.__fields = _normalize_fields(fields)
 
         self._name_to_alias, self._alias_to_name = {}, {}
         for name, field in self.fields.items():
@@ -175,9 +223,9 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         super().__init__(name_to_alias=self._name_to_alias)
 
     @property
-    def fields(self) -> Mapping[str, ZangarField]:
+    def fields(self) -> FieldMapping:
         """The fields of the struct."""
-        return self.__fields
+        return FieldMapping(self.__fields)
 
     def extend(self, fields: dict[str, ZangarField | SchemaBase], /):
         """Extend the struct with additional fields.
@@ -391,14 +439,6 @@ def _normalize_fields(fields: UnnormalizedFields) -> Fields:
     return _fields
 
 
-def _check_fieldnames(fields: UnnormalizedFields, names: Iterable[str] | None, /):
-    if not names:
-        return
-    for name in names:
-        if name not in fields:
-            raise ValueError(f"Field {name!r} not found in the struct schema")
-
-
 def required_fields(
     fields: UnnormalizedFields, names: Iterable[str] | None = None, /
 ) -> Fields:
@@ -410,17 +450,8 @@ def required_fields(
             If not provided, all fields will be made required.
     """
 
-    _check_fieldnames(fields, names)
     fields = _normalize_fields(fields)
-    copy_fields = {}
-    for name, field in fields.items():
-        copy_field = copy.copy(field)
-        if names is None or name in names:
-            copy_field.required()
-        else:
-            copy_field.optional()
-        copy_fields[name] = copy_field
-    return copy_fields
+    return FieldMapping(fields).required(names)
 
 
 def optional_fields(
@@ -433,10 +464,8 @@ def optional_fields(
         names: The names of the fields to make optional.
             If not provided, all fields will be made optional.
     """
-    _check_fieldnames(fields, names)
-    if names is None:
-        return required_fields(fields, [])
-    return required_fields(fields, set(fields) - set(names))
+    fields = _normalize_fields(fields)
+    return FieldMapping(fields).optional(names)
 
 
 def pick_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
@@ -446,12 +475,8 @@ def pick_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
         fields: The fields to pick from.
         names: The names of the fields to pick.
     """
-    _check_fieldnames(fields, names)
     fields = _normalize_fields(fields)
-    copy_fields = {}
-    for name in names:
-        copy_fields[name] = copy.copy(fields[name])
-    return copy_fields
+    return FieldMapping(fields).pick(names)
 
 
 def omit_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
@@ -461,5 +486,5 @@ def omit_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
         fields: The fields to omit from.
         names: The names of the fields to omit.
     """
-    _check_fieldnames(fields, names)
-    return pick_fields(fields, set(fields) - set(names))
+    fields = _normalize_fields(fields)
+    return FieldMapping(fields).omit(names)

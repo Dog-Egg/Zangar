@@ -251,6 +251,59 @@ class TestStruct:
                 "lastname": "Doe",
             }
 
+    class TestFieldMapping:
+        def setup_method(self):
+            self.fields = z.struct(
+                {
+                    "a": z.str(),
+                    "b": z.str(),
+                    "c": z.str(),
+                }
+            ).fields
+
+        def test_pick(self):
+            assert list(self.fields.pick(["a", "b"])) == ["a", "b"]
+            with pytest.raises(ValueError) as e:
+                self.fields.pick(["d"])
+            assert e.value.args == ("Field 'd' not found in the struct schema",)
+
+        def test_omit(self):
+            assert list(self.fields.omit(["a", "b"])) == ["c"]
+            assert list(self.fields.omit(["a", "b", "c"])) == []
+            assert list(self.fields.omit([])) == ["a", "b", "c"]
+            with pytest.raises(ValueError) as e:
+                self.fields.omit(["d"])
+            assert e.value.args == ("Field 'd' not found in the struct schema",)
+
+        def require_names(self, fields: z.FieldMapping):
+            return [name for name, field in fields.items() if field._required]
+
+        def test_required(self):
+            assert self.require_names(self.fields.required(["a", "b"])) == ["a", "b"]
+            assert self.require_names(self.fields.required([])) == []
+            assert self.require_names(self.fields.required(["a", "b", "c"])) == [
+                "a",
+                "b",
+                "c",
+            ]
+            assert self.require_names(self.fields.required()) == [
+                "a",
+                "b",
+                "c",
+            ]
+            with pytest.raises(ValueError) as e:
+                self.fields.required(["d"])
+            assert e.value.args == ("Field 'd' not found in the struct schema",)
+
+        def test_optional(self):
+            assert self.require_names(self.fields.optional(["a", "c"])) == ["b"]
+            assert self.require_names(self.fields.optional([])) == ["a", "b", "c"]
+            assert self.require_names(self.fields.optional(["a", "b", "c"])) == []
+            assert self.require_names(self.fields.optional()) == []
+            with pytest.raises(ValueError) as e:
+                self.fields.optional(["d"])
+            assert e.value.args == ("Field 'd' not found in the struct schema",)
+
 
 class TestList:
     def test_parse_wrong_type(self):

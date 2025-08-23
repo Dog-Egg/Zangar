@@ -18,6 +18,7 @@ from ._types import ZangarStr as str
 from ._types import ZangarStruct as struct
 from ._types.conversions import to
 from ._types.structures import (
+    FieldMapping,
     omit_fields,
     optional_fields,
     pick_fields,
