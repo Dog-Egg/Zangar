@@ -36,6 +36,7 @@ class ZangarField(t.Generic[T]):
         *,
         alias: str | None = None,
         getter: Callable[[t.Any], t.Any] | None = None,
+        meta: Mapping | None = None,
     ) -> None:
         self.__schema = schema
         self.__alias = alias
@@ -43,6 +44,11 @@ class ZangarField(t.Generic[T]):
         self._required = True
         self.__required_message = None
         self._default: Callable[[], T] | T = _empty
+        self.__meta = meta
+
+    @property
+    def meta(self) -> Mapping:
+        return self.__meta or {}
 
     @property
     def alias(self) -> str | None:
@@ -142,7 +148,7 @@ class StructMethods(Schema[T]):
         )
 
 
-class FieldMapping(Mapping):
+class FieldMapping(t.Mapping[str, ZangarField]):
     def __init__(self, fields: UnnormalizedFields):
         self.__fields = _normalize_fields(fields)
 

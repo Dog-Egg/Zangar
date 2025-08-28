@@ -580,3 +580,29 @@ class TestZangarToInt:
         n = 2**63 - 1
         assert z.to.int().lte(n).parse(n) == n
         assert z.to.int().lte(n).parse(str(n)) == n
+
+
+def test_field_meta():
+    schema = z.struct(
+        {
+            "username": z.field(z.str(), meta={"readonly": True}),
+            "password": z.field(z.str(), meta={"writeonly": True}),
+        }
+    )
+
+    def readonly(fields: z.FieldMapping):
+        rv = {}
+        for name, field in fields.items():
+            if field.meta.get("readonly"):
+                rv[name] = field
+        return rv
+
+    def writeonly(fields: z.FieldMapping):
+        rv = {}
+        for name, field in fields.items():
+            if field.meta.get("writeonly"):
+                rv[name] = field
+        return rv
+
+    assert readonly(schema.fields) == {"username": schema.fields["username"]}
+    assert writeonly(schema.fields) == {"password": schema.fields["password"]}
