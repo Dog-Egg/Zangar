@@ -455,7 +455,11 @@ def required_fields(
         names: The names of the fields to make required.
             If not provided, all fields will be made required.
     """
-
+    warnings.warn(
+        "Deprecated, use FieldMapping.required instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return FieldMapping(fields).required(names)
 
 
@@ -469,6 +473,11 @@ def optional_fields(
         names: The names of the fields to make optional.
             If not provided, all fields will be made optional.
     """
+    warnings.warn(
+        "Deprecated, use FieldMapping.optional instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return FieldMapping(fields).optional(names)
 
 
@@ -479,6 +488,11 @@ def pick_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
         fields: The fields to pick from.
         names: The names of the fields to pick.
     """
+    warnings.warn(
+        "Deprecated, use FieldMapping.pick instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return FieldMapping(fields).pick(names)
 
 
@@ -489,4 +503,9 @@ def omit_fields(fields: UnnormalizedFields, names: Iterable[str], /) -> Fields:
         fields: The fields to omit from.
         names: The names of the fields to omit.
     """
+    warnings.warn(
+        "Deprecated, use FieldMapping.omit instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return FieldMapping(fields).omit(names)
