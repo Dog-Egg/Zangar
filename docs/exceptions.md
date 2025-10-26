@@ -37,7 +37,7 @@
 ... except z.ValidationError as e:
 ...     e.format_errors()
 ...
-[{'loc': ['names', 2], 'msgs': ['The name is at lease 5 characters long', 'The name cannot contain !']}]
+[{'msgs': ['The name is at lease 5 characters long', 'The name cannot contain !'], 'loc': ['names', 2]}]
 
 ```
 

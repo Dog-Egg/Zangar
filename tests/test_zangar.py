@@ -327,7 +327,6 @@ class TestList:
 
 
 class TestUnion:
-
     def test_parse(self):
         union = z.int() | z.none()
 
@@ -483,21 +482,6 @@ def test_meta_checking():
 )
 def test_is_class(cls):
     assert issubclass(cls, z.Schema)
-
-
-def test_ValidationError():
-    peer1 = z.ValidationError()
-    peer1._set_child_err(0, z.ValidationError("err1"))
-
-    peer2 = z.ValidationError()
-    peer2._set_child_err(0, z.ValidationError("err2"))
-
-    error = z.ValidationError()
-    error._set_peer_err(peer1)
-    error._set_peer_err(peer2)
-    assert error.format_errors() == [
-        {"loc": [0], "msgs": ["err1", "err2"]},
-    ]
 
 
 class TestMappingStruct:

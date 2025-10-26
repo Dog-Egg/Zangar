@@ -35,7 +35,7 @@ Required fields can also have custom messages as shown below.
     ...     'username': z.field(z.str()).required(message='Username is required.'),
     ... }).parse({})
     Traceback (most recent call last):
-    zangar.exceptions.ValidationError: [{'loc': ['username'], 'msgs': ['Username is required.']}]
+    zangar.exceptions.ValidationError: [{'msgs': ['Username is required.'], 'loc': ['username']}]
 
 .. warning::
 
@@ -52,7 +52,7 @@ Messages can be any type you want (except `None`), not just strings.
     ...     'username': z.field(z.str()).required(message={'code': 1001, 'description': 'This field is required.'}),
     ... }).parse({})
     Traceback (most recent call last):
-    zangar.exceptions.ValidationError: [{'loc': ['username'], 'msgs': [{'code': 1001, 'description': 'This field is required.'}]}]
+    zangar.exceptions.ValidationError: [{'msgs': [{'code': 1001, 'description': 'This field is required.'}], 'loc': ['username']}]
 
 Modifying Default Messages
 --------------------------
@@ -75,7 +75,7 @@ Zangar's built-in validation methods all have default messages, but they may not
     ...         'username': z.field(z.str()).required(),
     ...     }).parse({})
     Traceback (most recent call last):
-    zangar.exceptions.ValidationError: [{'loc': ['username'], 'msgs': ['Required field']}]
+    zangar.exceptions.ValidationError: [{'msgs': ['Required field'], 'loc': ['username']}]
 
 Zangar's default messages are wrapped in a `zangar.DefaultMessage` object. It contains additional information that can be used to customize messages.
 
