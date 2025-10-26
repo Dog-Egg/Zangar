@@ -62,7 +62,7 @@ class ValidationOrError(ValidationError):
 
     def format_errors(self):
         """Collect all errors from OR chain, flattening nested OR operations."""
-        result = []
+        result: list = []
         self._collect_or_errors(result)
         return result
 
@@ -87,8 +87,8 @@ class ValidationAndError(ValidationError):
 
     def format_errors(self):
         """Collect all messages and errors from AND chain, merging them."""
-        msgs = []
-        all_errors = []
+        msgs: list = []
+        all_errors: list = []
         self._collect_and_errors(msgs, all_errors)
 
         # If there are errors with location paths, return them

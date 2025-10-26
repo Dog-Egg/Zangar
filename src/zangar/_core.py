@@ -190,7 +190,7 @@ class Schema(SchemaBase[T]):
                     if validator.break_on_failure:
                         break
             elif isinstance(validator, TransformationValidator):
-                if error:
+                if error is not None:
                     raise error
                 value = validator(value)
 
@@ -213,8 +213,8 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
                     errors.append(e)
             if errors:
                 error = errors[0]
-                for e in errors[1:]:
-                    error = error | e
+                for err in errors[1:]:
+                    error = error | err
                 raise error
             raise NotImplementedError
 
