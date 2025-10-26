@@ -129,7 +129,7 @@ zangar.exceptions.ValidationError: [{'msgs': ['The end time cannot be later than
 ...     'end_time': datetime(2000, 1, 1),
 ... })
 Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'loc': ['end_time'], 'msgs': ['The end time cannot be later than the start time']}]
+zangar.exceptions.ValidationError: [{'msgs': ['The end time cannot be later than the start time'], 'loc': ['end_time']}]
 
 ```
 
@@ -262,7 +262,7 @@ Raise an error when encountering unknown fields.
 ...     'age': 18
 ... })
 Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'loc': ['age'], 'msgs': ['Unknown field']}]
+zangar.exceptions.ValidationError: [{'msgs': ['Unknown field'], 'loc': ['age']}]
 
 ```
 
@@ -297,7 +297,7 @@ InventoryItem(name='necklace', unit_price=12.5, quantity_on_hand=0)
 # It's bad! because unit_price is not a float.
 >>> z.dataclass(InventoryItem).parse({'name': "necklace", 'unit_price': '12.50'})
 Traceback (most recent call last):
-zangar.exceptions.ValidationError: [{'loc': ['unit_price'], 'msgs': ['Expected float, received str']}]
+zangar.exceptions.ValidationError: [{'msgs': ['Expected float, received str'], 'loc': ['unit_price']}]
 
 ```
 

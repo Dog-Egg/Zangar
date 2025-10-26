@@ -340,13 +340,15 @@ class ZangarList(TypeSchema[t.List[T]]):
 
     def _pretransform(self, value):
         rv = []
-        error = ValidationError()
+        error = None
         for index, item in enumerate(value):
             try:
                 item = self.__item.parse(item)
             except ValidationError as exc:
-                error._set_child_err(index, exc)
+                if error is None:
+                    error = ValidationError()
+                error._set_sub_error(index, exc)
             rv.append(item)
-        if not error._empty():
+        if error:
             raise error
         return rv

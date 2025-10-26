@@ -128,7 +128,7 @@ class StructMethods(Schema[T]):
                 return True
             error = ValidationError()
             for fieldname in fieldnames:
-                error._set_child_err(
+                error._set_sub_error(
                     self.__name_to_alias[fieldname],
                     ValidationError(
                         process_message(
@@ -320,19 +320,21 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
 
     def _pretransform(self, value):
         rv = {}
-        error = ValidationError()
+        error = None
 
         for fieldname, field in self.fields.items():
             key = fieldname if field.alias is None else field.alias
             try:
                 fieldvalue = field(value, key)
             except ValidationError as e:
-                error._set_child_err(key, e)
+                if error is None:
+                    error = ValidationError()
+                error._set_sub_error(key, e)
             else:
                 if fieldvalue is not _empty:
                     rv[fieldname] = fieldvalue
 
-        if not error._empty():
+        if error:
             raise error
 
         return rv
@@ -394,10 +396,12 @@ class ZangarMappingStruct(ZangarStruct):
 
         keys = _get_keys(self.fields)
         if self.__unknown == "raise":
-            error = ValidationError()
+            error = None
             for k, v in value.items():
                 if k not in keys:
-                    error._set_child_err(
+                    if error is None:
+                        error = ValidationError()
+                    error._set_sub_error(
                         k,
                         ValidationError(
                             process_message(
@@ -406,7 +410,7 @@ class ZangarMappingStruct(ZangarStruct):
                             )
                         ),
                     )
-            if not error._empty():
+            if error:
                 raise error
 
         elif self.__unknown == "include":

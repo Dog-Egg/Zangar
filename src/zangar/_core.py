@@ -5,7 +5,7 @@ import typing as t
 from collections.abc import Callable
 
 from ._messages import DefaultMessage, process_message
-from .exceptions import UnionValidationError, ValidationError
+from .exceptions import ValidationError
 
 T = t.TypeVar("T")
 P = t.TypeVar("P")
@@ -85,7 +85,6 @@ _USER_META_KEYS = {
 
 
 class Schema(SchemaBase[T]):
-
     def __init__(
         self,
         *,
@@ -177,22 +176,25 @@ class Schema(SchemaBase[T]):
 
     @t.final
     def parse(self, value, /) -> T:
-        error = ValidationError()
+        error = None
         for n in self._iterate_chain():
             validator = n._validator
             if isinstance(validator, EnsuranceValidator):
                 try:
                     validator(value)
                 except ValidationError as e:
-                    error._set_peer_err(e)
+                    if error is None:
+                        error = e
+                    else:
+                        error = error & e
                     if validator.break_on_failure:
                         break
             elif isinstance(validator, TransformationValidator):
-                if not error._empty():
+                if error:
                     raise error
                 value = validator(value)
 
-        if not error._empty():
+        if error:
             raise error
 
         return value
@@ -210,7 +212,10 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
                 except ValidationError as e:
                     errors.append(e)
             if errors:
-                raise UnionValidationError(errors)
+                error = errors[0]
+                for e in errors[1:]:
+                    error = error | e
+                raise error
             raise NotImplementedError
 
         super().__init__(
