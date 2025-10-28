@@ -11,8 +11,8 @@ from zangar.exceptions import ValidationError
 T = t.TypeVar("T")
 
 
-class StringMethods(Schema):
-    def min(self, value: int, /, **kwargs):
+class StringMethods(Schema[str]):
+    def min(self, value: int, /, **kwargs) -> StringMethods:
         """Validate the minimum length of a string.
 
         Args:
@@ -36,7 +36,7 @@ class StringMethods(Schema):
             meta={"$min": value},
         )
 
-    def max(self, value: int, /, **kwargs):
+    def max(self, value: int, /, **kwargs) -> StringMethods:
         """Validate the maximum length of a string.
 
         Args:
@@ -60,7 +60,7 @@ class StringMethods(Schema):
             meta={"$max": value},
         )
 
-    def strip(self, *args, **kwargs):
+    def strip(self, *args, **kwargs) -> StringMethods:
         """Trim whitespace from both ends.
 
         .. code-block::
@@ -92,8 +92,11 @@ class ZangarStr(TypeSchema[str], StringMethods):
         return str
 
 
-class NumberMethods(Schema):
-    def gte(self, value: int | float, /, **kwargs):
+N = t.TypeVar("N", int, float)
+
+
+class NumberMethods(t.Generic[N], Schema[N]):
+    def gte(self, value: int | float, /, **kwargs) -> NumberMethods[N]:
         """Validate the number is greater than or equal to a given value.
 
         Args:
@@ -116,7 +119,7 @@ class NumberMethods(Schema):
             prev=self.ensure(lambda x: x >= value, **kwargs), meta={"$gte": value}
         )
 
-    def gt(self, value: int | float, /, **kwargs):
+    def gt(self, value: int | float, /, **kwargs) -> NumberMethods[N]:
         """Validate the number is greater than a given value.
 
         Args:
@@ -139,7 +142,7 @@ class NumberMethods(Schema):
             prev=self.ensure(lambda x: x > value, **kwargs), meta={"$gt": value}
         )
 
-    def lte(self, value: int | float, /, **kwargs):
+    def lte(self, value: int | float, /, **kwargs) -> NumberMethods[N]:
         """Validate the number is less than or equal to a given value.
 
         Args:
@@ -162,7 +165,7 @@ class NumberMethods(Schema):
             prev=self.ensure(lambda x: x <= value, **kwargs), meta={"$lte": value}
         )
 
-    def lt(self, value: int | float, /, **kwargs):
+    def lt(self, value: int | float, /, **kwargs) -> NumberMethods[N]:
         """Validate the number is less than a given value.
 
         Args:
@@ -186,7 +189,7 @@ class NumberMethods(Schema):
         )
 
 
-class ZangarInt(TypeSchema[int], NumberMethods):
+class ZangarInt(TypeSchema[int], NumberMethods[int]):
     """Validate that the data is of type `int`.
 
     .. code-block::
@@ -203,7 +206,7 @@ class ZangarInt(TypeSchema[int], NumberMethods):
         return int
 
 
-class ZangarFloat(TypeSchema[float], NumberMethods):
+class ZangarFloat(TypeSchema[float], NumberMethods[float]):
     """Validate that the data is of type `float`.
 
     .. code-block::
