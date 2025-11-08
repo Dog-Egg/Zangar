@@ -18,7 +18,14 @@ class ZangarDataclass(Schema["dataclasses._DataclassT"]):
 
     def __init__(self, cls: type[dataclasses._DataclassT], /):
         self.__struct = ZangarStruct(_parse_dataclass(cls))
-        super().__init__(prev=self.__struct.transform(lambda d: cls(**d)))
+
+        def transform(d: dict[str, t.Any]):
+            for field in dataclasses.fields(cls):
+                if field.init is False:
+                    d.pop(field.name, None)
+            return cls(**d)
+
+        super().__init__(prev=self.__struct.transform(transform))
 
     @property
     def fields(self):
@@ -47,7 +54,7 @@ def _parse_dataclass(
             default = dc_field.default
         elif dc_field.default_factory is not dataclasses.MISSING:
             default = dc_field.default_factory
-        if default is not ZangarField._empty:
+        if default is not ZangarField._empty or dc_field.init is False:
             struct_field = struct_field.optional(default=default)
         struct_fields[dc_field.name] = struct_field
 
