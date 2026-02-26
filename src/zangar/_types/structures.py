@@ -217,6 +217,7 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
         self,
         fields: UnnormalizedFields,
         /,
+        **kwargs,
     ):
         self.__fields = FieldMapping(fields)
 
@@ -226,7 +227,23 @@ class ZangarStruct(TypeSchema[dict], StructMethods[dict]):
             self._name_to_alias[name] = alias
             self._alias_to_name[alias] = name
 
-        super().__init__(name_to_alias=self._name_to_alias)
+        def oas(spec):
+            spec.update(type="object")
+            properties = {}
+            required = []
+            for name, field in self.fields.items():
+                key = name if field.alias is None else field.alias
+                properties[key] = spec._compile(field.schema, spec)
+                if field._default is not field._empty and not callable(field._default):
+                    properties[key].update(default=field._default)
+                if field._required:
+                    required.append(key)
+            if properties:
+                spec.update(properties=properties)
+            if required:
+                spec.update(required=required)
+
+        super().__init__(name_to_alias=self._name_to_alias, **kwargs, meta={"oas": oas})
 
     @property
     def fields(self) -> FieldMapping:
