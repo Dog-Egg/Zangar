@@ -7,6 +7,7 @@ from zangar._core import Schema, SchemaBase
 from zangar._messages import DefaultMessage
 from zangar._types.base import TypeSchema
 from zangar.exceptions import ValidationError
+from zangar.utils.misc import merge_meta
 
 T = t.TypeVar("T")
 
@@ -33,7 +34,7 @@ class StringMethods(Schema):
         )
         return StringMethods(
             prev=self.ensure(lambda x: len(x) >= value, **kwargs),
-            meta={"$min": value},
+            meta={"oas": {"minLength": value}},
         )
 
     def max(self, value: int, /, **kwargs):
@@ -57,7 +58,7 @@ class StringMethods(Schema):
         )
         return StringMethods(
             prev=self.ensure(lambda x: len(x) <= value, **kwargs),
-            meta={"$max": value},
+            meta={"oas": {"maxLength": value}},
         )
 
     def strip(self, *args, **kwargs):
@@ -88,6 +89,13 @@ class ZangarStr(TypeSchema[str], StringMethods):
         'hello'
     """
 
+    def __init__(self, **kwargs):
+        meta = kwargs.pop("meta", {})
+        super().__init__(
+            **kwargs,
+            meta=merge_meta({"oas": lambda spec: spec.update(type="string")}, meta),
+        )
+
     def _expected_type(self) -> type:
         return str
 
@@ -113,7 +121,8 @@ class NumberMethods(Schema):
             "message", DefaultMessage(key="number_gte", value=value, ctx={"gte": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x >= value, **kwargs), meta={"$gte": value}
+            prev=self.ensure(lambda x: x >= value, **kwargs),
+            meta={"oas": {"minimum": value}},
         )
 
     def gt(self, value: int | float, /, **kwargs):
@@ -136,7 +145,8 @@ class NumberMethods(Schema):
             "message", DefaultMessage(key="number_gt", value=value, ctx={"gt": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x > value, **kwargs), meta={"$gt": value}
+            prev=self.ensure(lambda x: x > value, **kwargs),
+            meta={"oas": {"exclusiveMinimum": True, "minimum": value}},
         )
 
     def lte(self, value: int | float, /, **kwargs):
@@ -159,7 +169,8 @@ class NumberMethods(Schema):
             "message", DefaultMessage(key="number_lte", value=value, ctx={"lte": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x <= value, **kwargs), meta={"$lte": value}
+            prev=self.ensure(lambda x: x <= value, **kwargs),
+            meta={"oas": {"maximum": value}},
         )
 
     def lt(self, value: int | float, /, **kwargs):
@@ -182,7 +193,8 @@ class NumberMethods(Schema):
             "message", DefaultMessage(key="number_lt", value=value, ctx={"lt": value})
         )
         return NumberMethods(
-            prev=self.ensure(lambda x: x < value, **kwargs), meta={"$lt": value}
+            prev=self.ensure(lambda x: x < value, **kwargs),
+            meta={"oas": {"exclusiveMaximum": True, "maximum": value}},
         )
 
 
@@ -198,6 +210,13 @@ class ZangarInt(TypeSchema[int], NumberMethods):
         >>> z.ensure(lambda x: isinstance(x, int)).parse(1)
         1
     """
+
+    def __init__(self, **kwargs):
+        meta = kwargs.pop("meta", {})
+        super().__init__(
+            **kwargs,
+            meta=merge_meta({"oas": lambda spec: spec.update(type="integer")}, meta),
+        )
 
     def _expected_type(self) -> type:
         return int
@@ -216,6 +235,13 @@ class ZangarFloat(TypeSchema[float], NumberMethods):
         1.0
     """
 
+    def __init__(self, **kwargs):
+        meta = kwargs.pop("meta", {})
+        super().__init__(
+            **kwargs,
+            meta=merge_meta({"oas": lambda spec: spec.update(type="number")}, meta),
+        )
+
     def _expected_type(self) -> type:
         return float
 
@@ -232,6 +258,13 @@ class ZangarBool(TypeSchema[bool]):
         >>> z.ensure(lambda x: isinstance(x, bool)).parse(True)
         True
     """
+
+    def __init__(self, **kwargs):
+        meta = kwargs.pop("meta", {})
+        super().__init__(
+            **kwargs,
+            meta=merge_meta({"oas": lambda spec: spec.update(type="boolean")}, meta),
+        )
 
     def _expected_type(self) -> type:
         return bool
@@ -251,12 +284,30 @@ class ZangarNone(TypeSchema[_NoneType]):
         >>> z.ensure(lambda x: x is None).parse(None)
     """
 
+    def __init__(self, **kwargs):
+        def oas(spec):
+            if isinstance(spec.parent, dict):
+                spec.parent["nullable"] = True
+            else:
+                spec.update(
+                    enum=[None],
+                )
+
+        super().__init__(**kwargs, meta={"oas": oas})
+
     def _expected_type(self) -> type:
         return _NoneType
 
 
 class ZangarAny(TypeSchema):
     """Validate that the data is of any type."""
+
+    def __init__(self, **kwargs):
+        meta = kwargs.pop("meta", {})
+        super().__init__(
+            **kwargs,
+            meta=merge_meta({"oas": lambda spec: spec.update(nullable=True)}, meta),
+        )
 
     def _expected_type(self) -> type:
         return object
@@ -303,6 +354,16 @@ class ZangarDatetime(TypeSchema[datetime.datetime], DatetimeMethods):
         datetime.datetime(2000, 1, 1, 0, 0)
     """
 
+    def __init__(self, **kwargs):
+        meta = kwargs.pop("meta", {})
+        super().__init__(
+            **kwargs,
+            meta=merge_meta(
+                {"oas": lambda spec: spec.update(type="string", format="date-time")},
+                meta,
+            ),
+        )
+
     def _expected_type(self) -> type:
         return datetime.datetime
 
@@ -331,7 +392,14 @@ class ZangarList(TypeSchema[t.List[T]]):
         return list
 
     def __init__(self, item: SchemaBase[T] | None = None, /, **kwargs):
-        super().__init__(**kwargs)
+        def oas(spec):
+            spec.update(
+                type="array",
+                items=spec._compile(self.item),
+            )
+
+        meta = kwargs.pop("meta", {})
+        super().__init__(**kwargs, meta=merge_meta({"oas": oas}, meta))
         self.__item = item or ZangarAny()
 
     @property

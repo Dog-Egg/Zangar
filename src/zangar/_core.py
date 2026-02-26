@@ -98,8 +98,6 @@ class Schema(SchemaBase[T]):
         # check meta
         if meta is not None:
             for key in meta:
-                if isinstance(key, str) and key.startswith("$"):
-                    continue
                 if key not in _USER_META_KEYS:
                     raise ValueError(f"Invalid meta key: {key}")
         self._meta: dict = meta or {}
@@ -200,6 +198,14 @@ class Schema(SchemaBase[T]):
         return value
 
 
+def _iter_union(union: Union):
+    for i in union._schemas:
+        if isinstance(i, Union):
+            yield from _iter_union(i)
+        else:
+            yield i
+
+
 class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
     def __init__(self, a: SchemaBase[T], b: SchemaBase[P], /):
         self._schemas = (a, b)
@@ -218,8 +224,21 @@ class Union(t.Generic[T, P], Schema[t.Union[T, P]]):
                 raise error
             raise NotImplementedError
 
+        def oas(spec):
+            results = list(
+                filter(
+                    lambda i: i,
+                    [spec._compile(s, spec) for s in _iter_union(self)],
+                )
+            )
+            if len(results) > 1:
+                spec.update(anyOf=results)
+            elif len(results) == 1:
+                spec.update(results[0])
+
         super().__init__(
             prev=Schema().transform(transform),
+            meta={"oas": oas},
         )
 
     def __repr__(self) -> str:
